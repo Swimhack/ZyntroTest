@@ -89,8 +89,9 @@ h1 {
 }
 
 h2 {
-    font-size: clamp(2rem, 4vw, 3rem);
+    font-size: clamp(1.875rem, 4vw, 2.5rem);
     margin-bottom: var(--space-md);
+    font-weight: 600;
 }
 
 h3 {
@@ -288,18 +289,19 @@ p {
 }
 
 .hero-title {
-    margin-bottom: var(--space-md);
-    background: linear-gradient(135deg, var(--gray-900), var(--gray-700));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    margin-bottom: var(--space-lg);
+    color: var(--gray-900);
+    font-weight: 600;
+    line-height: 1.1;
 }
 
 .hero-subtitle {
-    font-size: 1.25rem;
+    font-size: 1.375rem;
     color: var(--gray-600);
     margin-bottom: var(--space-xl);
-    line-height: 1.6;
+    line-height: 1.5;
+    font-weight: 400;
+    max-width: 90%;
 }
 
 .hero-cta {
@@ -771,7 +773,7 @@ p {
 .section-header {
     text-align: center;
     margin-bottom: var(--space-3xl);
-    max-width: 800px;
+    max-width: 700px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -791,10 +793,10 @@ p {
 .service-card {
     background: white;
     padding: 2rem;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-md);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-sm);
     border: 1px solid var(--gray-200);
-    transition: var(--transition-slow);
+    transition: var(--transition-base);
     position: relative;
     overflow: hidden;
 }
@@ -810,8 +812,8 @@ p {
 }
 
 .service-card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-xl);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
 }
 
 .service-icon {
