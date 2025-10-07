@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insights on LCMS Testing | ZyntroTest Blog</title>
+    <meta name="description" content="Expert insights on LCMS testing, peptide analysis, supplement safety, and biotech applications. Professional guidance from ZyntroTest's analytical chemistry experts.">
+    <meta name="keywords" content="LCMS testing blog, peptide analysis insights, supplement safety testing, biotech LCMS applications, analytical chemistry expertise">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="container">
+                <div class="nav-brand">
+                    <a href="index.html" class="logo">
+                        <div class="logo-icon">
+                            <div class="lcms-symbol"></div>
+                        </div>
+                        <div class="logo-text">
+                            <span class="brand-name">ZyntroTest</span>
+                            <span class="brand-tagline">Precision LCMS</span>
+                        </div>
+                    </a>
+                </div>
+                <div class="nav-menu" id="nav-menu">
+                    <ul class="nav-list">
+                        <li><a href="index.html" class="nav-link">Home</a></li>
+                        <li><a href="services.html" class="nav-link">Services</a></li>
+                        <li><a href="sample-submission.html" class="nav-link">Submit Sample</a></li>
+                        <li><a href="coa-samples.html" class="nav-link">COA Samples</a></li>
+                        <li><a href="blog.html" class="nav-link active">Blog</a></li>
+                        <li><a href="contact.html" class="nav-link">Contact</a></li>
+                    </ul>
+                </div>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Blog Header -->
+    <section class="blog-header">
+        <div class="container">
+            <div class="blog-header-content">
+                <h1>Insights on LCMS Testing</h1>
+                <p>Expert guidance and analytical chemistry insights from ZyntroTest's professional team. Discover the latest techniques, best practices, and industry trends in LCMS testing for peptides, supplements, and biotech applications.</p>
+                
+                <!-- Search Bar -->
+                <div class="blog-search">
+                    <div class="search-container">
+                        <input type="text" id="blog-search" placeholder="Search articles..." class="search-input">
+                        <button onclick="searchBlog()" class="search-btn">
+                            <span class="search-icon">🔍</span>
+                        </button>
+                    </div>
+                    <div class="search-filters">
+                        <button class="filter-btn active" data-category="all">All Posts</button>
+                        <button class="filter-btn" data-category="peptides">Peptides</button>
+                        <button class="filter-btn" data-category="supplements">Supplements</button>
+                        <button class="filter-btn" data-category="biotech">Biotech</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Article -->
+    <section class="featured-article">
+        <div class="container">
+            <div class="featured-content">
+                <div class="featured-badge">Featured Article</div>
+                <h2>Why LCMS with DAD Technology Outperforms Traditional Methods for Peptide Testing</h2>
+                <div class="article-meta">
+                    <span class="date">October 7, 2024</span>
+                    <span class="category">Peptides</span>
+                    <span class="read-time">5 min read</span>
+                </div>
+                <p class="featured-excerpt">Discover how Liquid Chromatography-Mass Spectrometry with Diode Array Detection revolutionizes peptide purity analysis, offering unmatched precision and comprehensive characterization for research and commercial applications.</p>
+                <a href="#article-1" class="btn btn-primary">Read Full Article</a>
+            </div>
+            <div class="featured-image">
+                <img src="https://images.unsplash.com/photo-1576671081837-49000212a370?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" alt="LCMS instrumentation for peptide analysis">
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Articles -->
+    <section class="blog-articles">
+        <div class="container">
+            <h2 class="section-title">Latest Articles</h2>
+            <div class="articles-grid">
+                
+                <!-- Article 1: LCMS with DAD Technology -->
+                <article class="blog-post" id="article-1" data-category="peptides">
+                    <div class="post-header">
+                        <div class="post-image">
+                            <img src="https://images.unsplash.com/photo-1576671081837-49000212a370?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="LCMS DAD technology for peptide testing">
+                        </div>
+                        <div class="post-meta">
+                            <span class="category">Peptides</span>
+                            <span class="date">October 7, 2024</span>
+                            <span class="read-time">5 min read</span>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <h3>Why LCMS with DAD Technology Outperforms Traditional Methods for Peptide Testing</h3>
+                        <div class="post-excerpt">
+                            <p>In the rapidly evolving landscape of peptide research and development, analytical precision has become paramount. Traditional testing methods, while foundational, often fall short of meeting today's stringent quality requirements.</p>
+                        </div>
+                        <div class="post-body">
+                            <p>Liquid Chromatography-Mass Spectrometry with Diode Array Detection (LCMS-DAD) represents a quantum leap forward in peptide analysis capabilities. This advanced technique combines the separation power of high-performance liquid chromatography with the molecular identification capabilities of mass spectrometry and the comprehensive spectral information provided by diode array detection.</p>
+
+                            <h4>Superior Molecular Characterization</h4>
+                            <p>Unlike traditional HPLC methods that rely solely on retention time and UV detection at fixed wavelengths, LCMS-DAD provides multi-dimensional analytical information. The mass spectrometry component delivers precise molecular weight confirmation, while DAD captures full UV-visible spectra across the entire chromatographic run. This combination enables definitive peptide identification and purity assessment that traditional methods simply cannot match.</p>
+
+                            <h4>Enhanced Impurity Detection and Identification</h4>
+                            <p>Peptide synthesis often results in complex impurity profiles including deletion sequences, amino acid substitutions, and oxidative modifications. LCMS-DAD technology excels at detecting and characterizing these impurities at sub-percent levels. The mass spectrometric data provides structural information that allows for impurity identification, while DAD detection offers additional confirmation through spectral matching.</p>
+
+                            <h4>Regulatory Compliance and Documentation</h4>
+                            <p>Modern pharmaceutical and research peptide applications require comprehensive analytical documentation. LCMS-DAD generates detailed analytical reports that meet FDA and ICH guidelines for peptide characterization. The technology's ability to provide both quantitative purity data and qualitative structural confirmation makes it the gold standard for regulatory submissions.</p>
+
+                            <h4>Cost-Effectiveness Through Efficiency</h4>
+                            <p>While the initial investment in LCMS-DAD technology may appear substantial, the analytical efficiency and information richness it provides often result in lower per-sample costs. Single-injection analysis can replace multiple traditional methods, reducing both time-to-result and overall analytical expenses.</p>
+
+                            <p>For peptide manufacturers, researchers, and e-commerce businesses, LCMS-DAD technology represents not just an analytical upgrade, but a competitive advantage in an increasingly quality-conscious marketplace.</p>
+                        </div>
+                        <div class="post-actions">
+                            <button onclick="togglePost('article-1')" class="read-more-btn">Read More</button>
+                            <div class="post-tags">
+                                <span class="tag">LCMS</span>
+                                <span class="tag">DAD</span>
+                                <span class="tag">Peptides</span>
+                                <span class="tag">Analysis</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Article 2: Supplement Safety -->
+                <article class="blog-post" id="article-2" data-category="supplements">
+                    <div class="post-header">
+                        <div class="post-image">
+                            <img src="https://images.unsplash.com/photo-1584362917165-526a968579e8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Supplement testing and safety analysis">
+                        </div>
+                        <div class="post-meta">
+                            <span class="category">Supplements</span>
+                            <span class="date">October 5, 2024</span>
+                            <span class="read-time">4 min read</span>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <h3>Ensuring Supplement Safety with Advanced Adulterant Screening</h3>
+                        <div class="post-excerpt">
+                            <p>The dietary supplement industry faces unprecedented scrutiny regarding product safety and authenticity. Advanced LCMS screening techniques are revolutionizing how we detect and prevent supplement adulteration.</p>
+                        </div>
+                        <div class="post-body">
+                            <p>In today's competitive supplement market, consumer safety and product integrity are non-negotiable. The proliferation of adulterated products has created significant challenges for legitimate manufacturers and serious health risks for consumers. Advanced adulterant screening using LCMS technology has emerged as the most effective solution for comprehensive product verification.</p>
+
+                            <h4>The Hidden Dangers of Supplement Adulteration</h4>
+                            <p>Supplement adulteration extends far beyond simple ingredient substitution. Common adulterants include undeclared pharmaceutical compounds such as PDE-5 inhibitors in male enhancement products, stimulants like DMAA in pre-workout formulas, and weight-loss drugs in dietary supplements. These additions can cause serious adverse reactions, drug interactions, and regulatory violations.</p>
+
+                            <h4>Comprehensive LCMS Screening Panels</h4>
+                            <p>Modern LCMS-based adulterant screening employs targeted analysis panels that can detect hundreds of potential contaminants in a single analytical run. These panels are specifically designed for different supplement categories:</p>
+                            
+                            <p><strong>Sports Nutrition Screening:</strong> Focuses on banned stimulants, anabolic agents, and performance-enhancing compounds that could lead to positive drug tests or health complications.</p>
+                            
+                            <p><strong>Weight Management Analysis:</strong> Targets pharmaceutical weight-loss compounds, appetite suppressants, and metabolic stimulants commonly found in adulterated diet products.</p>
+                            
+                            <p><strong>Sexual Enhancement Testing:</strong> Identifies PDE-5 inhibitors and their analogs, which can cause dangerous interactions with heart medications.</p>
+
+                            <h4>Regulatory Compliance and Market Access</h4>
+                            <p>Comprehensive adulterant screening is increasingly required for market access, especially in international markets. Major retailers and e-commerce platforms now require certificates of analysis demonstrating the absence of prohibited compounds. LCMS-based screening provides the sensitivity and specificity needed to meet these stringent requirements.</p>
+
+                            <h4>Building Consumer Trust</h4>
+                            <p>Transparent testing and certification help build consumer confidence in supplement brands. Companies that proactively screen for adulterants and publish their results demonstrate commitment to safety and quality, creating competitive advantages in crowded markets.</p>
+
+                            <p>The investment in comprehensive adulterant screening pays dividends through reduced liability, improved regulatory compliance, enhanced consumer trust, and protection of brand reputation. In an industry where trust is paramount, advanced LCMS screening has become an essential business tool.</p>
+                        </div>
+                        <div class="post-actions">
+                            <button onclick="togglePost('article-2')" class="read-more-btn">Read More</button>
+                            <div class="post-tags">
+                                <span class="tag">Supplements</span>
+                                <span class="tag">Safety</span>
+                                <span class="tag">Adulterants</span>
+                                <span class="tag">LCMS</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Article 3: Biotech Applications -->
+                <article class="blog-post" id="article-3" data-category="biotech">
+                    <div class="post-header">
+                        <div class="post-image">
+                            <img src="https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" alt="Biotech laboratory with LCMS analysis">
+                        </div>
+                        <div class="post-meta">
+                            <span class="category">Biotech</span>
+                            <span class="date">October 3, 2024</span>
+                            <span class="read-time">6 min read</span>
+                        </div>
+                    </div>
+                    <div class="post-content">
+                        <h3>How Biotech Startups Benefit from LCMS Impurity Analysis</h3>
+                        <div class="post-excerpt">
+                            <p>Biotech startups face unique challenges in drug development and regulatory compliance. Strategic use of LCMS impurity analysis can accelerate development timelines and ensure regulatory success.</p>
+                        </div>
+                        <div class="post-body">
+                            <p>The biotechnology sector represents one of the most promising yet challenging areas of modern science. Startups in this space must navigate complex regulatory landscapes while managing limited resources and tight timelines. LCMS-based impurity analysis has emerged as a critical tool that can make the difference between success and failure in biotech development programs.</p>
+
+                            <h4>Early-Stage Compound Characterization</h4>
+                            <p>During early drug development phases, understanding impurity profiles is crucial for safety assessment and regulatory planning. LCMS analysis provides comprehensive characterization of synthetic intermediates and final products, enabling identification of process-related impurities, degradation products, and potential genotoxic compounds. This early insight allows startups to optimize synthetic routes and minimize problematic impurities before scaling up production.</p>
+
+                            <h4>Regulatory Strategy Development</h4>
+                            <p>Regulatory agencies require detailed impurity information throughout drug development. LCMS analysis generates the analytical data needed for Investigational New Drug (IND) applications, including impurity identification, quantification, and qualification studies. Startups that establish robust analytical capabilities early can streamline regulatory interactions and avoid costly delays.</p>
+
+                            <h4>Cost-Effective Analytical Development</h4>
+                            <p>Traditional approaches to impurity analysis often require multiple analytical techniques and extensive method development. Modern LCMS platforms can handle diverse compound types and provide both identification and quantification in single analytical runs. This efficiency is particularly valuable for resource-constrained startups that need maximum analytical information per dollar invested.</p>
+
+                            <h4>Stability and Formulation Support</h4>
+                            <p>Biotech compounds often present unique stability challenges. LCMS-based impurity monitoring enables real-time assessment of degradation pathways, helping formulation scientists develop stable drug products. Understanding degradation mechanisms early in development prevents costly reformulation efforts later in clinical phases.</p>
+
+                            <h4>Competitive Intelligence and IP Protection</h4>
+                            <p>LCMS impurity profiling can provide insights into competitor manufacturing processes and help identify opportunities for patent protection around novel synthetic routes or purification methods. This strategic application of analytical data can create valuable intellectual property assets for growing biotech companies.</p>
+
+                            <h4>Investor and Partnership Opportunities</h4>
+                            <p>Comprehensive analytical documentation demonstrates technical competence and risk mitigation to potential investors and pharmaceutical partners. Well-characterized impurity profiles indicate mature analytical capabilities and reduce technical risk for stakeholders evaluating investment or licensing opportunities.</p>
+
+                            <p>For biotech startups, LCMS impurity analysis represents more than analytical capability—it's a strategic advantage that can accelerate development timelines, reduce regulatory risk, and create value for investors and partners. The companies that recognize and leverage this advantage are positioning themselves for long-term success in an increasingly competitive marketplace.</p>
+                        </div>
+                        <div class="post-actions">
+                            <button onclick="togglePost('article-3')" class="read-more-btn">Read More</button>
+                            <div class="post-tags">
+                                <span class="tag">Biotech</span>
+                                <span class="tag">Startups</span>
+                                <span class="tag">Impurity Analysis</span>
+                                <span class="tag">Drug Development</span>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section class="blog-newsletter">
+        <div class="container">
+            <div class="newsletter-content">
+                <h2>Stay Updated on LCMS Testing Insights</h2>
+                <p>Subscribe to receive expert analysis, industry trends, and technical insights directly in your inbox.</p>
+                <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+                    <input type="email" placeholder="Enter your email address" required class="newsletter-input">
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </form>
+                <div class="newsletter-features">
+                    <div class="feature">
+                        <span class="feature-icon">📊</span>
+                        <span>Technical Insights</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">🔬</span>
+                        <span>Industry Trends</span>
+                    </div>
+                    <div class="feature">
+                        <span class="feature-icon">📈</span>
+                        <span>Best Practices</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="blog-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Experience Professional LCMS Testing?</h2>
+                <p>Transform your analytical requirements into precise, reliable results. Our expert team is ready to support your peptide, supplement, and biotech testing needs with industry-leading LCMS technology.</p>
+                <div class="cta-actions">
+                    <a href="services.html" class="btn btn-primary btn-large">Explore Our Services</a>
+                    <a href="contact.html" class="btn btn-outline btn-large">Request Consultation</a>
+                </div>
+                <div class="cta-features">
+                    <div class="feature">✓ Advanced LCMS-DAD Technology</div>
+                    <div class="feature">✓ 3-5 Day Turnaround</div>
+                    <div class="feature">✓ Professional COAs</div>
+                    <div class="feature">✓ Expert Support</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <div class="logo-icon">
+                            <div class="lcms-symbol"></div>
+                        </div>
+                        <div class="logo-text">
+                            <span class="brand-name">ZyntroTest</span>
+                            <span class="brand-tagline">Precision LCMS Testing</span>
+                        </div>
+                    </div>
+                    <p>Advanced LCMS testing for peptides, supplements, and biotech research. Delivering precision results nationwide.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="services.html#peptide">Peptide Purity Testing</a></li>
+                        <li><a href="services.html#supplement">Supplement Screening</a></li>
+                        <li><a href="services.html#biotech">Biotech R&D Profiling</a></li>
+                        <li><a href="coa-samples.html">COA Samples</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="blog.html">Blog & Insights</a></li>
+                        <li><a href="sample-submission.html">Submit Sample</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p>Email: info@zyntrotest.com</p>
+                    <p>Phone: (555) 123-4567</p>
+                    <p>Texas, USA</p>
+                </div>
+            </div>
+            <div class="footer-badges">
+                <div class="badge">ISO 17025 in Progress</div>
+                <div class="badge">Nationwide Results in Days</div>
+                <div class="badge">Advanced DAD Technology</div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-social">
+                    <a href="#" class="social-link">LinkedIn</a>
+                    <a href="#" class="social-link">X (Twitter)</a>
+                </div>
+                <div class="footer-legal">
+                    <p>&copy; 2024 ZyntroTest. All rights reserved. | <a href="#privacy">Privacy Policy</a> | <a href="#terms">Terms of Service</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <style>
+        /* Blog-specific styles */
+        .blog-header {
+            padding: 8rem 0 4rem;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            text-align: center;
+        }
+
+        .blog-header-content h1 {
+            margin-bottom: var(--space-lg);
+            color: var(--gray-900);
+            font-size: 3rem;
+        }
+
+        .blog-header-content p {
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            max-width: 800px;
+            margin: 0 auto var(--space-xl);
+            line-height: 1.6;
+        }
+
+        .blog-search {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-container {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            font-size: 1rem;
+            background: var(--white);
+            outline: none;
+        }
+
+        .search-btn {
+            padding: 1rem 1.5rem;
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+
+        .search-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .search-filters {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid var(--gray-300);
+            background: var(--white);
+            color: var(--gray-700);
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--transition-base);
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .filter-btn.active {
+            background: var(--primary-blue);
+            color: var(--white);
+            border-color: var(--primary-blue);
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+
+        .filter-btn.active:hover {
+            background: var(--primary-dark);
+            color: var(--white);
+        }
+
+        .featured-article {
+            padding: var(--space-3xl) 0;
+            background: var(--white);
+        }
+
+        .featured-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .featured-badge {
+            background: var(--secondary-green);
+            color: var(--white);
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .featured-content h2 {
+            font-size: 2.5rem;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .article-meta {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            color: var(--gray-600);
+        }
+
+        .article-meta .category {
+            background: var(--primary-blue);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-weight: 600;
+        }
+
+        .featured-excerpt {
+            font-size: 1.125rem;
+            color: var(--gray-600);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .featured-image {
+            display: flex;
+            justify-content: center;
+        }
+
+        .featured-image img {
+            width: 100%;
+            max-width: 500px;
+            height: auto;
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .blog-articles {
+            padding: var(--space-3xl) 0;
+            background: var(--gray-50);
+        }
+
+        .articles-grid {
+            display: grid;
+            gap: 3rem;
+        }
+
+        .blog-post {
+            background: var(--white);
+            border-radius: var(--radius-2xl);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+            transition: var(--transition-base);
+        }
+
+        .blog-post:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .post-header {
+            position: relative;
+        }
+
+        .post-image img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .post-meta {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .post-meta span {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .post-meta .category {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
+        .post-content {
+            padding: 2rem;
+        }
+
+        .post-content h3 {
+            font-size: 1.5rem;
+            color: var(--gray-900);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .post-excerpt {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+        }
+
+        .post-body {
+            display: none;
+            color: var(--gray-700);
+            line-height: 1.7;
+        }
+
+        .post-body.expanded {
+            display: block;
+            margin-top: 1rem;
+        }
+
+        .post-body h4 {
+            color: var(--gray-900);
+            margin-top: 1.5rem;
+            margin-bottom: 0.75rem;
+            font-size: 1.125rem;
+        }
+
+        .post-body p {
+            margin-bottom: 1rem;
+        }
+
+        .post-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .read-more-btn {
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition-base);
+        }
+
+        .read-more-btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .post-tags {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            background: var(--gray-100);
+            color: var(--gray-700);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .blog-newsletter {
+            padding: var(--space-3xl) 0;
+            background: var(--primary-blue);
+            color: var(--white);
+            text-align: center;
+        }
+
+        .newsletter-content h2 {
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .newsletter-content p {
+            font-size: 1.125rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .newsletter-form {
+            display: flex;
+            max-width: 500px;
+            margin: 0 auto 2rem;
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .newsletter-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: none;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .newsletter-form .btn {
+            border-radius: 0;
+            background: var(--secondary-green);
+        }
+
+        .newsletter-form .btn:hover {
+            background: var(--accent-teal);
+        }
+
+        .newsletter-features {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .newsletter-features .feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+
+        .blog-cta {
+            padding: var(--space-3xl) 0;
+            background: linear-gradient(135deg, var(--secondary-green), var(--accent-teal));
+            color: var(--white);
+            text-align: center;
+        }
+
+        .blog-cta h2 {
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .blog-cta p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .blog-cta .btn-primary {
+            background: var(--white);
+            color: var(--secondary-green);
+        }
+
+        .blog-cta .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--white);
+        }
+
+        .cta-features {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            opacity: 0.9;
+        }
+
+        .cta-features .feature {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .blog-header-content h1 {
+                font-size: 2.5rem;
+            }
+
+            .blog-header-content p {
+                font-size: 1.125rem;
+            }
+
+            .search-filters {
+                gap: 0.5rem;
+            }
+
+            .filter-btn {
+                font-size: 0.75rem;
+                padding: 0.4rem 0.8rem;
+            }
+
+            .featured-content {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .featured-content h2 {
+                font-size: 2rem;
+            }
+
+            .article-meta {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+
+            .post-actions {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: flex-start;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .newsletter-features {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .cta-actions {
+                flex-direction: column;
+            }
+
+            .cta-features {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+
+    <script>
+        // Blog functionality
+        function togglePost(postId) {
+            const post = document.getElementById(postId);
+            const body = post.querySelector('.post-body');
+            const button = post.querySelector('.read-more-btn');
+            
+            if (body.classList.contains('expanded')) {
+                body.classList.remove('expanded');
+                button.textContent = 'Read More';
+            } else {
+                body.classList.add('expanded');
+                button.textContent = 'Read Less';
+            }
+        }
+
+        function searchBlog() {
+            const searchTerm = document.getElementById('blog-search').value.toLowerCase();
+            const posts = document.querySelectorAll('.blog-post');
+            
+            posts.forEach(post => {
+                const title = post.querySelector('h3').textContent.toLowerCase();
+                const excerpt = post.querySelector('.post-excerpt').textContent.toLowerCase();
+                const tags = Array.from(post.querySelectorAll('.tag')).map(tag => tag.textContent.toLowerCase()).join(' ');
+                
+                if (title.includes(searchTerm) || excerpt.includes(searchTerm) || tags.includes(searchTerm)) {
+                    post.style.display = 'block';
+                } else {
+                    post.style.display = searchTerm === '' ? 'block' : 'none';
+                }
+            });
+        }
+
+        function filterPosts(category) {
+            const posts = document.querySelectorAll('.blog-post');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            filterButtons.forEach(btn => btn.classList.remove('active'));
+            document.querySelector(`[data-category="${category}"]`).classList.add('active');
+            
+            // Filter posts
+            posts.forEach(post => {
+                if (category === 'all' || post.dataset.category === category) {
+                    post.style.display = 'block';
+                } else {
+                    post.style.display = 'none';
+                }
+            });
+        }
+
+        function subscribeNewsletter(event) {
+            event.preventDefault();
+            const email = event.target.querySelector('input[type="email"]').value;
+            
+            // Simulate newsletter subscription
+            showNotification(`Thank you for subscribing! We'll send LCMS insights to ${email}`, 'success');
+            event.target.reset();
+            
+            // Track subscription event
+            if (typeof trackEvent === 'function') {
+                trackEvent('Newsletter Subscription', 'Blog', email);
+            }
+        }
+
+        // Initialize filter buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    filterPosts(this.dataset.category);
+                });
+            });
+            
+            // Search on Enter key
+            document.getElementById('blog-search').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchBlog();
+                }
+            });
+            
+            // Real-time search
+            document.getElementById('blog-search').addEventListener('input', function() {
+                searchBlog();
+            });
+        });
+    </script>
+</body>
+</html>
