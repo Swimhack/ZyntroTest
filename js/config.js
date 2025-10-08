@@ -4,11 +4,11 @@
 const SITE_CONFIG = {
     // Company Information
     company: {
-        name: "ZyntroTest",
+        name: "Zyntro",
         tagline: "Precision LCMS",
-        fullName: "ZyntroTest Laboratory",
+        fullName: "Zyntro Laboratory",
         description: "Advanced LCMS testing for peptides, supplements, and biotech research. Delivering precision results nationwide.",
-        email: "info@zyntrotest.com",
+        email: "info@zyntro.com",
         phone: "(555) 123-4567",
         location: "Texas, USA"
     },
