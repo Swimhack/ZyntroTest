@@ -10,6 +10,13 @@ document.addEventListener('DOMContentLoaded', function() {
         navToggle.addEventListener('click', function() {
             navMenu.classList.toggle('active');
             
+            // Toggle body scroll lock
+            if (navMenu.classList.contains('active')) {
+                document.body.classList.add('nav-menu-open');
+            } else {
+                document.body.classList.remove('nav-menu-open');
+            }
+            
             // Animate hamburger menu
             const spans = navToggle.querySelectorAll('span');
             spans.forEach((span, index) => {
@@ -25,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
         navLinks.forEach(link => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
+                document.body.classList.remove('nav-menu-open');
                 const spans = navToggle.querySelectorAll('span');
                 spans.forEach((span, index) => {
                     span.style.transform = 'none';
@@ -37,6 +45,20 @@ document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('click', function(e) {
             if (!navToggle.contains(e.target) && !navMenu.contains(e.target)) {
                 navMenu.classList.remove('active');
+                document.body.classList.remove('nav-menu-open');
+                const spans = navToggle.querySelectorAll('span');
+                spans.forEach((span, index) => {
+                    span.style.transform = 'none';
+                    span.style.opacity = '1';
+                });
+            }
+        });
+        
+        // Close menu on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && navMenu.classList.contains('active')) {
+                navMenu.classList.remove('active');
+                document.body.classList.remove('nav-menu-open');
                 const spans = navToggle.querySelectorAll('span');
                 spans.forEach((span, index) => {
                     span.style.transform = 'none';
@@ -611,6 +633,19 @@ style.textContent = `
     .deliverables li {
         margin-bottom: 4px;
         color: #6b7280;
+    }
+    
+    /* Body scroll lock for mobile menu */
+    body.nav-menu-open {
+        overflow: hidden;
+        position: fixed;
+        width: 100%;
+    }
+    
+    /* Improved hamburger animation */
+    .nav-toggle span {
+        transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        transform-origin: center;
     }
 `;
 document.head.appendChild(style);
