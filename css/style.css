@@ -1158,81 +1158,75 @@ p {
     
     .nav-menu {
         position: fixed;
-        top: 80px;
+        top: 0;
         left: 0;
         right: 0;
+        bottom: 0;
         background: rgba(255, 255, 255, 0.98);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        padding: 0;
-        box-shadow: var(--shadow-lg);
-        border-top: 1px solid var(--gray-200);
-        transform: translateY(-100vh);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        padding: 2rem;
+        transform: translateX(100%);
         opacity: 0;
         visibility: hidden;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        z-index: 999;
-        max-height: calc(100vh - 80px);
-        overflow-y: auto;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        z-index: 1001;
     }
     
     .nav-menu.active {
-        transform: translateY(0);
+        transform: translateX(0);
         opacity: 1;
         visibility: visible;
     }
     
     .nav-list {
         flex-direction: column;
-        gap: 0;
+        gap: 1rem;
         text-align: center;
-        padding: 1rem 0;
+        padding: 0;
         margin: 0;
         list-style: none;
+        width: 100%;
+        max-width: 300px;
     }
     
     .nav-link {
         display: block;
-        padding: 1.25rem 2rem;
-        font-size: 1.1rem;
+        padding: 1rem 2rem;
+        font-size: 1.25rem;
         font-weight: 500;
         text-decoration: none;
         color: var(--gray-700);
-        border-bottom: 1px solid var(--gray-100);
+        background: rgba(255, 255, 255, 0.8);
+        border: 1px solid var(--gray-200);
+        border-radius: 12px;
         transition: all 0.3s ease;
         position: relative;
         text-align: center;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        width: 100%;
     }
     
     .nav-link:hover {
-        background: var(--gray-50);
-        color: var(--primary-blue);
-        transform: translateX(4px);
+        background: var(--primary-blue);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
     }
     
     .nav-link.active {
-        background: linear-gradient(90deg, transparent, rgba(37, 99, 235, 0.1), transparent);
-        color: var(--primary-blue);
-        font-weight: 600;
-    }
-    
-    .nav-link.active::after {
-        display: none;
-    }
-    
-    .nav-link.active::before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 4px;
         background: var(--primary-blue);
+        color: white;
+        font-weight: 600;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
     }
     
-    .nav-link:last-child {
-        border-bottom: none;
-    }
     
     .nav-toggle {
         display: flex;
@@ -1245,7 +1239,7 @@ p {
         cursor: pointer;
         padding: 0;
         position: relative;
-        z-index: 1000;
+        z-index: 1002;
     }
     
     .nav-toggle span {
@@ -1253,21 +1247,40 @@ p {
         height: 3px;
         background: var(--gray-700);
         border-radius: 2px;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        transform-origin: center;
+        transition: all 0.3s ease;
     }
     
-    .nav-toggle.active span:first-child {
-        transform: rotate(45deg) translate(6px, 6px);
+    /* Close button that appears when menu is open */
+    .nav-close {
+        position: absolute;
+        top: 2rem;
+        right: 2rem;
+        width: 40px;
+        height: 40px;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--gray-300);
+        border-radius: 50%;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        font-weight: 300;
+        color: var(--gray-700);
+        transition: all 0.3s ease;
+        z-index: 1003;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
     }
     
-    .nav-toggle.active span:nth-child(2) {
-        opacity: 0;
-        transform: translateX(20px);
+    .nav-close:hover {
+        background: var(--gray-100);
+        transform: scale(1.1);
     }
     
-    .nav-toggle.active span:last-child {
-        transform: rotate(-45deg) translate(6px, -6px);
+    .nav-menu.active .nav-close {
+        display: flex;
     }
     
     /* Prevent body scroll when menu is open */
