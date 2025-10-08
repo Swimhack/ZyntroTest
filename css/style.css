@@ -1185,10 +1185,18 @@ p {
     .nav-list {
         flex-direction: column;
         gap: 0;
-        text-align: center;
         padding: 1rem 0;
         margin: 0;
         list-style: none;
+        width: 100%;
+        display: flex;
+        align-items: center;
+    }
+    
+    .nav-list li {
+        width: 100%;
+        display: flex;
+        justify-content: center;
     }
     
     .nav-link {
@@ -1202,6 +1210,7 @@ p {
         transition: all 0.3s ease;
         position: relative;
         text-align: center;
+        width: 100%;
     }
     
     .nav-link:hover {
@@ -1251,40 +1260,22 @@ p {
         height: 3px;
         background: var(--gray-700);
         border-radius: 2px;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        transform-origin: center;
     }
     
-    /* Close button that appears in dropdown menu */
-    .nav-close {
-        position: absolute;
-        top: 0.75rem;
-        right: 1rem;
-        width: 32px;
-        height: 32px;
-        background: rgba(255, 255, 255, 0.95);
-        border: 1px solid var(--gray-300);
-        border-radius: 6px;
-        cursor: pointer;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        font-size: 18px;
-        font-weight: 300;
-        color: var(--gray-600);
-        transition: all 0.2s ease;
-        z-index: 1000;
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    /* Hamburger to X transformation */
+    .nav-toggle.active span:first-child {
+        transform: rotate(45deg) translate(6px, 6px);
     }
     
-    .nav-close:hover {
-        background: var(--gray-100);
-        color: var(--gray-800);
+    .nav-toggle.active span:nth-child(2) {
+        opacity: 0;
+        transform: translateX(20px);
     }
     
-    .nav-menu.active .nav-close {
-        display: flex;
+    .nav-toggle.active span:last-child {
+        transform: rotate(-45deg) translate(6px, -6px);
     }
     
     /* Prevent body scroll when menu is open */

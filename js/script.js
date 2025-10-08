@@ -5,30 +5,28 @@ document.addEventListener('DOMContentLoaded', function() {
     // Mobile menu toggle functionality
     const navToggle = document.getElementById('nav-toggle');
     const navMenu = document.getElementById('nav-menu');
-    const navClose = document.getElementById('nav-close');
     
     function openMenu() {
         navMenu.classList.add('active');
+        navToggle.classList.add('active');
         document.body.classList.add('nav-menu-open');
     }
     
     function closeMenu() {
         navMenu.classList.remove('active');
+        navToggle.classList.remove('active');
         document.body.classList.remove('nav-menu-open');
     }
     
     if (navToggle && navMenu) {
-        // Open menu when hamburger is clicked
+        // Toggle menu when hamburger is clicked
         navToggle.addEventListener('click', function() {
-            openMenu();
-        });
-        
-        // Close menu when X button is clicked
-        if (navClose) {
-            navClose.addEventListener('click', function() {
+            if (navMenu.classList.contains('active')) {
                 closeMenu();
-            });
-        }
+            } else {
+                openMenu();
+            }
+        });
         
         // Close menu when clicking on nav links
         const navLinks = navMenu.querySelectorAll('.nav-link');
