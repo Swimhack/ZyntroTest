@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Certificate of Analysis Samples | ZyntroTest Laboratory</title>
-    <meta name="description" content="View sample Certificates of Analysis from ZyntroTest's LCMS testing laboratory. Download example COAs for peptide purity, supplement screening, and biotech analysis.">
-    <meta name="keywords" content="COA samples, certificate of analysis, LCMS testing results, peptide COA, supplement analysis report">
+    <title>COA Search | ZyntroTest Laboratory</title>
+    <meta name="description" content="Search and retrieve your Certificate of Analysis from ZyntroTest's secure database. Enter your COA number to access detailed testing results and reports.">
+    <meta name="keywords" content="COA search, certificate lookup, testing results, ZyntroTest COA database, analytical report access">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
@@ -33,7 +33,7 @@
                         <li><a href="index.html" class="nav-link">Home</a></li>
                         <li><a href="services.html" class="nav-link">Services</a></li>
                         <li><a href="sample-submission.html" class="nav-link">Submit Sample</a></li>
-                        <li><a href="coa-samples.html" class="nav-link active">COA Samples</a></li>
+                        <li><a href="coa-samples.html" class="nav-link active">COA Search</a></li>
                         <li><a href="blog.html" class="nav-link">Blog</a></li>
                         <li><a href="contact.html" class="nav-link">Contact</a></li>
                     </ul>
@@ -47,22 +47,52 @@
         </nav>
     </header>
 
-    <!-- COA Header -->
+    <!-- COA Search Header -->
     <section class="coa-header">
         <div class="container">
             <div class="coa-header-content">
-                <h1>Certificates of Analysis Samples</h1>
-                <p>Explore our professional COA formats and detailed analytical reports. These sample certificates demonstrate the quality and comprehensiveness of ZyntroTest's LCMS testing results.</p>
+                <h1>COA Search & Lookup</h1>
+                <p>Enter your COA number below to access your Certificate of Analysis. All testing results are securely stored and available for download with your unique COA identifier.</p>
+                
+                <!-- COA Search Form -->
+                <div class="coa-search-form">
+                    <form class="search-form" onsubmit="searchCOA(event)">
+                        <div class="form-group">
+                            <input type="text" id="coa-number" placeholder="Enter COA Number (e.g., ZT-2024-001)" required class="coa-search-input">
+                            <button type="submit" class="btn btn-primary btn-large">Search COA</button>
+                        </div>
+                    </form>
+                    <div class="search-help">
+                        <p><strong>Need help finding your COA number?</strong></p>
+                        <ul>
+                            <li>Check your email confirmation from ZyntroTest</li>
+                            <li>Look for format: ZT-YYYY-XXX (e.g., ZT-2024-001)</li>
+                            <li>Contact us at <a href="mailto:info@zyntrotest.com">info@zyntrotest.com</a> for assistance</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- COA Overview -->
-    <section class="coa-overview">
+    <!-- COA Search Results -->
+    <section class="coa-results" id="search-results" style="display: none;">
         <div class="container">
+            <div class="results-header">
+                <h2>Certificate of Analysis Found</h2>
+                <div id="coa-content"><!-- COA will be loaded here --></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sample COAs Section -->
+    <section class="sample-coas-section">
+        <div class="container">
+            <h2 class="section-title">Sample COA Formats</h2>
+            <p class="section-subtitle">View examples of our professional reporting standards and comprehensive analytical documentation.</p>
             <div class="overview-grid">
                 <div class="overview-content">
-                    <h2>Professional Analytical Reporting</h2>
+                    <h3>Professional Analytical Reporting</h3>
                     <p>ZyntroTest provides detailed Certificates of Analysis for peptides, supplements, and biotech samples, ensuring trust and regulatory compliance. Our reports include comprehensive analytical data, professional interpretation, and clear conclusions.</p>
                     
                     <div class="coa-features">
@@ -1165,7 +1195,89 @@
             gap: 1rem;
         }
 
+        /* COA Search Styling */
+        .coa-search-form {
+            max-width: 800px;
+            margin: 2rem auto 0;
+            padding: 2rem;
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .form-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .coa-search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            font-size: 1rem;
+            transition: var(--transition-base);
+        }
+        
+        .coa-search-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .search-help {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border-left: 4px solid var(--primary-blue);
+        }
+        
+        .search-help p {
+            margin-bottom: 0.75rem;
+            color: var(--gray-700);
+        }
+        
+        .search-help ul {
+            margin: 0;
+            color: var(--gray-600);
+        }
+        
+        .search-help li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .search-help a {
+            color: var(--primary-blue);
+            text-decoration: none;
+        }
+        
+        .coa-results {
+            padding: var(--space-xl) 0;
+            background: var(--white);
+        }
+        
+        .sample-coas-section {
+            background: var(--gray-50);
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 1.125rem;
+            margin-bottom: 3rem;
+        }
+
         @media (max-width: 768px) {
+            .form-group {
+                flex-direction: column;
+            }
+            
+            .coa-search-form {
+                padding: 1.5rem;
+                margin: 1.5rem auto 0;
+            }
+            
             .overview-grid,
             .formats-content {
                 grid-template-columns: 1fr;
@@ -1495,6 +1607,92 @@
                     </div>
                 </div>
             `;
+        }
+        
+        // COA Search Functionality
+        function searchCOA(event) {
+            event.preventDefault();
+            const coaNumber = document.getElementById('coa-number').value.trim();
+            
+            if (!coaNumber) {
+                showNotification('Please enter a COA number', 'error');
+                return;
+            }
+            
+            // Show loading state
+            const button = event.target.querySelector('button[type="submit"]');
+            const originalText = button.textContent;
+            button.textContent = 'Searching...';
+            button.disabled = true;
+            
+            // Simulate database search (in real implementation, this would be an API call)
+            setTimeout(() => {
+                const coa = findCOAInDatabase(coaNumber);
+                
+                if (coa) {
+                    displayCOAResults(coa);
+                    showNotification('COA found successfully!', 'success');
+                } else {
+                    showNotification('COA not found. Please check the number and try again.', 'error');
+                }
+                
+                // Reset button
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 1500);
+        }
+        
+        function findCOAInDatabase(coaNumber) {
+            // Mock database of COAs
+            const coaDatabase = {
+                'ZT-2024-001': {
+                    id: 'ZT-2024-001',
+                    client: 'BioVenture Research',
+                    compound: 'BPC-157',
+                    date: 'October 1, 2024',
+                    purity: '99.8%',
+                    type: 'Peptide Analysis'
+                },
+                'ZT-2024-025': {
+                    id: 'ZT-2024-025',
+                    client: 'NutriPure Supplements',
+                    compound: 'Pre-Workout Formula',
+                    date: 'October 5, 2024',
+                    result: 'PASS - No Adulterants',
+                    type: 'Supplement Screening'
+                },
+                'ZT-2024-050': {
+                    id: 'ZT-2024-050',
+                    client: 'Apex Biotechnology',
+                    compound: 'API Intermediate X-47B',
+                    date: 'October 3, 2024',
+                    purity: '98.2%',
+                    type: 'Biotech Analysis'
+                }
+            };
+            
+            return coaDatabase[coaNumber.toUpperCase()] || null;
+        }
+        
+        function displayCOAResults(coa) {
+            const resultsSection = document.getElementById('search-results');
+            const coaContent = document.getElementById('coa-content');
+            
+            let contentHTML = '';
+            
+            if (coa.type === 'Peptide Analysis') {
+                contentHTML = generatePeptideCOA();
+            } else if (coa.type === 'Supplement Screening') {
+                contentHTML = generateSupplementCOA();
+            } else if (coa.type === 'Biotech Analysis') {
+                contentHTML = generateBiotechCOA();
+            }
+            
+            coaContent.innerHTML = contentHTML;
+            resultsSection.style.display = 'block';
+            
+            // Scroll to results
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
         }
         
         // Close modal when clicking outside

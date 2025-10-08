@@ -40,7 +40,7 @@
     --space-lg: 2rem;
     --space-xl: 3rem;
     --space-2xl: 4rem;
-    --space-3xl: 6rem;
+    --space-3xl: 4rem;
     
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -215,47 +215,60 @@ p {
 }
 
 .logo-icon {
-    width: 48px;
-    height: 48px;
+    width: 52px;
+    height: 52px;
     background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-xl);
     display: flex;
     align-items: center;
     justify-content: center;
     position: relative;
-    box-shadow: var(--shadow-md);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    transition: var(--transition-base);
+}
+
+.logo-icon:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
 }
 
 .lcms-symbol {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     background: var(--white);
     border-radius: 50%;
     position: relative;
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .lcms-symbol::before {
-    content: '';
+    content: 'LC';
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 12px;
-    height: 2px;
-    background: var(--primary-blue);
-    border-radius: 1px;
+    font-size: 8px;
+    font-weight: 700;
+    color: var(--primary-blue);
+    letter-spacing: -0.5px;
 }
 
 .lcms-symbol::after {
-    content: '';
+    content: 'MS';
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) rotate(90deg);
+    bottom: -2px;
+    right: -2px;
     width: 12px;
-    height: 2px;
+    height: 12px;
     background: var(--secondary-green);
-    border-radius: 1px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 6px;
+    font-weight: 700;
+    color: var(--white);
+    border: 2px solid var(--white);
 }
 
 .logo-text {
@@ -335,10 +348,10 @@ p {
 /* Hero Section */
 .hero {
     background: linear-gradient(135deg, var(--gray-50) 0%, rgba(37, 99, 235, 0.05) 100%);
-    padding: 8rem 0 6rem;
+    padding: 6rem 0 4rem;
     position: relative;
     overflow: hidden;
-    min-height: 80vh;
+    min-height: 70vh;
 }
 
 .hero::before {
@@ -537,7 +550,7 @@ p {
 /* Hero Responsive Styles */
 @media (max-width: 768px) {
     .hero {
-        padding: 6rem 0 4rem;
+        padding: 4rem 0 3rem;
         min-height: auto;
     }
     
