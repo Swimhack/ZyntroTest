@@ -214,61 +214,43 @@ p {
     color: var(--gray-900);
 }
 
-.logo-icon {
-    width: 52px;
-    height: 52px;
-    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
-    border-radius: var(--radius-xl);
+.logo {
     display: flex;
     align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    text-decoration: none;
+    color: var(--gray-900);
+}
+
+.logo img {
+    height: 50px;
+    width: auto;
     transition: var(--transition-base);
 }
 
-.logo-icon:hover {
+.logo:hover img {
     transform: translateY(-1px);
-    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.3);
+    filter: drop-shadow(0 4px 8px rgba(0, 212, 170, 0.3));
 }
 
+/* Footer logo styling */
+.footer-logo {
+    margin-bottom: 1rem;
+}
+
+.footer-logo .logo img {
+    height: 40px;
+    opacity: 0.9;
+}
+
+.footer-logo .logo:hover img {
+    opacity: 1;
+}
+
+/* Hide the old logo elements */
+.logo-icon,
+.logo-text,
 .lcms-symbol {
-    width: 28px;
-    height: 28px;
-    background: var(--white);
-    border-radius: 50%;
-    position: relative;
-    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.lcms-symbol::before {
-    content: 'LC';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 8px;
-    font-weight: 700;
-    color: var(--primary-blue);
-    letter-spacing: -0.5px;
-}
-
-.lcms-symbol::after {
-    content: 'MS';
-    position: absolute;
-    bottom: -2px;
-    right: -2px;
-    width: 12px;
-    height: 12px;
-    background: var(--secondary-green);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 6px;
-    font-weight: 700;
-    color: var(--white);
-    border: 2px solid var(--white);
+    display: none;
 }
 
 .logo-text {
