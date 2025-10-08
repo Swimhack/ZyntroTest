@@ -572,21 +572,51 @@ p {
         gap: 0.5rem;
     }
     
+    .hero-image {
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+    
     .image-container {
         transform: none;
         max-width: 100%;
+        width: 100%;
+        margin: 0;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
     }
     
     .image-container:hover {
         transform: none;
     }
     
+    .hero-main-image {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        border-radius: var(--radius-lg);
+    }
+    
     .image-overlay {
-        padding: 1.5rem;
+        padding: 1rem;
+        background: linear-gradient(transparent, rgba(0, 0, 0, 0.9));
+    }
+    
+    .overlay-content {
+        gap: 0.75rem;
     }
     
     .feature-highlight {
         padding: 0.5rem 0.75rem;
+        font-size: 0.875rem;
+    }
+    
+    .highlight-text strong {
+        font-size: 0.8rem;
+    }
+    
+    .highlight-text span {
+        font-size: 0.7rem;
     }
 }
 
@@ -1347,6 +1377,33 @@ p {
     
     .section-title {
         font-size: 1.75rem;
+    }
+    
+    /* Additional hero image optimization for small screens */
+    .hero-image {
+        margin: 0 -0.5rem;
+        padding: 0 0.5rem;
+    }
+    
+    .image-overlay {
+        padding: 0.75rem;
+    }
+    
+    .feature-highlight {
+        padding: 0.375rem 0.5rem;
+        font-size: 0.8rem;
+    }
+    
+    .highlight-icon {
+        font-size: 1.25rem;
+    }
+    
+    .highlight-text strong {
+        font-size: 0.75rem;
+    }
+    
+    .highlight-text span {
+        font-size: 0.65rem;
     }
 }
 
