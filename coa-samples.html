@@ -1614,6 +1614,34 @@
             `;
         }
         
+        // Initialize Supabase for COA search
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Load Supabase if not already loaded
+                if (!window.supabase) {
+                    const script = document.createElement('script');
+                    script.src = 'https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js';
+                    script.onload = () => {
+                        // Initialize Supabase client for public access
+                        window.supabaseClient = window.supabase.createClient(
+                            'https://hctdzwmlkgnuxcuhjooe.supabase.co',
+                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
+                        );
+                        console.log('Supabase initialized for public COA search');
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    // Supabase already loaded
+                    window.supabaseClient = window.supabase.createClient(
+                        'https://hctdzwmlkgnuxcuhjooe.supabase.co',
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
+                    );
+                }
+            } catch (error) {
+                console.warn('Failed to initialize Supabase for COA search:', error);
+            }
+        });
+        
         // COA Search Functionality
         function searchCOA(event) {
             event.preventDefault();
@@ -1630,25 +1658,44 @@
             button.textContent = 'Searching...';
             button.disabled = true;
             
-            // Simulate database search (in real implementation, this would be an API call)
-            setTimeout(() => {
-                const coa = findCOAInDatabase(coaNumber);
-                
-                if (coa) {
-                    displayCOAResults(coa);
-                    showNotification('COA found successfully!', 'success');
-                } else {
-                    showNotification('COA not found. Please check the number and try again.', 'error');
+            // Search database (now using Supabase)
+            setTimeout(async () => {
+                try {
+                    const coa = await findCOAInDatabase(coaNumber);
+                    
+                    if (coa) {
+                        displayCOAResults(coa);
+                        showNotification('COA found successfully!', 'success');
+                    } else {
+                        showNotification('COA not found. Please check the number and try again.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    showNotification('Error searching for COA. Please try again.', 'error');
                 }
                 
                 // Reset button
                 button.textContent = originalText;
                 button.disabled = false;
-            }, 1500);
+            }, 1000);
         }
         
-        function findCOAInDatabase(coaNumber) {
-            // First try to load from admin dashboard database
+        async function findCOAInDatabase(coaNumber) {
+            // First try to load from Supabase database
+            try {
+                if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient) {
+                    const { data, error } = await window.supabaseClient
+                        .rpc('get_coa_by_id', { coa_id: coaNumber.toUpperCase() });
+                    
+                    if (!error && data && data.length > 0) {
+                        return data[0];
+                    }
+                }
+            } catch (error) {
+                console.warn('Error loading COAs from Supabase:', error);
+            }
+            
+            // Fallback: try localStorage from admin dashboard
             try {
                 const adminCOAs = localStorage.getItem('zyntro_config_coa_database');
                 if (adminCOAs) {
@@ -1659,7 +1706,7 @@
                     }
                 }
             } catch (error) {
-                console.warn('Error loading admin COAs:', error);
+                console.warn('Error loading admin COAs from localStorage:', error);
             }
             
             // Fallback to original hardcoded database for demo purposes
