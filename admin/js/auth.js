@@ -11,7 +11,7 @@ const Auth = {
     // Default credentials (In production, this should be server-side)
     CREDENTIALS: {
         username: 'drew',
-        password: 'ZyntroAdmin2024!'
+        password: 'ZyntroAdmin2025!'
     },
     
     /**
