@@ -1648,15 +1648,30 @@
         }
         
         function findCOAInDatabase(coaNumber) {
-            // Mock database of COAs
-            const coaDatabase = {
+            // First try to load from admin dashboard database
+            try {
+                const adminCOAs = localStorage.getItem('zyntro_config_coa_database');
+                if (adminCOAs) {
+                    const parsedCOAs = JSON.parse(adminCOAs);
+                    const foundCOA = parsedCOAs[coaNumber.toUpperCase()];
+                    if (foundCOA) {
+                        return foundCOA;
+                    }
+                }
+            } catch (error) {
+                console.warn('Error loading admin COAs:', error);
+            }
+            
+            // Fallback to original hardcoded database for demo purposes
+            const fallbackDatabase = {
                 'ZT-2024-001': {
                     id: 'ZT-2024-001',
                     client: 'BioVenture Research',
                     compound: 'BPC-157',
                     date: 'October 1, 2024',
                     purity: '99.8%',
-                    type: 'Peptide Analysis'
+                    type: 'Peptide Analysis',
+                    status: 'Complete'
                 },
                 'ZT-2024-025': {
                     id: 'ZT-2024-025',
@@ -1664,7 +1679,8 @@
                     compound: 'Pre-Workout Formula',
                     date: 'October 5, 2024',
                     result: 'PASS - No Adulterants',
-                    type: 'Supplement Screening'
+                    type: 'Supplement Screening',
+                    status: 'Complete'
                 },
                 'ZT-2024-050': {
                     id: 'ZT-2024-050',
@@ -1672,11 +1688,12 @@
                     compound: 'API Intermediate X-47B',
                     date: 'October 3, 2024',
                     purity: '98.2%',
-                    type: 'Biotech Analysis'
+                    type: 'Biotech Analysis',
+                    status: 'Complete'
                 }
             };
             
-            return coaDatabase[coaNumber.toUpperCase()] || null;
+            return fallbackDatabase[coaNumber.toUpperCase()] || null;
         }
         
         function displayCOAResults(coa) {

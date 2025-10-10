@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COA Dashboard | ZyntroTest Admin</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+</head>
+<body class="dashboard-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="../images/zyntrotest-logo.svg" alt="ZyntroTest">
+            </div>
+            <h2>COA Dashboard</h2>
+            <p>Admin Panel</p>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="dashboard.html" class="nav-link active">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="upload-coa.html" class="nav-link">
+                    <span class="nav-icon">⬆️</span>
+                    Upload COA
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="manage-coas.html" class="nav-link">
+                    <span class="nav-icon">📋</span>
+                    Manage COAs
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="../coa-samples.html" class="nav-link" target="_blank">
+                    <span class="nav-icon">🔍</span>
+                    Public Search
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="../index.html" class="nav-link" target="_blank">
+                    <span class="nav-icon">🌐</span>
+                    Main Website
+                </a>
+            </div>
+        </nav>
+    </aside>
+    
+    <!-- Main Content Area -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="main-header">
+            <h1>COA Dashboard</h1>
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-name" id="current-user">Drew</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+                <button onclick="logout()" class="btn btn-outline logout-btn">Logout</button>
+            </div>
+        </header>
+        
+        <!-- Statistics Overview -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="total-coas">0</div>
+                <div class="stat-label">Total COAs</div>
+                <div class="stat-change positive" id="coa-change">+0 this month</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pending-coas">0</div>
+                <div class="stat-label">Pending Upload</div>
+                <div class="stat-change" id="pending-change">Ready to process</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="recent-uploads">0</div>
+                <div class="stat-label">Uploaded Today</div>
+                <div class="stat-change positive" id="today-change">+0 since yesterday</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="storage-used">0 MB</div>
+                <div class="stat-label">Storage Used</div>
+                <div class="stat-change" id="storage-change">Plenty of space</div>
+            </div>
+        </div>
+        
+        <!-- Quick Actions -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Quick Actions</h2>
+                <p class="card-description">Common tasks for managing your COA database</p>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <a href="upload-coa.html" class="btn btn-primary" style="padding: 1.5rem; text-align: center; text-decoration: none; display: block;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">⬆️</div>
+                    <div style="font-weight: 600;">Upload New COA</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem;">Add a new certificate</div>
+                </a>
+                
+                <a href="manage-coas.html" class="btn btn-secondary" style="padding: 1.5rem; text-align: center; text-decoration: none; display: block;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">📋</div>
+                    <div style="font-weight: 600;">Manage COAs</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem;">Edit or delete existing</div>
+                </a>
+                
+                <a href="../coa-samples.html" class="btn btn-outline" style="padding: 1.5rem; text-align: center; text-decoration: none; display: block;" target="_blank">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">🔍</div>
+                    <div style="font-weight: 600;">Test Search</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem;">View public search page</div>
+                </a>
+                
+                <button onclick="exportBackup()" class="btn btn-outline" style="padding: 1.5rem; text-align: center;">
+                    <div style="font-size: 2rem; margin-bottom: 0.5rem;">💾</div>
+                    <div style="font-weight: 600;">Export Backup</div>
+                    <div style="font-size: 0.75rem; opacity: 0.8; margin-top: 0.25rem;">Download COA database</div>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Recent Activity -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Recent Activity</h2>
+                <p class="card-description">Latest COA uploads and modifications</p>
+            </div>
+            
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>COA ID</th>
+                            <th>Client</th>
+                            <th>Compound</th>
+                            <th>Type</th>
+                            <th>Date Added</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="recent-activity">
+                        <tr>
+                            <td colspan="7" class="text-center text-gray">No recent activity. Upload your first COA to get started.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- System Status -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">System Status</h2>
+                <p class="card-description">Current system health and configuration</p>
+            </div>
+            
+            <div style="display: grid; gap: 1rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: var(--gray-50); border-radius: var(--radius-md);">
+                    <div>
+                        <strong>Database Connection</strong>
+                        <div class="text-sm text-gray">Configuration file access</div>
+                    </div>
+                    <span class="status-badge success">Connected</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: var(--gray-50); border-radius: var(--radius-md);">
+                    <div>
+                        <strong>File Storage</strong>
+                        <div class="text-sm text-gray">PDF upload directory</div>
+                    </div>
+                    <span class="status-badge success">Available</span>
+                </div>
+                
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: var(--gray-50); border-radius: var(--radius-md);">
+                    <div>
+                        <strong>Public Search</strong>
+                        <div class="text-sm text-gray">Client-facing COA lookup</div>
+                    </div>
+                    <span class="status-badge success">Operational</span>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/coa-manager.js"></script>
+    <script>
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            if (!Auth.requireAuth()) {
+                return;
+            }
+            
+            // Load dashboard data
+            loadDashboardStats();
+            loadRecentActivity();
+            
+            // Set current user info
+            const user = Auth.getCurrentUser();
+            if (user) {
+                document.getElementById('current-user').textContent = user.username;
+            }
+        });
+        
+        function loadDashboardStats() {
+            const coas = COAManager.getAllCOAs();
+            const today = new Date().toDateString();
+            
+            // Update statistics
+            document.getElementById('total-coas').textContent = coas.length;
+            document.getElementById('recent-uploads').textContent = coas.filter(coa => 
+                new Date(coa.dateAdded).toDateString() === today
+            ).length;
+            
+            // Calculate storage (rough estimate)
+            const storageUsed = Math.round(coas.length * 0.5); // Assume ~500KB per COA
+            document.getElementById('storage-used').textContent = `${storageUsed} MB`;
+            
+            // Update change indicators
+            const thisMonth = new Date().getMonth();
+            const thisYear = new Date().getFullYear();
+            const thisMonthCOAs = coas.filter(coa => {
+                const coaDate = new Date(coa.dateAdded);
+                return coaDate.getMonth() === thisMonth && coaDate.getFullYear() === thisYear;
+            }).length;
+            
+            document.getElementById('coa-change').textContent = `+${thisMonthCOAs} this month`;
+        }
+        
+        function loadRecentActivity() {
+            const coas = COAManager.getAllCOAs();
+            const recentCOAs = coas
+                .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
+                .slice(0, 5);
+            
+            const tbody = document.getElementById('recent-activity');
+            
+            if (recentCOAs.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="text-center text-gray">No recent activity. Upload your first COA to get started.</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = recentCOAs.map(coa => `
+                <tr>
+                    <td><strong>${coa.id}</strong></td>
+                    <td>${coa.client}</td>
+                    <td>${coa.compound}</td>
+                    <td><span class="status-badge info">${coa.type}</span></td>
+                    <td>${new Date(coa.dateAdded).toLocaleDateString()}</td>
+                    <td><span class="status-badge success">${coa.status}</span></td>
+                    <td>
+                        <a href="manage-coas.html?id=${coa.id}" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                Auth.logout();
+            }
+        }
+        
+        function exportBackup() {
+            try {
+                const coas = COAManager.getAllCOAs();
+                const backup = {
+                    exportDate: new Date().toISOString(),
+                    version: '1.0',
+                    totalCOAs: coas.length,
+                    coas: coas
+                };
+                
+                const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `zyntro-coa-backup-${new Date().toISOString().split('T')[0]}.json`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                
+                console.log('Backup exported successfully');
+            } catch (error) {
+                console.error('Error exporting backup:', error);
+                alert('Error creating backup. Please try again.');
+            }
+        }
+    </script>
+</body>
+</html>

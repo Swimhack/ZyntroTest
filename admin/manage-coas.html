@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage COAs | ZyntroTest Admin</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    <style>
+        .search-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .filter-dropdown {
+            min-width: 150px;
+        }
+        
+        .table-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+        
+        .edit-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+        }
+        
+        .edit-modal.show {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90vw;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--gray-500);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .pagination button {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--gray-300);
+            background: white;
+            color: var(--gray-700);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .pagination .current {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body class="dashboard-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="../images/zyntrotest-logo.svg" alt="ZyntroTest">
+            </div>
+            <h2>COA Dashboard</h2>
+            <p>Admin Panel</p>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="dashboard.html" class="nav-link">
+                    <span class="nav-icon">📊</span>
+                    Dashboard
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="upload-coa.html" class="nav-link">
+                    <span class="nav-icon">⬆️</span>
+                    Upload COA
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="manage-coas.html" class="nav-link active">
+                    <span class="nav-icon">📋</span>
+                    Manage COAs
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="../coa-samples.html" class="nav-link" target="_blank">
+                    <span class="nav-icon">🔍</span>
+                    Public Search
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="../index.html" class="nav-link" target="_blank">
+                    <span class="nav-icon">🌐</span>
+                    Main Website
+                </a>
+            </div>
+        </nav>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="main-header">
+            <h1>Manage COAs</h1>
+            <div class="user-menu">
+                <div class="user-info">
+                    <div class="user-name" id="current-user">Drew</div>
+                    <div class="user-role">Administrator</div>
+                </div>
+                <button onclick="logout()" class="btn btn-outline logout-btn">Logout</button>
+            </div>
+        </header>
+        
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">All COAs</h2>
+                <p class="card-description">View, edit, and manage your certificates of analysis</p>
+            </div>
+            
+            <!-- Search and Filters -->
+            <div class="search-filters">
+                <div class="form-group search-box">
+                    <input type="text" id="search-input" placeholder="Search by COA ID, client, or compound..." onkeyup="handleSearch()">
+                </div>
+                <div class="form-group filter-dropdown">
+                    <select id="type-filter" onchange="handleFilter()">
+                        <option value="">All Types</option>
+                        <option value="Peptide Analysis">Peptide Analysis</option>
+                        <option value="Supplement Screening">Supplement Screening</option>
+                        <option value="Biotech Analysis">Biotech Analysis</option>
+                    </select>
+                </div>
+                <div class="form-group filter-dropdown">
+                    <select id="status-filter" onchange="handleFilter()">
+                        <option value="">All Status</option>
+                        <option value="Complete">Complete</option>
+                        <option value="Pending">Pending</option>
+                        <option value="In Progress">In Progress</option>
+                    </select>
+                </div>
+                <button onclick="clearFilters()" class="btn btn-outline">Clear Filters</button>
+            </div>
+            
+            <!-- COA Table -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>COA ID</th>
+                            <th>Client</th>
+                            <th>Compound</th>
+                            <th>Type</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                            <th>Added</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="coa-table-body">
+                        <tr>
+                            <td colspan="8" class="text-center">Loading COAs...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination" id="pagination">
+                <!-- Pagination will be generated dynamically -->
+            </div>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">Quick Stats</h2>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-count">0</div>
+                    <div class="stat-label">Total COAs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="peptide-count">0</div>
+                    <div class="stat-label">Peptide Analysis</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="supplement-count">0</div>
+                    <div class="stat-label">Supplement Screening</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="biotech-count">0</div>
+                    <div class="stat-label">Biotech Analysis</div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- Edit Modal -->
+    <div class="edit-modal" id="edit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit COA</h3>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            
+            <form id="edit-form">
+                <input type="hidden" id="edit-id">
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-coa-id">COA ID *</label>
+                        <input type="text" id="edit-coa-id" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-status">Status</label>
+                        <select id="edit-status">
+                            <option value="Complete">Complete</option>
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-client">Client Name *</label>
+                        <input type="text" id="edit-client" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-compound">Compound *</label>
+                        <input type="text" id="edit-compound" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-type">Type *</label>
+                        <select id="edit-type" required>
+                            <option value="Peptide Analysis">Peptide Analysis</option>
+                            <option value="Supplement Screening">Supplement Screening</option>
+                            <option value="Biotech Analysis">Biotech Analysis</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-date">Test Date</label>
+                        <input type="date" id="edit-date">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit-purity">Purity (%)</label>
+                        <input type="text" id="edit-purity" placeholder="99.8%">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit-result">Test Result</label>
+                        <input type="text" id="edit-result" placeholder="PASS - No Adulterants">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit-notes">Notes</label>
+                    <textarea id="edit-notes" rows="3"></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" onclick="closeEditModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script src="js/auth.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/coa-manager.js"></script>
+    <script>
+        let currentPage = 1;
+        let itemsPerPage = 10;
+        let filteredCOAs = [];
+        let currentEditId = null;
+        
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check authentication
+            if (!Auth.requireAuth()) {
+                return;
+            }
+            
+            // Set current user
+            const user = Auth.getCurrentUser();
+            if (user) {
+                document.getElementById('current-user').textContent = user.username;
+            }
+            
+            // Load COAs
+            loadCOAs();
+            updateStats();
+            
+            // Set up edit form handler
+            document.getElementById('edit-form').addEventListener('submit', handleEditSubmit);
+        });
+        
+        function loadCOAs() {
+            const allCOAs = COAManager.getAllCOAs();
+            filteredCOAs = allCOAs.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+            renderCOATable();
+            renderPagination();
+        }
+        
+        function renderCOATable() {
+            const tbody = document.getElementById('coa-table-body');
+            
+            if (filteredCOAs.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-gray">No COAs found</td></tr>';
+                return;
+            }
+            
+            // Calculate pagination
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredCOAs.length);
+            const currentCOAs = filteredCOAs.slice(startIndex, endIndex);
+            
+            tbody.innerHTML = currentCOAs.map(coa => `
+                <tr>
+                    <td><strong>${coa.id}</strong></td>
+                    <td>${coa.client}</td>
+                    <td>${coa.compound}</td>
+                    <td><span class="status-badge info">${coa.type}</span></td>
+                    <td>${coa.date}</td>
+                    <td><span class="status-badge ${getStatusBadgeClass(coa.status)}">${coa.status}</span></td>
+                    <td>${new Date(coa.dateAdded).toLocaleDateString()}</td>
+                    <td>
+                        <div class="table-actions">
+                            <button onclick="editCOA('${coa.id}')" class="btn btn-primary btn-sm">Edit</button>
+                            <button onclick="deleteCOA('${coa.id}')" class="btn btn-danger btn-sm">Delete</button>
+                            ${coa.fileName ? `<button onclick="downloadCOA('${coa.id}')" class="btn btn-outline btn-sm">Download</button>` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function renderPagination() {
+            const pagination = document.getElementById('pagination');
+            const totalPages = Math.ceil(filteredCOAs.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                return;
+            }
+            
+            let paginationHTML = `
+                <button ${currentPage === 1 ? 'disabled' : ''} onclick="changePage(${currentPage - 1})">&laquo; Prev</button>
+            `;
+            
+            for (let i = 1; i <= totalPages; i++) {
+                paginationHTML += `
+                    <button class="${i === currentPage ? 'current' : ''}" onclick="changePage(${i})">${i}</button>
+                `;
+            }
+            
+            paginationHTML += `
+                <button ${currentPage === totalPages ? 'disabled' : ''} onclick="changePage(${currentPage + 1})">Next &raquo;</button>
+            `;
+            
+            pagination.innerHTML = paginationHTML;
+        }
+        
+        function changePage(page) {
+            const totalPages = Math.ceil(filteredCOAs.length / itemsPerPage);
+            if (page >= 1 && page <= totalPages) {
+                currentPage = page;
+                renderCOATable();
+                renderPagination();
+            }
+        }
+        
+        function handleSearch() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            applyFilters();
+        }
+        
+        function handleFilter() {
+            applyFilters();
+        }
+        
+        function applyFilters() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const typeFilter = document.getElementById('type-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            
+            const allCOAs = COAManager.getAllCOAs();
+            
+            filteredCOAs = allCOAs.filter(coa => {
+                const matchesSearch = !query || 
+                    coa.id.toLowerCase().includes(query) ||
+                    coa.client.toLowerCase().includes(query) ||
+                    coa.compound.toLowerCase().includes(query);
+                
+                const matchesType = !typeFilter || coa.type === typeFilter;
+                const matchesStatus = !statusFilter || coa.status === statusFilter;
+                
+                return matchesSearch && matchesType && matchesStatus;
+            });
+            
+            currentPage = 1;
+            renderCOATable();
+            renderPagination();
+        }
+        
+        function clearFilters() {
+            document.getElementById('search-input').value = '';
+            document.getElementById('type-filter').value = '';
+            document.getElementById('status-filter').value = '';
+            loadCOAs();
+        }
+        
+        function getStatusBadgeClass(status) {
+            switch (status) {
+                case 'Complete': return 'success';
+                case 'Pending': return 'warning';
+                case 'In Progress': return 'info';
+                default: return 'info';
+            }
+        }
+        
+        function editCOA(id) {
+            const coa = COAManager.getCOAById(id);
+            if (!coa) {
+                alert('COA not found');
+                return;
+            }
+            
+            currentEditId = id;
+            
+            // Populate form
+            document.getElementById('edit-id').value = id;
+            document.getElementById('edit-coa-id').value = coa.id;
+            document.getElementById('edit-client').value = coa.client;
+            document.getElementById('edit-compound').value = coa.compound;
+            document.getElementById('edit-type').value = coa.type;
+            document.getElementById('edit-status').value = coa.status;
+            document.getElementById('edit-date').value = coa.date ? new Date(coa.date).toISOString().split('T')[0] : '';
+            document.getElementById('edit-purity').value = coa.purity || '';
+            document.getElementById('edit-result').value = coa.result || '';
+            document.getElementById('edit-notes').value = coa.notes || '';
+            
+            // Show modal
+            document.getElementById('edit-modal').classList.add('show');
+        }
+        
+        function closeEditModal() {
+            document.getElementById('edit-modal').classList.remove('show');
+            currentEditId = null;
+        }
+        
+        function handleEditSubmit(event) {
+            event.preventDefault();
+            
+            if (!currentEditId) return;
+            
+            const updateData = {
+                id: document.getElementById('edit-coa-id').value,
+                client: document.getElementById('edit-client').value,
+                compound: document.getElementById('edit-compound').value,
+                type: document.getElementById('edit-type').value,
+                status: document.getElementById('edit-status').value,
+                date: document.getElementById('edit-date').value,
+                purity: document.getElementById('edit-purity').value || null,
+                result: document.getElementById('edit-result').value || null,
+                notes: document.getElementById('edit-notes').value || ''
+            };
+            
+            try {
+                COAManager.updateCOA(currentEditId, updateData);
+                alert('COA updated successfully!');
+                closeEditModal();
+                loadCOAs();
+                updateStats();
+            } catch (error) {
+                alert('Error updating COA: ' + error.message);
+            }
+        }
+        
+        function deleteCOA(id) {
+            const coa = COAManager.getCOAById(id);
+            if (!coa) {
+                alert('COA not found');
+                return;
+            }
+            
+            if (confirm(`Are you sure you want to delete COA ${id}?\\nClient: ${coa.client}\\nCompound: ${coa.compound}`)) {
+                try {
+                    COAManager.deleteCOA(id);
+                    alert('COA deleted successfully!');
+                    loadCOAs();
+                    updateStats();
+                } catch (error) {
+                    alert('Error deleting COA: ' + error.message);
+                }
+            }
+        }
+        
+        function downloadCOA(id) {
+            const coa = COAManager.getCOAById(id);
+            if (!coa || !coa.fileName) {
+                alert('No file available for download');
+                return;
+            }
+            
+            // In a real implementation, this would download from server
+            alert('File download would start here in production. File: ' + coa.fileName);
+        }
+        
+        function updateStats() {
+            const coas = COAManager.getAllCOAs();
+            
+            document.getElementById('total-count').textContent = coas.length;
+            document.getElementById('peptide-count').textContent = coas.filter(coa => coa.type === 'Peptide Analysis').length;
+            document.getElementById('supplement-count').textContent = coas.filter(coa => coa.type === 'Supplement Screening').length;
+            document.getElementById('biotech-count').textContent = coas.filter(coa => coa.type === 'Biotech Analysis').length;
+        }
+        
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                Auth.logout();
+            }
+        }
+    </script>
+</body>
+</html>
