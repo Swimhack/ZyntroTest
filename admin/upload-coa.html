@@ -412,9 +412,89 @@
             document.getElementById('file-input').value = '';
         }
         
-        function generateCOAId() {
-            const generatedId = COAManager.generateCOAId();
+        async function generateCOAId() {
+            const generatedId = await generateSupabaseCOAId();
             document.getElementById('coa-id').value = generatedId;
+        }
+        
+        // Generate COA ID using Supabase data
+        async function generateSupabaseCOAId() {
+            const currentYear = new Date().getFullYear();
+            const yearPrefix = `ZT-${currentYear}-`;
+            
+            try {
+                const result = await SupabaseCOAManager.getAllCOAs();
+                if (!result.success) {
+                    console.warn('Could not load existing COAs for ID generation, using fallback');
+                    return `${yearPrefix}001`;
+                }
+                
+                // Find highest number for current year
+                const currentYearCOAs = result.data.filter(coa => coa.coa_id.startsWith(yearPrefix));
+                let maxNumber = 0;
+                
+                currentYearCOAs.forEach(coa => {
+                    const match = coa.coa_id.match(/ZT-\d{4}-(\d+)/);
+                    if (match) {
+                        const number = parseInt(match[1]);
+                        if (number > maxNumber) {
+                            maxNumber = number;
+                        }
+                    }
+                });
+                
+                const nextNumber = maxNumber + 1;
+                return `${yearPrefix}${nextNumber.toString().padStart(3, '0')}`;
+            } catch (error) {
+                console.error('Error generating COA ID:', error);
+                return `${yearPrefix}001`;
+            }
+        }
+        
+        // Upload file to Supabase Storage
+        async function uploadFileToSupabase(file, coaId) {
+            try {
+                if (!window.supabaseClient) {
+                    throw new Error('Supabase client not initialized');
+                }
+                
+                // Generate unique filename
+                const timestamp = Date.now();
+                const fileExtension = file.name.split('.').pop();
+                const fileName = `${coaId}_${timestamp}.${fileExtension}`;
+                const filePath = `coa-files/${fileName}`;
+                
+                // Upload to Supabase Storage
+                const { data, error } = await window.supabaseClient.storage
+                    .from('coa-documents')
+                    .upload(filePath, file, {
+                        contentType: file.type,
+                        upsert: false
+                    });
+                
+                if (error) {
+                    throw error;
+                }
+                
+                // Get public URL
+                const { data: { publicUrl } } = window.supabaseClient.storage
+                    .from('coa-documents')
+                    .getPublicUrl(filePath);
+                
+                return {
+                    success: true,
+                    file_path: filePath,
+                    file_url: publicUrl,
+                    data: data
+                };
+                
+            } catch (error) {
+                console.error('File upload error:', error);
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
         }
         
         function clearForm() {
@@ -432,25 +512,23 @@
                 return;
             }
             
-            const formData = new FormData();
             const coaData = {
-                id: document.getElementById('coa-id').value || COAManager.generateCOAId(),
-                client: document.getElementById('client-name').value,
-                compound: document.getElementById('compound-name').value,
-                type: document.getElementById('analysis-type').value,
-                date: document.getElementById('test-date').value || new Date().toLocaleDateString(),
+                coa_id: document.getElementById('coa-id').value || await generateSupabaseCOAId(),
+                client_name: document.getElementById('client-name').value,
+                compound_name: document.getElementById('compound-name').value,
+                analysis_type: document.getElementById('analysis-type').value,
+                test_date: document.getElementById('test-date').value || new Date().toISOString().split('T')[0],
                 status: document.getElementById('status').value || 'Complete',
                 purity: document.getElementById('purity').value || null,
                 result: document.getElementById('result').value || null,
                 notes: document.getElementById('notes').value || '',
-                fileName: selectedFile.name,
-                fileSize: selectedFile.size
+                file_name: selectedFile.name,
+                file_size: selectedFile.size
             };
             
-            // Validate COA data
-            const validation = COAManager.validateCOA(coaData);
-            if (!validation.isValid) {
-                alert('Please fix the following errors:\\n' + validation.errors.join('\\n'));
+            // Validate required fields
+            if (!coaData.coa_id || !coaData.client_name || !coaData.compound_name || !coaData.analysis_type) {
+                alert('Please fill in all required fields (COA ID, Client Name, Compound Name, and Analysis Type).');
                 return;
             }
             
@@ -458,11 +536,23 @@
                 // Show upload progress
                 showUploadProgress();
                 
-                // Simulate file upload (in real implementation, this would upload to server)
-                await simulateFileUpload();
+                // Upload file to Supabase Storage
+                const fileUploadResult = await uploadFileToSupabase(selectedFile, coaData.coa_id);
                 
-                // Add COA to database
-                COAManager.addCOA(coaData);
+                if (!fileUploadResult.success) {
+                    throw new Error('File upload failed: ' + fileUploadResult.error);
+                }
+                
+                // Add file info to COA data
+                coaData.file_url = fileUploadResult.file_url;
+                coaData.file_path = fileUploadResult.file_path;
+                
+                // Add COA to Supabase database
+                const result = await SupabaseCOAManager.addCOA(coaData);
+                
+                if (!result.success) {
+                    throw new Error('Database upload failed: ' + result.error);
+                }
                 
                 // Show success message
                 alert('COA uploaded successfully!');
@@ -502,31 +592,43 @@
             }
         }
         
-        function loadRecentUploads() {
-            const coas = COAManager.getAllCOAs();
-            const recentCOAs = coas
-                .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
-                .slice(0, 5);
-            
-            const tbody = document.getElementById('recent-uploads');
-            
-            if (recentCOAs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray">No recent uploads</td></tr>';
-                return;
+        async function loadRecentUploads() {
+            try {
+                const result = await SupabaseCOAManager.getAllCOAs();
+                
+                if (!result.success) {
+                    console.error('Error loading recent uploads:', result.error);
+                    document.getElementById('recent-uploads').innerHTML = '<tr><td colspan="6" class="text-center text-gray">Error loading uploads</td></tr>';
+                    return;
+                }
+                
+                const recentCOAs = result.data
+                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                    .slice(0, 5);
+                
+                const tbody = document.getElementById('recent-uploads');
+                
+                if (recentCOAs.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" class="text-center text-gray">No recent uploads</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = recentCOAs.map(coa => `
+                    <tr>
+                        <td><strong>${coa.coa_id}</strong></td>
+                        <td>${coa.client_name}</td>
+                        <td>${coa.compound_name}</td>
+                        <td><span class="status-badge info">${coa.analysis_type}</span></td>
+                        <td>${new Date(coa.created_at).toLocaleString()}</td>
+                        <td>
+                            <a href="manage-coas.html?id=${coa.coa_id}" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</a>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading recent uploads:', error);
+                document.getElementById('recent-uploads').innerHTML = '<tr><td colspan="6" class="text-center text-gray">Error loading uploads</td></tr>';
             }
-            
-            tbody.innerHTML = recentCOAs.map(coa => `
-                <tr>
-                    <td><strong>${coa.id}</strong></td>
-                    <td>${coa.client}</td>
-                    <td>${coa.compound}</td>
-                    <td><span class="status-badge info">${coa.type}</span></td>
-                    <td>${new Date(coa.dateAdded).toLocaleString()}</td>
-                    <td>
-                        <a href="manage-coas.html?id=${coa.id}" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</a>
-                    </td>
-                </tr>
-            `).join('');
         }
         
         function logout() {
