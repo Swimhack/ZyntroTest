@@ -430,11 +430,11 @@
                 }
                 
                 // Find highest number for current year
-                const currentYearCOAs = result.data.filter(coa => coa.coa_id.startsWith(yearPrefix));
+                const currentYearCOAs = result.data.filter(coa => coa.id.startsWith(yearPrefix));
                 let maxNumber = 0;
                 
                 currentYearCOAs.forEach(coa => {
-                    const match = coa.coa_id.match(/ZT-\d{4}-(\d+)/);
+                    const match = coa.id.match(/ZT-\d{4}-(\d+)/);
                     if (match) {
                         const number = parseInt(match[1]);
                         if (number > maxNumber) {
@@ -466,7 +466,7 @@
                 
                 // Upload to Supabase Storage
                 const { data, error } = await window.supabaseClient.storage
-                    .from('coa-documents')
+                    .from('coa-files')
                     .upload(filePath, file, {
                         contentType: file.type,
                         upsert: false
@@ -478,7 +478,7 @@
                 
                 // Get public URL
                 const { data: { publicUrl } } = window.supabaseClient.storage
-                    .from('coa-documents')
+                    .from('coa-files')
                     .getPublicUrl(filePath);
                 
                 return {
@@ -513,21 +513,21 @@
             }
             
             const coaData = {
-                coa_id: document.getElementById('coa-id').value || await generateSupabaseCOAId(),
-                client_name: document.getElementById('client-name').value,
-                compound_name: document.getElementById('compound-name').value,
-                analysis_type: document.getElementById('analysis-type').value,
-                test_date: document.getElementById('test-date').value || new Date().toISOString().split('T')[0],
+                id: document.getElementById('coa-id').value || await generateSupabaseCOAId(),
+                client: document.getElementById('client-name').value,
+                compound: document.getElementById('compound-name').value,
+                type: document.getElementById('analysis-type').value,
+                date: document.getElementById('test-date').value || new Date().toISOString().split('T')[0],
                 status: document.getElementById('status').value || 'Complete',
                 purity: document.getElementById('purity').value || null,
                 result: document.getElementById('result').value || null,
                 notes: document.getElementById('notes').value || '',
-                file_name: selectedFile.name,
-                file_size: selectedFile.size
+                fileName: selectedFile.name,
+                fileSize: selectedFile.size
             };
             
             // Validate required fields
-            if (!coaData.coa_id || !coaData.client_name || !coaData.compound_name || !coaData.analysis_type) {
+            if (!coaData.id || !coaData.client || !coaData.compound || !coaData.type) {
                 alert('Please fill in all required fields (COA ID, Client Name, Compound Name, and Analysis Type).');
                 return;
             }
@@ -537,15 +537,15 @@
                 showUploadProgress();
                 
                 // Upload file to Supabase Storage
-                const fileUploadResult = await uploadFileToSupabase(selectedFile, coaData.coa_id);
+                const fileUploadResult = await uploadFileToSupabase(selectedFile, coaData.id);
                 
                 if (!fileUploadResult.success) {
                     throw new Error('File upload failed: ' + fileUploadResult.error);
                 }
                 
                 // Add file info to COA data
-                coaData.file_url = fileUploadResult.file_url;
-                coaData.file_path = fileUploadResult.file_path;
+                coaData.fileUrl = fileUploadResult.file_url;
+                coaData.filePath = fileUploadResult.file_path;
                 
                 // Add COA to Supabase database
                 const result = await SupabaseCOAManager.addCOA(coaData);
@@ -615,13 +615,13 @@
                 
                 tbody.innerHTML = recentCOAs.map(coa => `
                     <tr>
-                        <td><strong>${coa.coa_id}</strong></td>
-                        <td>${coa.client_name}</td>
-                        <td>${coa.compound_name}</td>
-                        <td><span class="status-badge info">${coa.analysis_type}</span></td>
-                        <td>${new Date(coa.created_at).toLocaleString()}</td>
+                        <td><strong>${coa.id}</strong></td>
+                        <td>${coa.client}</td>
+                        <td>${coa.compound}</td>
+                        <td><span class="status-badge info">${coa.type}</span></td>
+                        <td>${new Date(coa.dateAdded).toLocaleString()}</td>
                         <td>
-                            <a href="manage-coas.html?id=${coa.coa_id}" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</a>
+                            <a href="manage-coas.html?id=${coa.id}" class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.75rem;">Edit</a>
                         </td>
                     </tr>
                 `).join('');

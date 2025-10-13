@@ -51,6 +51,10 @@ const initSupabase = async () => {
             SUPABASE_CONFIG.serviceRoleKey
         );
         
+        // Set global references
+        window.supabaseClient = supabaseClient;
+        window.supabaseAdmin = supabaseAdmin;
+        
         console.log('Supabase clients initialized successfully');
         return { client: supabaseClient, admin: supabaseAdmin };
     } catch (error) {
