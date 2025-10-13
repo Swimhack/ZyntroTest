@@ -318,7 +318,7 @@
         let selectedFile = null;
         
         // Initialize upload page
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             // Check authentication
             if (!Auth.requireAuth()) {
                 return;
@@ -328,6 +328,18 @@
             const user = Auth.getCurrentUser();
             if (user) {
                 document.getElementById('current-user').textContent = user.username;
+            }
+            
+            // Wait for Supabase to initialize
+            try {
+                if (!window.supabaseClient) {
+                    console.log('Waiting for Supabase initialization...');
+                    await window.initSupabase();
+                }
+                console.log('Supabase ready for upload operations');
+            } catch (error) {
+                console.error('Supabase initialization failed:', error);
+                alert('Database connection failed. Please refresh the page.');
             }
             
             // Initialize upload functionality
@@ -413,8 +425,16 @@
         }
         
         async function generateCOAId() {
-            const generatedId = await generateSupabaseCOAId();
-            document.getElementById('coa-id').value = generatedId;
+            try {
+                const generatedId = await generateSupabaseCOAId();
+                document.getElementById('coa-id').value = generatedId;
+            } catch (error) {
+                console.error('Error generating COA ID:', error);
+                // Fallback ID generation
+                const currentYear = new Date().getFullYear();
+                const fallbackId = `ZT-${currentYear}-001`;
+                document.getElementById('coa-id').value = fallbackId;
+            }
         }
         
         // Generate COA ID using Supabase data
@@ -512,6 +532,17 @@
                 return;
             }
             
+            // Ensure Supabase is initialized
+            if (!window.supabaseClient) {
+                try {
+                    console.log('Initializing Supabase before upload...');
+                    await window.initSupabase();
+                } catch (error) {
+                    alert('Unable to connect to database. Please refresh and try again.');
+                    return;
+                }
+            }
+            
             const coaData = {
                 id: document.getElementById('coa-id').value || await generateSupabaseCOAId(),
                 client: document.getElementById('client-name').value,
@@ -603,7 +634,7 @@
                 }
                 
                 const recentCOAs = result.data
-                    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                    .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
                     .slice(0, 5);
                 
                 const tbody = document.getElementById('recent-uploads');

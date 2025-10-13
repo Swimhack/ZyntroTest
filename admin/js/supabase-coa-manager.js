@@ -55,7 +55,7 @@ const SupabaseCOAManager = {
             }
             
             // Transform data to match frontend expectations
-            return data.map(coa => ({
+            const transformedData = data.map(coa => ({
                 id: coa.id,
                 client: coa.client,
                 compound: coa.compound,
@@ -71,9 +71,11 @@ const SupabaseCOAManager = {
                 fileUrl: coa.file_url || null,
                 notes: coa.notes || ''
             }));
+            
+            return { success: true, data: transformedData };
         } catch (error) {
             console.error('SupabaseCOAManager: Error loading COAs:', error);
-            return [];
+            return { success: false, error: error.message, data: [] };
         }
     },
     
@@ -163,10 +165,10 @@ const SupabaseCOAManager = {
             }
             
             console.log('SupabaseCOAManager: Added COA:', data.id);
-            return true;
+            return { success: true, data: data };
         } catch (error) {
             console.error('SupabaseCOAManager: Error adding COA:', error);
-            throw error;
+            return { success: false, error: error.message };
         }
     },
     
