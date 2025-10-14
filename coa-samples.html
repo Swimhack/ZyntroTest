@@ -1684,11 +1684,19 @@
             // First try to load from Supabase database
             try {
                 if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient) {
+                    console.log('Searching Supabase for COA:', coaNumber);
                     const { data, error } = await window.supabaseClient
                         .rpc('get_coa_by_id', { coa_id: coaNumber.toUpperCase() });
                     
+                    console.log('Supabase search result:', { data, error });
+                    
                     if (!error && data && data.length > 0) {
+                        console.log('Found COA in Supabase:', data[0]);
                         return data[0];
+                    }
+                    
+                    if (error) {
+                        console.error('Supabase search error:', error);
                     }
                 }
             } catch (error) {
@@ -1747,21 +1755,188 @@
             const resultsSection = document.getElementById('search-results');
             const coaContent = document.getElementById('coa-content');
             
-            let contentHTML = '';
+            console.log('Displaying COA results for:', coa);
             
-            if (coa.type === 'Peptide Analysis') {
-                contentHTML = generatePeptideCOA();
-            } else if (coa.type === 'Supplement Screening') {
-                contentHTML = generateSupplementCOA();
-            } else if (coa.type === 'Biotech Analysis') {
-                contentHTML = generateBiotechCOA();
-            }
+            // Generate content based on actual COA data
+            const contentHTML = generateRealCOAContent(coa);
             
             coaContent.innerHTML = contentHTML;
             resultsSection.style.display = 'block';
             
             // Scroll to results
             resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Generate COA content from real database data
+        function generateRealCOAContent(coa) {
+            return `
+                <div class="full-coa-content">
+                    <div class="coa-section">
+                        <h3>Sample Information</h3>
+                        <div class="info-table">
+                            <div class="info-row">
+                                <span class="label">COA ID:</span>
+                                <span class="value">${coa.id}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Client:</span>
+                                <span class="value">${coa.client}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Compound:</span>
+                                <span class="value">${coa.compound}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Analysis Type:</span>
+                                <span class="value">${coa.type}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Test Date:</span>
+                                <span class="value">${coa.date}</span>
+                            </div>
+                            <div class="info-row">
+                                <span class="label">Status:</span>
+                                <span class="value status-${coa.status.toLowerCase()}">${coa.status}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="coa-section">
+                        <h3>Analytical Results</h3>
+                        <div class="results-table">
+                            ${coa.purity ? `
+                                <div class="result-row">
+                                    <span class="test">Purity</span>
+                                    <span class="result">${coa.purity}</span>
+                                    <span class="status pass">PASS</span>
+                                </div>
+                            ` : ''}
+                            
+                            ${coa.result ? `
+                                <div class="result-row">
+                                    <span class="test">Test Result</span>
+                                    <span class="result">${coa.result}</span>
+                                    <span class="status pass">PASS</span>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="coa-section">
+                        <h3>Conclusion</h3>
+                        <p>The analyzed sample <strong>${coa.compound}</strong> has been tested using <strong>${coa.type}</strong> methods. 
+                        ${coa.purity ? `The sample shows purity of ${coa.purity}.` : ''}
+                        ${coa.result ? `Result: ${coa.result}.` : ''}
+                        The sample ${coa.status === 'Complete' ? 'meets all specified requirements' : 'is under analysis'}.</p>
+                        
+                        ${coa.notes ? `
+                            <div class="additional-notes">
+                                <h4>Additional Notes</h4>
+                                <p>${coa.notes}</p>
+                            </div>
+                        ` : ''}
+                    </div>
+                    
+                    <div class="coa-signature">
+                        <p><strong>Analysis completed by ZyntroTest Laboratory</strong><br>
+                        <strong>Certificate ID:</strong> ${coa.id}<br>
+                        <strong>Generated:</strong> ${new Date().toLocaleDateString()}</p>
+                        
+                        <div class="download-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
+                            <p><strong>Need the full PDF report?</strong></p>
+                            <p>Contact us at <a href="mailto:info@zyntrotest.com">info@zyntrotest.com</a> with your COA ID (${coa.id}) to receive the complete certificate with detailed analytical data, chromatograms, and professional interpretation.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <style>
+                .info-table, .results-table {
+                    width: 100%;
+                    margin-bottom: 2rem;
+                }
+                
+                .info-row, .result-row {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    padding: 0.75rem 0;
+                    border-bottom: 1px solid #e5e7eb;
+                }
+                
+                .info-row:last-child, .result-row:last-child {
+                    border-bottom: none;
+                }
+                
+                .label, .test {
+                    font-weight: 600;
+                    color: #374151;
+                }
+                
+                .value, .result {
+                    font-weight: 500;
+                    color: #111827;
+                }
+                
+                .status {
+                    padding: 0.25rem 0.75rem;
+                    border-radius: 0.375rem;
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    text-transform: uppercase;
+                }
+                
+                .status.pass, .status-complete {
+                    background-color: #d1fae5;
+                    color: #065f46;
+                }
+                
+                .status-pending {
+                    background-color: #fef3c7;
+                    color: #92400e;
+                }
+                
+                .status-in-progress {
+                    background-color: #dbeafe;
+                    color: #1e40af;
+                }
+                
+                .coa-section {
+                    margin-bottom: 2rem;
+                    padding-bottom: 2rem;
+                    border-bottom: 2px solid #f3f4f6;
+                }
+                
+                .coa-section:last-child {
+                    border-bottom: none;
+                }
+                
+                .coa-section h3 {
+                    color: #111827;
+                    margin-bottom: 1rem;
+                    font-size: 1.25rem;
+                }
+                
+                .additional-notes h4 {
+                    color: #374151;
+                    margin: 1rem 0 0.5rem 0;
+                }
+                
+                .download-section {
+                    background: #f9fafb;
+                    padding: 1.5rem;
+                    border-radius: 0.5rem;
+                }
+                
+                .download-section a {
+                    color: #2563eb;
+                    text-decoration: none;
+                }
+                
+                .download-section a:hover {
+                    text-decoration: underline;
+                }
+                </style>
+            `;
         }
         
         // Close modal when clicking outside
