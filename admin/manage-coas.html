@@ -355,7 +355,7 @@
         let currentEditId = null;
         
         // Initialize page
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             // Check authentication
             if (!Auth.requireAuth()) {
                 return;
@@ -367,6 +367,18 @@
                 document.getElementById('current-user').textContent = user.username;
             }
             
+            // Wait for Supabase to initialize
+            try {
+                if (!window.supabaseClient) {
+                    console.log('Waiting for Supabase initialization...');
+                    await window.initSupabase();
+                }
+                console.log('Supabase ready for manage operations');
+            } catch (error) {
+                console.error('Supabase initialization failed:', error);
+                alert('Database connection failed. Please refresh the page.');
+            }
+            
             // Load COAs
             loadCOAs();
             updateStats();
@@ -375,9 +387,19 @@
             document.getElementById('edit-form').addEventListener('submit', handleEditSubmit);
         });
         
-        function loadCOAs() {
-            const allCOAs = COAManager.getAllCOAs();
-            filteredCOAs = allCOAs.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+        async function loadCOAs() {
+            try {
+                const result = await SupabaseCOAManager.getAllCOAs();
+                if (!result.success) {
+                    console.error('Error loading COAs:', result.error);
+                    filteredCOAs = [];
+                } else {
+                    filteredCOAs = result.data.sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded));
+                }
+            } catch (error) {
+                console.error('Error loading COAs:', error);
+                filteredCOAs = [];
+            }
             renderCOATable();
             renderPagination();
         }
@@ -408,7 +430,7 @@
                         <div class="table-actions">
                             <button onclick="editCOA('${coa.id}')" class="btn btn-primary btn-sm">Edit</button>
                             <button onclick="deleteCOA('${coa.id}')" class="btn btn-danger btn-sm">Delete</button>
-                            ${coa.fileName ? `<button onclick="downloadCOA('${coa.id}')" class="btn btn-outline btn-sm">Download</button>` : ''}
+                            ${coa.fileUrl ? `<button onclick="downloadCOA('${coa.id}')" class="btn btn-outline btn-sm">Download</button>` : ''}
                         </div>
                     </td>
                 </tr>
@@ -450,33 +472,39 @@
             }
         }
         
-        function handleSearch() {
+        async function handleSearch() {
             const query = document.getElementById('search-input').value.toLowerCase();
-            applyFilters();
+            await applyFilters();
         }
         
-        function handleFilter() {
-            applyFilters();
+        async function handleFilter() {
+            await applyFilters();
         }
         
-        function applyFilters() {
+        async function applyFilters() {
             const query = document.getElementById('search-input').value.toLowerCase();
             const typeFilter = document.getElementById('type-filter').value;
             const statusFilter = document.getElementById('status-filter').value;
             
-            const allCOAs = COAManager.getAllCOAs();
-            
-            filteredCOAs = allCOAs.filter(coa => {
-                const matchesSearch = !query || 
-                    coa.id.toLowerCase().includes(query) ||
-                    coa.client.toLowerCase().includes(query) ||
-                    coa.compound.toLowerCase().includes(query);
+            try {
+                const result = await SupabaseCOAManager.getAllCOAs();
+                const allCOAs = result.success ? result.data : [];
                 
-                const matchesType = !typeFilter || coa.type === typeFilter;
-                const matchesStatus = !statusFilter || coa.status === statusFilter;
-                
-                return matchesSearch && matchesType && matchesStatus;
-            });
+                filteredCOAs = allCOAs.filter(coa => {
+                    const matchesSearch = !query || 
+                        coa.id.toLowerCase().includes(query) ||
+                        coa.client.toLowerCase().includes(query) ||
+                        coa.compound.toLowerCase().includes(query);
+                    
+                    const matchesType = !typeFilter || coa.type === typeFilter;
+                    const matchesStatus = !statusFilter || coa.status === statusFilter;
+                    
+                    return matchesSearch && matchesType && matchesStatus;
+                });
+            } catch (error) {
+                console.error('Error applying filters:', error);
+                filteredCOAs = [];
+            }
             
             currentPage = 1;
             renderCOATable();
@@ -499,8 +527,8 @@
             }
         }
         
-        function editCOA(id) {
-            const coa = COAManager.getCOAById(id);
+        async function editCOA(id) {
+            const coa = await SupabaseCOAManager.getCOAById(id);
             if (!coa) {
                 alert('COA not found');
                 return;
@@ -529,7 +557,7 @@
             currentEditId = null;
         }
         
-        function handleEditSubmit(event) {
+        async function handleEditSubmit(event) {
             event.preventDefault();
             
             if (!currentEditId) return;
@@ -547,18 +575,22 @@
             };
             
             try {
-                COAManager.updateCOA(currentEditId, updateData);
-                alert('COA updated successfully!');
-                closeEditModal();
-                loadCOAs();
-                updateStats();
+                const result = await SupabaseCOAManager.updateCOA(currentEditId, updateData);
+                if (result.success) {
+                    alert('COA updated successfully!');
+                    closeEditModal();
+                    await loadCOAs();
+                    await updateStats();
+                } else {
+                    alert('Error updating COA: ' + result.error);
+                }
             } catch (error) {
                 alert('Error updating COA: ' + error.message);
             }
         }
         
-        function deleteCOA(id) {
-            const coa = COAManager.getCOAById(id);
+        async function deleteCOA(id) {
+            const coa = await SupabaseCOAManager.getCOAById(id);
             if (!coa) {
                 alert('COA not found');
                 return;
@@ -566,34 +598,52 @@
             
             if (confirm(`Are you sure you want to delete COA ${id}?\\nClient: ${coa.client}\\nCompound: ${coa.compound}`)) {
                 try {
-                    COAManager.deleteCOA(id);
-                    alert('COA deleted successfully!');
-                    loadCOAs();
-                    updateStats();
+                    const result = await SupabaseCOAManager.deleteCOA(id);
+                    if (result.success || result === true) {
+                        alert('COA deleted successfully!');
+                        await loadCOAs();
+                        await updateStats();
+                    } else {
+                        alert('Error deleting COA: ' + (result.error || 'Unknown error'));
+                    }
                 } catch (error) {
                     alert('Error deleting COA: ' + error.message);
                 }
             }
         }
         
-        function downloadCOA(id) {
-            const coa = COAManager.getCOAById(id);
-            if (!coa || !coa.fileName) {
+        async function downloadCOA(id) {
+            const coa = await SupabaseCOAManager.getCOAById(id);
+            if (!coa || !coa.fileUrl) {
                 alert('No file available for download');
                 return;
             }
             
-            // In a real implementation, this would download from server
-            alert('File download would start here in production. File: ' + coa.fileName);
+            // Download file from Supabase Storage
+            try {
+                window.open(coa.fileUrl, '_blank');
+            } catch (error) {
+                console.error('Download error:', error);
+                alert('Error downloading file: ' + error.message);
+            }
         }
         
-        function updateStats() {
-            const coas = COAManager.getAllCOAs();
-            
-            document.getElementById('total-count').textContent = coas.length;
-            document.getElementById('peptide-count').textContent = coas.filter(coa => coa.type === 'Peptide Analysis').length;
-            document.getElementById('supplement-count').textContent = coas.filter(coa => coa.type === 'Supplement Screening').length;
-            document.getElementById('biotech-count').textContent = coas.filter(coa => coa.type === 'Biotech Analysis').length;
+        async function updateStats() {
+            try {
+                const result = await SupabaseCOAManager.getAllCOAs();
+                const coas = result.success ? result.data : [];
+                
+                document.getElementById('total-count').textContent = coas.length;
+                document.getElementById('peptide-count').textContent = coas.filter(coa => coa.type === 'Peptide Analysis').length;
+                document.getElementById('supplement-count').textContent = coas.filter(coa => coa.type === 'Supplement Screening').length;
+                document.getElementById('biotech-count').textContent = coas.filter(coa => coa.type === 'Biotech Analysis').length;
+            } catch (error) {
+                console.error('Error updating stats:', error);
+                document.getElementById('total-count').textContent = '0';
+                document.getElementById('peptide-count').textContent = '0';
+                document.getElementById('supplement-count').textContent = '0';
+                document.getElementById('biotech-count').textContent = '0';
+            }
         }
         
         function logout() {
