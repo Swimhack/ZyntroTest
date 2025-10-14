@@ -54,14 +54,18 @@ CREATE POLICY "Allow all operations for service role" ON coas
 -- CREATE POLICY "Allow authenticated users to manage COAs" ON coas
 --     FOR ALL USING (auth.role() = 'authenticated');
 
--- Create storage bucket for COA files
+-- Create storage bucket for COA files (public for downloads)
 INSERT INTO storage.buckets (id, name, public, file_size_limit, allowed_mime_types) 
-VALUES ('coa-files', 'coa-files', false, 10485760, ARRAY['application/pdf'])
-ON CONFLICT (id) DO NOTHING;
+VALUES ('coa-files', 'coa-files', true, 10485760, ARRAY['application/pdf'])
+ON CONFLICT (id) DO UPDATE SET public = true;
 
 -- Storage policies for COA files
 CREATE POLICY "Allow service role to manage COA files" ON storage.objects
     FOR ALL USING (bucket_id = 'coa-files');
+
+-- Allow public downloads of COA files
+CREATE POLICY "Allow public download of COA files" ON storage.objects
+    FOR SELECT USING (bucket_id = 'coa-files');
 
 -- Alternative storage policy for authenticated users (uncomment if you want to use Supabase Auth)
 -- CREATE POLICY "Allow authenticated users to upload COA files" ON storage.objects
@@ -102,7 +106,10 @@ RETURNS TABLE (
     date TEXT,
     status TEXT,
     purity TEXT,
-    result TEXT
+    result TEXT,
+    notes TEXT,
+    file_url TEXT,
+    file_name TEXT
 ) 
 SECURITY DEFINER
 SET search_path = public
@@ -117,7 +124,10 @@ BEGIN
         to_char(c.test_date, 'Month DD, YYYY') as date,
         c.status,
         c.purity,
-        c.result
+        c.result,
+        c.notes,
+        c.file_url,
+        c.file_name
     FROM coas c
     WHERE c.id = UPPER(coa_id) AND c.status = 'Complete';
 END;

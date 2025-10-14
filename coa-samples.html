@@ -1355,8 +1355,21 @@
         }
         
         function downloadCOA(filename) {
-            // Simulate PDF download
-            showNotification(`Downloading ${filename}.pdf - This is a demo functionality.`, 'info');
+            // Extract COA ID from filename for real downloads
+            let coaId = '';
+            if (filename === 'peptide-bpc157') {
+                coaId = 'ZT-2024-001';
+            } else if (filename === 'supplement-preworkout') {
+                coaId = 'ZT-2024-025';
+            } else if (filename === 'biotech-intermediate') {
+                coaId = 'ZT-2024-050';
+            }
+            
+            if (coaId) {
+                downloadCOAPDF(coaId);
+            } else {
+                showNotification(`Sample COA download - This is a demo functionality.`, 'info');
+            }
             
             // Track download event
             if (typeof trackEvent === 'function') {
@@ -1366,7 +1379,23 @@
         
         function downloadCurrentCOA() {
             const title = document.getElementById('modal-title').textContent;
-            showNotification(`Downloading ${title} - This is a demo functionality.`, 'info');
+            
+            // Determine COA ID from modal title
+            let coaId = '';
+            if (title.includes('BPC-157')) {
+                coaId = 'ZT-2024-001';
+            } else if (title.includes('Pre-Workout')) {
+                coaId = 'ZT-2024-025';
+            } else if (title.includes('Pharmaceutical Intermediate')) {
+                coaId = 'ZT-2024-050';
+            }
+            
+            if (coaId) {
+                downloadCOAPDF(coaId);
+            } else {
+                showNotification(`Downloading ${title} - This is a demo functionality.`, 'info');
+            }
+            
             closeCOAModal();
         }
         
@@ -1843,8 +1872,12 @@
                         <strong>Generated:</strong> ${new Date().toLocaleDateString()}</p>
                         
                         <div class="download-section" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
-                            <p><strong>Need the full PDF report?</strong></p>
-                            <p>Contact us at <a href="mailto:info@zyntrotest.com">info@zyntrotest.com</a> with your COA ID (${coa.id}) to receive the complete certificate with detailed analytical data, chromatograms, and professional interpretation.</p>
+                            <p><strong>Full PDF Report Available</strong></p>
+                            <p>Download the complete Certificate of Analysis with detailed analytical data, chromatograms, and professional interpretation.</p>
+                            <div style="margin-top: 1rem;">
+                                <button onclick="downloadCOAPDF('${coa.id}')" class="btn btn-primary" style="margin-right: 1rem;">Download PDF Report</button>
+                                <small style="color: #6b7280;">Complete analytical documentation • Professional format • Regulatory compliant</small>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1937,6 +1970,100 @@
                 }
                 </style>
             `;
+        }
+        
+        // Download actual PDF from Supabase Storage
+        async function downloadCOAPDF(coaId) {
+            try {
+                console.log('Downloading PDF for COA:', coaId);
+                
+                // Show loading state
+                let downloadButton = null;
+                let originalText = 'Download PDF Report';
+                
+                if (event && event.target) {
+                    downloadButton = event.target;
+                    originalText = downloadButton.textContent;
+                    downloadButton.textContent = 'Downloading...';
+                    downloadButton.disabled = true;
+                }
+                
+                // First, get the COA data to find the file URL
+                const coa = await findCOAInDatabase(coaId);
+                
+                if (!coa) {
+                    throw new Error('COA not found');
+                }
+                
+                // Try to get file URL from COA data or construct it
+                let fileUrl = null;
+                
+                // If we have a direct file URL from the database
+                if (coa.file_url || coa.fileUrl) {
+                    fileUrl = coa.file_url || coa.fileUrl;
+                } else {
+                    // Try to get file from Supabase Storage by querying the database
+                    if (window.supabaseClient) {
+                        const { data: coaData, error } = await window.supabaseClient
+                            .from('coas')
+                            .select('file_url, file_path, file_name')
+                            .eq('id', coaId.toUpperCase())
+                            .single();
+                        
+                        if (!error && coaData) {
+                            fileUrl = coaData.file_url;
+                            
+                            // If no direct URL, try to construct from file path
+                            if (!fileUrl && coaData.file_path) {
+                                const { data } = window.supabaseClient.storage
+                                    .from('coa-files')
+                                    .getPublicUrl(coaData.file_path);
+                                fileUrl = data.publicUrl;
+                            }
+                        }
+                    }
+                }
+                
+                if (!fileUrl) {
+                    throw new Error('PDF file not found for this COA');
+                }
+                
+                console.log('Downloading PDF from URL:', fileUrl);
+                
+                // Create a temporary link to download the file
+                const link = document.createElement('a');
+                link.href = fileUrl;
+                link.download = `COA_${coaId}.pdf`;
+                link.target = '_blank';
+                
+                // Add to DOM, click, and remove
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                showNotification(`Downloading COA ${coaId} PDF report`, 'success');
+                
+                // Track download event
+                if (typeof trackEvent === 'function') {
+                    trackEvent('COA PDF Download', 'Public Search', coaId);
+                }
+                
+                // Reset button
+                if (downloadButton) {
+                    downloadButton.textContent = originalText;
+                    downloadButton.disabled = false;
+                }
+                
+            } catch (error) {
+                console.error('PDF download error:', error);
+                showNotification(`Error downloading PDF: ${error.message}`, 'error');
+                
+                // Reset button
+                if (downloadButton) {
+                    downloadButton.textContent = originalText;
+                    downloadButton.disabled = false;
+                }
+            }
         }
         
         // Close modal when clicking outside
