@@ -156,7 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Simulate form submission (replace with actual backend integration)
                 setTimeout(() => {
-                    showNotification('Thank you for your inquiry! We will contact you within 24 hours.', 'success');
+                    showNotification('Thank you! Your information has been received. A team member will reach out to you shortly.', 'success');
                     form.reset();
                     submitBtn.disabled = false;
                     submitBtn.textContent = originalText;
@@ -216,6 +216,14 @@ document.addEventListener('DOMContentLoaded', function() {
         checkbox.addEventListener('change', function() {
             calculateEstimate();
             updateServiceDetails();
+        });
+    });
+    
+    // Add-on selection handler
+    const addonCheckboxes = document.querySelectorAll('input[name="addons"]');
+    addonCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            calculateEstimate();
         });
     });
 });
@@ -325,6 +333,7 @@ function showNotification(message, type = 'info') {
 function calculateEstimate() {
     const quantityInputs = document.querySelectorAll('input[name="quantity"]');
     const serviceCheckboxes = document.querySelectorAll('input[name="services"]:checked');
+    const addonCheckboxes = document.querySelectorAll('input[name="addons"]:checked');
     const estimateDisplay = document.getElementById('cost-estimate');
     
     if (!estimateDisplay) return;
@@ -334,32 +343,57 @@ function calculateEstimate() {
         totalQuantity += parseInt(input.value) || 0;
     });
     
+    // Default to 1 if no quantity specified
+    if (totalQuantity === 0) totalQuantity = 1;
+    
     let basePrice = 0;
     serviceCheckboxes.forEach(checkbox => {
         const service = checkbox.value;
         switch (service) {
             case 'peptide':
-                basePrice += 100;
+                basePrice += 200;
                 break;
             case 'supplement':
-                basePrice += 125;
+                basePrice += 225; // Average of $175-275
                 break;
-            case 'biotech':
-                basePrice += 200;
+            case 'hemp':
+                basePrice += 225; // Average of $150-350
                 break;
         }
     });
     
-    const totalEstimate = basePrice * totalQuantity;
-    const discountedPrice = totalQuantity > 5 ? totalEstimate * 0.9 : totalEstimate;
+    // Calculate add-ons
+    let addonPrice = 0;
+    addonCheckboxes.forEach(checkbox => {
+        const addon = checkbox.value;
+        switch (addon) {
+            case 'content':
+                addonPrice += 25;
+                break;
+            case 'endotoxin':
+                addonPrice += 250;
+                break;
+            case 'sterility':
+                addonPrice += 300;
+                break;
+        }
+    });
     
-    estimateDisplay.innerHTML = `
-        <div class="estimate-breakdown">
-            <p><strong>Estimated Cost: $${discountedPrice.toFixed(2)}</strong></p>
-            ${totalQuantity > 5 ? '<p class="discount-note">10% bulk discount applied!</p>' : ''}
-            <p class="estimate-note">*Final pricing subject to sample complexity and additional requirements</p>
-        </div>
-    `;
+    const totalEstimate = (basePrice + addonPrice) * totalQuantity;
+    const discountedPrice = totalQuantity >= 5 ? totalEstimate * 0.9 : totalEstimate;
+    
+    if (basePrice > 0) {
+        estimateDisplay.innerHTML = `
+            <div class="estimate-breakdown">
+                <p><strong>Estimated Cost: $${discountedPrice.toFixed(2)}</strong></p>
+                ${totalQuantity >= 5 ? '<p class="discount-note">10% bulk discount applied!</p>' : ''}
+                ${addonPrice > 0 ? `<p class="addon-note">Includes $${addonPrice} in add-on services per sample</p>` : ''}
+                <p class="estimate-note">*Final pricing subject to sample complexity and additional requirements</p>
+            </div>
+        `;
+    } else {
+        estimateDisplay.innerHTML = '';
+    }
 }
 
 function updateServiceDetails() {
@@ -370,22 +404,22 @@ function updateServiceDetails() {
     
     const serviceInfo = {
         'peptide': {
-            title: 'Peptide Purity Testing',
-            description: 'High-precision LCMS analysis for research peptides with comprehensive COAs.',
+            title: 'Peptide Purity Analysis',
+            description: 'Verify research-use peptides with 99.9% accuracy using LCMS with DAD.',
             turnaround: '3-5 business days',
             deliverables: ['Purity percentage', 'Mass spectrometry data', 'Chromatogram', 'COA document']
         },
         'supplement': {
             title: 'Supplement Adulterant Screening',
-            description: 'Comprehensive screening for contaminants and adulterants using DAD technology.',
+            description: 'Detect contaminants like PDE-5 inhibitors or steroids with advanced LCMS-DAD.',
             turnaround: '5-7 business days',
             deliverables: ['Adulterant screening report', 'Contaminant analysis', 'Safety assessment', 'Regulatory compliance data']
         },
-        'biotech': {
-            title: 'Biotech R&D Profiling',
-            description: 'Advanced impurity profiling and stability analysis for biotechnology applications.',
-            turnaround: '7-10 business days',
-            deliverables: ['Impurity profile', 'Stability data', 'Method validation', 'Regulatory support documentation']
+        'hemp': {
+            title: 'Cannabis/Hemp Testing (Coming Soon)',
+            description: 'Quantify THC/CBD and screen pesticides or mycotoxins in hemp products using LCMS-DAD. Pending TDA registration.',
+            turnaround: '5-7 business days (estimated)',
+            deliverables: ['Cannabinoid potency profile', 'Pesticide screening', 'Mycotoxin detection', 'State-compliant COA']
         }
     };
     
@@ -575,6 +609,13 @@ style.textContent = `
         color: #10b981;
         font-weight: 600;
         margin: 8px 0;
+    }
+    
+    .addon-note {
+        color: #2563eb;
+        font-weight: 500;
+        margin: 8px 0;
+        font-size: 14px;
     }
     
     .estimate-note {
