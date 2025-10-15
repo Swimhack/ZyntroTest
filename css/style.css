@@ -715,6 +715,38 @@ p {
     stroke-width: 2;
 }
 
+/* Animation Performance Optimizations */
+.service-card {
+    will-change: transform, box-shadow;
+    transition: none; /* Let anime.js handle all transitions */
+}
+
+.service-card:hover {
+    /* Remove CSS transitions to prevent conflicts */
+    transition: none;
+}
+
+.btn {
+    will-change: transform;
+}
+
+.nav-link {
+    will-change: auto; /* Only when needed */
+}
+
+/* Respect reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .service-card,
+    .btn,
+    .nav-link,
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
 /* Service Icons using Heroicons */
 .peptide-icon {
     /* Beaker icon for peptide testing */

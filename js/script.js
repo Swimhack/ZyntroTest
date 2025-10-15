@@ -156,7 +156,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Simulate form submission (replace with actual backend integration)
                 setTimeout(() => {
-                    showNotification('Thank you! Your information has been received. A team member will reach out to you shortly.', 'success');
+                    const message = 'Thank you! Your information has been received. A team member will reach out to you shortly.';
+                    
+                    // Use animated feedback if available, otherwise fallback
+                    if (window.zyntroAnimations && window.zyntroAnimations.showFormFeedback) {
+                        window.zyntroAnimations.showFormFeedback(message, 'success');
+                    } else {
+                        showNotification(message, 'success');
+                    }
+                    
                     form.reset();
                     submitBtn.disabled = false;
                     submitBtn.textContent = originalText;
