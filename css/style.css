@@ -1560,75 +1560,79 @@ p {
 
 /* Featured Article */
 .featured-article {
-    padding: var(--space-3xl) 0;
-    background: var(--white);
+    padding: var(--space-3xl) 0 !important;
+    background: var(--white) !important;
 }
 
 .featured-article .container {
-    max-width: 1000px;
-    margin: 0 auto;
-    padding: 0 2rem;
+    max-width: 1000px !important;
+    margin: 0 auto !important;
+    padding: 0 2rem !important;
+    display: block !important;
 }
 
-.featured-image {
-    position: relative;
-    border-radius: var(--radius-xl);
-    overflow: hidden;
-    box-shadow: var(--shadow-xl);
-    margin-bottom: 3rem;
-    width: 100%;
+.featured-article .featured-image {
+    position: relative !important;
+    border-radius: var(--radius-xl) !important;
+    overflow: hidden !important;
+    box-shadow: var(--shadow-xl) !important;
+    margin: 0 auto 3rem auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
 }
 
-.featured-image img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-    aspect-ratio: 21/9;
-    display: block;
+.featured-article .featured-image img {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: cover !important;
+    aspect-ratio: 21/9 !important;
+    display: block !important;
+    margin: 0 !important;
 }
 
-.featured-content {
-    text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 0 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.featured-article .featured-content {
+    text-align: center !important;
+    max-width: 800px !important;
+    margin: 0 auto !important;
+    padding: 0 1rem !important;
+    display: block !important;
 }
 
-.featured-badge {
-    display: inline-block;
-    padding: 0.5rem 1.25rem;
-    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
-    color: var(--white);
-    border-radius: var(--radius-full);
-    font-size: 0.875rem;
-    font-weight: 600;
-    margin-bottom: 1.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-align: center;
+.featured-article .featured-badge {
+    display: inline-block !important;
+    padding: 0.5rem 1.25rem !important;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green)) !important;
+    color: var(--white) !important;
+    border-radius: var(--radius-full) !important;
+    font-size: 0.875rem !important;
+    font-weight: 600 !important;
+    margin: 0 auto 1.5rem auto !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    text-align: center !important;
 }
 
-.featured-content h2 {
-    font-size: 2.5rem;
-    color: var(--gray-900);
-    margin-bottom: 1.5rem;
-    line-height: 1.2;
-    font-family: var(--font-display);
-    text-align: center;
-    width: 100%;
+.featured-article .featured-content h2 {
+    font-size: 2.5rem !important;
+    color: var(--gray-900) !important;
+    margin: 0 auto 1.5rem auto !important;
+    line-height: 1.2 !important;
+    font-family: var(--font-display) !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
 }
 
-.article-meta {
-    display: flex;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+.featured-article .article-meta {
+    display: flex !important;
+    gap: 1.5rem !important;
+    margin: 0 auto 2rem auto !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+    text-align: center !important;
 }
 
 .article-meta span {
@@ -1656,17 +1660,20 @@ p {
     font-size: 0.8rem;
 }
 
-.featured-excerpt {
-    font-size: 1.125rem;
-    color: var(--gray-600);
-    line-height: 1.7;
-    margin-bottom: 2rem;
-    text-align: center;
-    width: 100%;
+.featured-article .featured-excerpt {
+    font-size: 1.125rem !important;
+    color: var(--gray-600) !important;
+    line-height: 1.7 !important;
+    margin: 0 auto 2rem auto !important;
+    text-align: center !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    display: block !important;
 }
 
-.featured-content .btn {
-    margin: 0 auto;
+.featured-article .featured-content .btn {
+    margin: 0 auto !important;
+    display: inline-block !important;
 }
 
 /* Blog Articles Grid */
