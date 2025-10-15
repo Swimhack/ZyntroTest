@@ -87,7 +87,24 @@
                 <div id="pdf-preview-section" style="margin-top: 2rem; display: none;">
                     <h3 style="margin-bottom: 1rem;">PDF Preview</h3>
                     <div class="pdf-preview-container">
-                        <iframe id="pdf-viewer" style="width: 100%; height: 800px; border: 2px solid #e5e7eb; border-radius: 0.5rem;"></iframe>
+                        <!-- PDF Screenshot Preview -->
+                        <div class="pdf-screenshot-preview">
+                            <img id="pdf-screenshot" src="" alt="PDF Report Preview" style="width: 100%; max-width: 600px; height: auto; border: 2px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+                            <div class="pdf-overlay-info">
+                                <p style="margin: 1rem 0; color: #6b7280; font-size: 0.875rem; text-align: center;">
+                                    📄 Certificate of Analysis Report Preview
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Full PDF Viewer (Hidden by default) -->
+                        <div id="full-pdf-viewer" style="display: none;">
+                            <iframe id="pdf-viewer" style="width: 100%; height: 800px; border: 2px solid #e5e7eb; border-radius: 0.5rem;"></iframe>
+                        </div>
+                        <!-- PDF Actions -->
+                        <div class="pdf-actions" style="margin-top: 1rem; text-align: center;">
+                            <button id="view-full-pdf" class="btn btn-outline" style="margin-right: 0.5rem;">View Full PDF</button>
+                            <button id="hide-pdf" class="btn btn-secondary" style="display: none;">Hide PDF</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -294,6 +311,7 @@
             const coaContent = document.getElementById('coa-content');
             const pdfPreview = document.getElementById('pdf-preview-section');
             const pdfViewer = document.getElementById('pdf-viewer');
+            const pdfScreenshot = document.getElementById('pdf-screenshot');
             
             // Get the proper file URL
             const fileUrl = getProperFileUrl(coa);
@@ -303,13 +321,51 @@
             
             // Show PDF preview if file URL exists
             if (fileUrl) {
+                // Set up PDF viewer
                 pdfViewer.src = fileUrl;
+                
+                // Set up PDF screenshot preview
+                const screenshotUrl = getPDFScreenshotUrl(coa);
+                pdfScreenshot.src = screenshotUrl;
+                
                 pdfPreview.style.display = 'block';
+                
+                // Set up PDF toggle functionality
+                setupPDFToggle();
             } else {
                 pdfPreview.style.display = 'none';
             }
             
             resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function getPDFScreenshotUrl(coa) {
+            // Generate a screenshot URL based on COA data
+            // For demo purposes, we'll use a placeholder image that represents the COA
+            const baseUrl = 'https://via.placeholder.com/600x800/f8fafc/2563eb?text=';
+            const text = encodeURIComponent(`Certificate of Analysis\n\nCOA ID: ${coa.id}\nClient: ${coa.client}\nCompound: ${coa.compound}\nPurity: ${coa.purity}\nDate: ${coa.date}\nStatus: ${coa.status}\n\nZyntroTest Laboratory\nCollege Station, Texas`);
+            return baseUrl + text;
+        }
+        
+        function setupPDFToggle() {
+            const viewFullBtn = document.getElementById('view-full-pdf');
+            const hideBtn = document.getElementById('hide-pdf');
+            const screenshotPreview = document.querySelector('.pdf-screenshot-preview');
+            const fullPdfViewer = document.getElementById('full-pdf-viewer');
+            
+            viewFullBtn.addEventListener('click', function() {
+                screenshotPreview.style.display = 'none';
+                fullPdfViewer.style.display = 'block';
+                viewFullBtn.style.display = 'none';
+                hideBtn.style.display = 'inline-block';
+            });
+            
+            hideBtn.addEventListener('click', function() {
+                screenshotPreview.style.display = 'block';
+                fullPdfViewer.style.display = 'none';
+                viewFullBtn.style.display = 'inline-block';
+                hideBtn.style.display = 'none';
+            });
         }
         
         function getProperFileUrl(coa) {
