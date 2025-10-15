@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COA Search | ZyntroTest Laboratory</title>
+    <meta name="description" content="Search and retrieve your Certificate of Analysis from ZyntroTest's secure database. Enter your COA number to access detailed testing results and reports.">
+    <meta name="keywords" content="COA search, certificate lookup, testing results, ZyntroTest COA database, analytical report access">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="COA Search | ZyntroTest Laboratory">
+    <meta property="og:description" content="Search and retrieve your Certificate of Analysis from ZyntroTest's secure database. Enter your COA number to access detailed testing results and reports.">
+    <meta property="og:image" content="images/zyntrotest-logo.svg">
+    <meta property="og:url" content="https://zyntrotest.com/search">
+    <meta property="og:site_name" content="ZyntroTest Laboratory">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="COA Search | ZyntroTest Laboratory">
+    <meta name="twitter:description" content="Access your Certificate of Analysis and detailed testing results from ZyntroTest's secure database.">
+    <meta name="twitter:image" content="images/zyntrotest-logo.svg">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav">
+            <div class="container">
+                <div class="nav-brand">
+                    <a href="index.html" class="logo">
+                        <img src="images/zyntrotest-logo.svg" alt="ZyntroTest - Analytical Lab Solutions">
+                    </a>
+                </div>
+                <div class="nav-menu" id="nav-menu">
+                    <ul class="nav-list">
+                        <li><a href="index.html" class="nav-link">Home</a></li>
+                        <li><a href="services.html" class="nav-link">Services</a></li>
+                        <li><a href="sample-submission.html" class="nav-link">Submit Sample</a></li>
+                        <li><a href="search.html" class="nav-link active">COA Search</a></li>
+                        <li><a href="blog.html" class="nav-link">Blog</a></li>
+                        <li><a href="contact.html" class="nav-link">Contact</a></li>
+                    </ul>
+                </div>
+                <button class="nav-toggle" id="nav-toggle">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- COA Search Header -->
+    <section class="coa-header">
+        <div class="container">
+            <div class="coa-header-content">
+                <h1>COA Search</h1>
+                <p>Enter your COA number to access your Certificate of Analysis</p>
+                
+                <!-- COA Search Form - Simple and Clean -->
+                <div class="coa-search-form">
+                    <form class="search-form" onsubmit="searchCOA(event)">
+                        <div class="form-group">
+                            <input type="text" id="coa-number" placeholder="Enter COA Number (e.g., ZT-2024-001)" required class="coa-search-input">
+                            <button type="submit" class="btn btn-primary btn-large">Search</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COA Search Results with PDF Preview -->
+    <section class="coa-results" id="search-results" style="display: none;">
+        <div class="container">
+            <div class="results-header">
+                <h2>Certificate of Analysis Found</h2>
+                <div id="coa-content"><!-- COA data will be loaded here --></div>
+                
+                <!-- PDF Preview Section -->
+                <div id="pdf-preview-section" style="margin-top: 2rem; display: none;">
+                    <h3 style="margin-bottom: 1rem;">PDF Preview</h3>
+                    <div class="pdf-preview-container">
+                        <iframe id="pdf-viewer" style="width: 100%; height: 800px; border: 2px solid #e5e7eb; border-radius: 0.5rem;"></iframe>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Professional Analytical Reporting Section - Cleaned Up -->
+    <section class="sample-coas-section">
+        <div class="container">
+            <h2 class="section-title">Professional Analytical Reporting</h2>
+            <p class="section-subtitle">ZyntroTest provides detailed Certificates of Analysis for peptides, supplements, and biotech samples, ensuring trust and regulatory compliance.</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Comprehensive Data</h3>
+                    <p>Complete analytical results with chromatograms and spectra</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔬</div>
+                    <h3>LCMS with DAD</h3>
+                    <p>Advanced instrumentation for precise analysis</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">✅</div>
+                    <h3>Professional Interpretation</h3>
+                    <p>Expert analysis and clear conclusions</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📋</div>
+                    <h3>Regulatory Compliance</h3>
+                    <p>Format meets industry standards and regulations</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="coa-cta">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready for Professional LCMS Testing?</h2>
+                <p>Get started with ZyntroTest's comprehensive analytical services. Contact us for a detailed quote and fast turnaround.</p>
+                <div class="cta-actions">
+                    <a href="contact.html" class="btn btn-primary btn-large">Request Quote</a>
+                    <a href="sample-submission.html" class="btn btn-outline btn-large">Submit Samples</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <div class="footer-logo">
+                        <a href="index.html" class="logo">
+                            <img src="images/zyntrotest-logo.svg" alt="ZyntroTest - Analytical Lab Solutions">
+                        </a>
+                    </div>
+                    <p>Advanced LCMS testing for peptides, supplements, and biotech research. Delivering precision results nationwide.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="services.html#peptide">Peptide Purity Testing</a></li>
+                        <li><a href="services.html#supplement">Supplement Screening</a></li>
+                        <li><a href="services.html#hemp">Cannabis/Hemp Testing</a></li>
+                        <li><a href="search.html">COA Search</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Company</h3>
+                    <ul>
+                        <li><a href="sample-submission.html">Submit Sample</a></li>
+                        <li><a href="blog.html">Blog</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Contact</h3>
+                    <p><a href="contact.html">Get in Touch</a></p>
+                    <p>College Station, Texas</p>
+                </div>
+            </div>
+            <div class="footer-badges">
+                <div class="badge">ISO 17025 in Progress</div>
+                <div class="badge">Nationwide Results in Days</div>
+                <div class="badge">Advanced DAD Technology</div>
+            </div>
+            <div class="footer-bottom">
+                <div class="footer-social">
+                    <a href="#" class="social-link">LinkedIn</a>
+                    <a href="#" class="social-link">X (Twitter)</a>
+                </div>
+                <div class="footer-legal">
+                    <p>&copy; 2024 ZyntroTest. All rights reserved. | <a href="#privacy">Privacy Policy</a> | <a href="#terms">Terms of Service</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+    <script>
+        // Initialize Supabase for COA search
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                if (!window.supabase) {
+                    const script = document.createElement('script');
+                    script.src = 'https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js';
+                    script.onload = () => {
+                        window.supabaseClient = window.supabase.createClient(
+                            'https://hctdzwmlkgnuxcuhjooe.supabase.co',
+                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
+                        );
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    window.supabaseClient = window.supabase.createClient(
+                        'https://hctdzwmlkgnuxcuhjooe.supabase.co',
+                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
+                    );
+                }
+            } catch (error) {
+                console.warn('Failed to initialize Supabase:', error);
+            }
+        });
+        
+        // COA Search Functionality
+        function searchCOA(event) {
+            event.preventDefault();
+            const coaNumber = document.getElementById('coa-number').value.trim();
+            
+            if (!coaNumber) {
+                showNotification('Please enter a COA number', 'error');
+                return;
+            }
+            
+            const button = event.target.querySelector('button[type="submit"]');
+            const originalText = button.textContent;
+            button.textContent = 'Searching...';
+            button.disabled = true;
+            
+            setTimeout(async () => {
+                try {
+                    const coa = await findCOAInDatabase(coaNumber);
+                    
+                    if (coa) {
+                        displayCOAResults(coa);
+                        showNotification('COA found successfully!', 'success');
+                    } else {
+                        showNotification('COA not found. Please check the number and try again.', 'error');
+                    }
+                } catch (error) {
+                    console.error('Search error:', error);
+                    showNotification('Error searching for COA. Please try again.', 'error');
+                }
+                
+                button.textContent = originalText;
+                button.disabled = false;
+            }, 1000);
+        }
+        
+        async function findCOAInDatabase(coaNumber) {
+            try {
+                if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient) {
+                    const { data, error } = await window.supabaseClient
+                        .from('coas')
+                        .select('*')
+                        .eq('id', coaNumber.toUpperCase())
+                        .single();
+                    
+                    if (!error && data) {
+                        return data;
+                    }
+                }
+            } catch (error) {
+                console.warn('Error loading from Supabase:', error);
+            }
+            
+            // Fallback demo database
+            const fallbackDatabase = {
+                'ZT-2024-001': {
+                    id: 'ZT-2024-001',
+                    client: 'BioVenture Research',
+                    compound: 'BPC-157',
+                    date: 'October 1, 2024',
+                    purity: '99.8%',
+                    type: 'Peptide Analysis',
+                    status: 'Complete',
+                    file_url: 'COAs/Zyntro BPC-157.pdf'
+                }
+            };
+            
+            return fallbackDatabase[coaNumber.toUpperCase()] || null;
+        }
+        
+        function displayCOAResults(coa) {
+            const resultsSection = document.getElementById('search-results');
+            const coaContent = document.getElementById('coa-content');
+            const pdfPreview = document.getElementById('pdf-preview-section');
+            const pdfViewer = document.getElementById('pdf-viewer');
+            
+            coaContent.innerHTML = generateCOAContent(coa);
+            resultsSection.style.display = 'block';
+            
+            // Show PDF preview if file URL exists
+            if (coa.file_url) {
+                pdfViewer.src = coa.file_url;
+                pdfPreview.style.display = 'block';
+            } else {
+                pdfPreview.style.display = 'none';
+            }
+            
+            resultsSection.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function generateCOAContent(coa) {
+            return `
+                <div class="coa-data-display">
+                    <div class="data-grid">
+                        <div class="data-item">
+                            <strong>COA ID:</strong>
+                            <span>${coa.id}</span>
+                        </div>
+                        <div class="data-item">
+                            <strong>Client:</strong>
+                            <span>${coa.client}</span>
+                        </div>
+                        <div class="data-item">
+                            <strong>Compound:</strong>
+                            <span>${coa.compound}</span>
+                        </div>
+                        <div class="data-item">
+                            <strong>Type:</strong>
+                            <span>${coa.type}</span>
+                        </div>
+                        <div class="data-item">
+                            <strong>Date:</strong>
+                            <span>${coa.date}</span>
+                        </div>
+                        <div class="data-item">
+                            <strong>Status:</strong>
+                            <span class="status-badge">${coa.status}</span>
+                        </div>
+                    </div>
+                    
+                    ${coa.purity ? `
+                        <div class="result-highlight">
+                            <strong>Purity:</strong> ${coa.purity}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="download-actions">
+                        ${coa.file_url ? `
+                            <a href="${coa.file_url}" target="_blank" class="btn btn-primary">Download PDF Report</a>
+                        ` : ''}
+                        <a href="contact.html" class="btn btn-outline">Contact for Questions</a>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+    
+    <style>
+        /* Clean search header */
+        .coa-header {
+            padding: 8rem 0 4rem;
+            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
+            text-align: center;
+        }
+
+        .coa-header-content h1 {
+            margin-bottom: 1rem;
+            color: var(--gray-900);
+            font-size: 3rem;
+        }
+
+        .coa-header-content p {
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+
+        .coa-search-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .form-group {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .coa-search-input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-lg);
+            font-size: 1.125rem;
+            transition: var(--transition-base);
+            background: var(--white);
+        }
+        
+        .coa-search-input:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        /* Results section */
+        .coa-results {
+            padding: var(--space-3xl) 0;
+            background: var(--white);
+        }
+        
+        .results-header h2 {
+            color: var(--gray-900);
+            margin-bottom: 2rem;
+        }
+        
+        .coa-data-display {
+            background: var(--gray-50);
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            border: 2px solid var(--gray-200);
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .data-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+            padding: 1rem;
+            background: var(--white);
+            border-radius: var(--radius-md);
+        }
+        
+        .data-item strong {
+            color: var(--gray-700);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .data-item span {
+            color: var(--gray-900);
+            font-size: 1.125rem;
+            font-weight: 500;
+        }
+        
+        .status-badge {
+            background: var(--secondary-green);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-full);
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            display: inline-block;
+        }
+        
+        .result-highlight {
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
+            color: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .download-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .pdf-preview-container {
+            background: var(--gray-50);
+            padding: 1rem;
+            border-radius: var(--radius-xl);
+        }
+        
+        /* Features section - cleaner layout */
+        .sample-coas-section {
+            padding: var(--space-3xl) 0;
+            background: var(--gray-50);
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 1.125rem;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .feature-card {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: var(--radius-xl);
+            text-align: center;
+            border: 2px solid var(--gray-200);
+            transition: var(--transition-base);
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: var(--primary-blue);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            color: var(--gray-900);
+            margin-bottom: 0.75rem;
+            font-size: 1.25rem;
+        }
+        
+        .feature-card p {
+            color: var(--gray-600);
+            line-height: 1.6;
+        }
+        
+        /* CTA Section */
+        .coa-cta {
+            padding: var(--space-3xl) 0;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
+            color: var(--white);
+            text-align: center;
+        }
+
+        .coa-cta h2 {
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .coa-cta p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .coa-cta .btn-primary {
+            background: var(--white);
+            color: var(--primary-blue);
+        }
+
+        .coa-cta .btn-outline {
+            background: transparent;
+            color: var(--white);
+            border-color: var(--white);
+        }
+
+        @media (max-width: 768px) {
+            .form-group {
+                flex-direction: column;
+            }
+            
+            .coa-header-content h1 {
+                font-size: 2rem;
+            }
+            
+            .data-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .features-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>
+
