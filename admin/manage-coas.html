@@ -690,11 +690,14 @@
                     await loadCOAs();
                     await updateStats();
                 } else {
-                    alert('Error updating COA: ' + (result.error || 'Unknown error'));
+                    const errorMsg = result.error || result.message || 'Unknown error';
+                    console.error('Update failed:', result);
+                    alert('Error updating COA: ' + errorMsg);
                 }
             } catch (error) {
                 console.error('Edit error:', error);
-                alert('Error updating COA: ' + error.message);
+                const errorMsg = error.message || error || 'Unknown error';
+                alert('Error updating COA: ' + errorMsg);
             } finally {
                 const submitBtn = event.target.querySelector('button[type="submit"]');
                 submitBtn.disabled = false;

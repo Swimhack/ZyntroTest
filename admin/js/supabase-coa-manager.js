@@ -212,14 +212,15 @@ const SupabaseCOAManager = {
                 .single();
             
             if (error) {
-                throw new Error(SupabaseUtils.handleError(error));
+                console.error('Supabase update error:', error);
+                return { success: false, error: SupabaseUtils.handleError(error) };
             }
             
             console.log('SupabaseCOAManager: Updated COA:', id);
-            return true;
+            return { success: true, data: data };
         } catch (error) {
             console.error('SupabaseCOAManager: Error updating COA:', error);
-            throw error;
+            return { success: false, error: error.message || 'Unknown error updating COA' };
         }
     },
     
