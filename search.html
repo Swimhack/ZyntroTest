@@ -319,21 +319,18 @@
             coaContent.innerHTML = generateCOAContent(coa, fileUrl);
             resultsSection.style.display = 'block';
             
-            // Show PDF preview if file URL exists
+            // Always show canvas preview
+            const screenshotUrl = getPDFScreenshotUrl(coa);
+            pdfScreenshot.src = screenshotUrl;
+            pdfPreview.style.display = 'block';
+            
+            // Only set up PDF viewer if file URL exists
             if (fileUrl) {
-                // Set up PDF viewer
                 pdfViewer.src = fileUrl;
-                
-                // Set up PDF screenshot preview
-                const screenshotUrl = getPDFScreenshotUrl(coa);
-                pdfScreenshot.src = screenshotUrl;
-                
-                pdfPreview.style.display = 'block';
-                
-                // Set up PDF toggle functionality
                 setupPDFToggle();
             } else {
-                pdfPreview.style.display = 'none';
+                // Hide the "View Full PDF" button if no PDF available
+                document.getElementById('view-full-pdf').style.display = 'none';
             }
             
             resultsSection.scrollIntoView({ behavior: 'smooth' });
@@ -433,34 +430,16 @@
         }
         
         function getProperFileUrl(coa) {
+            // ONLY use local file URLs - NO Supabase bucket access
             // Priority order:
-            // 1. fileUrl field (for Supabase data)
+            // 1. fileUrl field (direct URL)
             // 2. file_url field (legacy format)
-            // 3. file_name field (construct Supabase URL)
-            // 4. fileName field (construct local URL)
+            // 3. fileName field (local path)
             
-            let fileUrl = coa.fileUrl || coa.file_url;
+            let fileUrl = coa.fileUrl || coa.file_url || coa.fileName;
             
-            // If no URL but we have a file_name, try to construct Supabase public URL
-            if (!fileUrl && coa.file_name && window.supabaseClient) {
-                try {
-                    const { data } = window.supabaseClient.storage
-                        .from('coa-files')
-                        .getPublicUrl(coa.file_name);
-                    if (data && data.publicUrl) {
-                        fileUrl = data.publicUrl;
-                    }
-                } catch (error) {
-                    console.warn('Could not get Supabase public URL:', error);
-                }
-            }
-            
-            // Fallback to fileName if it exists and looks like a local path
-            if (!fileUrl && coa.fileName) {
-                fileUrl = coa.fileName;
-            }
-            
-            return fileUrl;
+            // If no URL, return null (will show canvas preview only)
+            return fileUrl || null;
         }
         
         function generateCOAContent(coa, fileUrl) {
