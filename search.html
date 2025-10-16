@@ -250,7 +250,6 @@
                     
                     if (coa) {
                         displayCOAResults(coa);
-                        showNotification('COA found successfully!', 'success');
                     } else {
                         showNotification('COA not found. Please check the number and try again.', 'error');
                     }
@@ -324,7 +323,26 @@
                 // Add error handler for iframe
                 pdfViewer.onerror = function() {
                     console.error('Failed to load PDF from:', fileUrl);
+                    pdfViewer.style.display = 'none';
                     pdfErrorMessage.style.display = 'block';
+                };
+                
+                // Detect JSON errors in iframe after loading
+                pdfViewer.onload = function() {
+                    try {
+                        const iframeContent = pdfViewer.contentDocument || pdfViewer.contentWindow.document;
+                        const text = iframeContent.body.innerText || '';
+                        
+                        // Check if iframe contains JSON error response
+                        if (text.includes('statusCode') || text.includes('Bucket not found')) {
+                            console.error('PDF iframe contains error response:', text);
+                            pdfViewer.style.display = 'none';
+                            pdfErrorMessage.style.display = 'block';
+                        }
+                    } catch (e) {
+                        // Cross-origin error is fine - means PDF loaded
+                        console.log('PDF loaded from different origin');
+                    }
                 };
             } else {
                 console.warn('No file URL found for COA:', coa.id);
