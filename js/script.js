@@ -104,6 +104,11 @@ document.addEventListener('DOMContentLoaded', function() {
     // Form validation and submission
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
+        // Skip forms that have their own custom handlers (like COA search)
+        if (form.classList.contains('search-form') || form.hasAttribute('onsubmit')) {
+            return;
+        }
+        
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             
