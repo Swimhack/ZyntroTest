@@ -259,63 +259,53 @@ const SupabaseCOAManager = {
     },
     
     /**
-     * Upload file to Supabase Storage
+     * Upload file locally (NO Supabase Storage - stores in COAs folder)
      * @param {File} file 
      * @param {string} fileName 
      * @returns {Promise<Object>}
      */
     async uploadFile(file, fileName) {
         try {
-            const client = SupabaseUtils.getClient();
+            // Note: Actual file upload must be handled by server/backend
+            // This function just returns the correct local path format
+            // Frontend cannot directly write to server filesystem
             
-            const { data, error } = await client.storage
-                .from(this.STORAGE_BUCKET)
-                .upload(fileName, file, {
-                    cacheControl: '3600',
-                    upsert: false
-                });
+            console.warn('File upload requires server-side handling.');
+            console.log('Expected file location: ./COAs/' + fileName);
+            console.log('Please manually place the PDF file in the COAs folder on your server.');
             
-            if (error) {
-                throw new Error(SupabaseUtils.handleError(error));
-            }
-            
-            // Get public URL
-            const { data: urlData } = client.storage
-                .from(this.STORAGE_BUCKET)
-                .getPublicUrl(fileName);
+            // Return the correct local path format for database storage
+            const localPath = './COAs/' + fileName;
             
             return {
-                path: data.path,
-                fullPath: data.fullPath,
-                publicUrl: urlData.publicUrl
+                path: localPath,
+                fullPath: localPath,
+                publicUrl: localPath,
+                localPath: localPath,
+                requiresManualUpload: true
             };
         } catch (error) {
-            console.error('SupabaseCOAManager: Error uploading file:', error);
+            console.error('SupabaseCOAManager: Error preparing file upload:', error);
             throw error;
         }
     },
     
     /**
-     * Delete file from Supabase Storage
+     * Delete file locally (NO Supabase Storage)
      * @param {string} fileName 
      * @returns {Promise<boolean>}
      */
     async deleteFile(fileName) {
         try {
-            const client = SupabaseUtils.getClient();
+            // Note: File deletion must be handled server-side
+            // Frontend cannot directly delete files from server filesystem
             
-            const { error } = await client.storage
-                .from(this.STORAGE_BUCKET)
-                .remove([fileName]);
-            
-            if (error) {
-                console.warn('SupabaseCOAManager: Error deleting file:', error);
-                return false;
-            }
+            console.warn('File deletion requires server-side handling.');
+            console.log('Please manually delete the file from ./COAs/' + fileName);
             
             return true;
         } catch (error) {
-            console.warn('SupabaseCOAManager: Error deleting file:', error);
+            console.warn('SupabaseCOAManager: Error preparing file deletion:', error);
             return false;
         }
     },

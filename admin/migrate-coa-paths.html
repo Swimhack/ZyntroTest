@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Migrate COA Paths | ZyntroTest Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .migration-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .migration-info {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        .migration-warning {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 1rem;
+            margin-bottom: 2rem;
+        }
+        .migration-results {
+            margin-top: 2rem;
+            padding: 1rem;
+            background: #f9fafb;
+            border-radius: 4px;
+        }
+        .coa-item {
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+        }
+        .coa-item.success {
+            border-left: 4px solid #10b981;
+        }
+        .coa-item.error {
+            border-left: 4px solid #ef4444;
+        }
+        .path-change {
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+        .path-change .old {
+            color: #ef4444;
+            text-decoration: line-through;
+        }
+        .path-change .new {
+            color: #10b981;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="migration-container">
+        <h1>COA Path Migration Tool</h1>
+        
+        <div class="migration-info">
+            <h3>📋 What This Tool Does</h3>
+            <p>This tool updates all COA records in your database to use the correct local PDF path format:</p>
+            <ul>
+                <li><strong>Old format:</strong> <code>COAs/filename.pdf</code></li>
+                <li><strong>New format:</strong> <code>./COAs/filename.pdf</code></li>
+            </ul>
+            <p>This ensures PDFs load correctly on the search page without Supabase bucket errors.</p>
+        </div>
+
+        <div class="migration-warning">
+            <h3>⚠️ Important Notes</h3>
+            <ul>
+                <li>This will update the <code>file_url</code> field for ALL COAs in your database</li>
+                <li>Make sure all PDF files are in the <code>./COAs/</code> folder on your server</li>
+                <li>Existing files: <code>Zyntro BPC-157.pdf</code>, <code>Zyntro MOTS-c COA.pdf</code>, <code>Zyntro PT-141 COA.pdf</code></li>
+            </ul>
+        </div>
+
+        <button id="run-migration" class="btn btn-primary" style="margin-bottom: 2rem;">Run Migration</button>
+        <button id="dry-run" class="btn btn-secondary" style="margin-bottom: 2rem; margin-left: 1rem;">Dry Run (Preview Only)</button>
+
+        <div id="migration-results" class="migration-results" style="display: none;">
+            <h3>Migration Results</h3>
+            <div id="results-content"></div>
+        </div>
+    </div>
+
+    <script src="js/supabase-config.js"></script>
+    <script>
+        let isDryRun = false;
+
+        document.getElementById('run-migration').addEventListener('click', () => runMigration(false));
+        document.getElementById('dry-run').addEventListener('click', () => runMigration(true));
+
+        async function runMigration(dryRun) {
+            isDryRun = dryRun;
+            const resultsDiv = document.getElementById('migration-results');
+            const resultsContent = document.getElementById('results-content');
+            
+            resultsDiv.style.display = 'block';
+            resultsContent.innerHTML = '<p>⏳ Processing...</p>';
+
+            try {
+                await window.initSupabase();
+                const client = window.supabaseClient;
+
+                // Get all COAs
+                const { data: coas, error } = await client
+                    .from('coas')
+                    .select('*');
+
+                if (error) {
+                    throw new Error(error.message);
+                }
+
+                if (!coas || coas.length === 0) {
+                    resultsContent.innerHTML = '<p>No COAs found in database.</p>';
+                    return;
+                }
+
+                const results = [];
+                let updatedCount = 0;
+                let skippedCount = 0;
+
+                for (const coa of coas) {
+                    const oldPath = coa.file_url;
+                    
+                    if (!oldPath) {
+                        results.push({
+                            id: coa.id,
+                            status: 'skipped',
+                            reason: 'No file_url present'
+                        });
+                        skippedCount++;
+                        continue;
+                    }
+
+                    // Check if already in correct format
+                    if (oldPath.startsWith('./COAs/')) {
+                        results.push({
+                            id: coa.id,
+                            status: 'skipped',
+                            reason: 'Already in correct format',
+                            path: oldPath
+                        });
+                        skippedCount++;
+                        continue;
+                    }
+
+                    // Generate new path
+                    let newPath = oldPath;
+                    if (oldPath.startsWith('COAs/')) {
+                        newPath = './' + oldPath;
+                    } else if (!oldPath.startsWith('./')) {
+                        // Handle other formats - assume it needs ./COAs/ prefix
+                        const fileName = oldPath.split('/').pop();
+                        newPath = './COAs/' + fileName;
+                    }
+
+                    // Update database (unless dry run)
+                    if (!isDryRun) {
+                        const { error: updateError } = await client
+                            .from('coas')
+                            .update({ file_url: newPath })
+                            .eq('id', coa.id);
+
+                        if (updateError) {
+                            results.push({
+                                id: coa.id,
+                                status: 'error',
+                                oldPath,
+                                newPath,
+                                error: updateError.message
+                            });
+                            continue;
+                        }
+                    }
+
+                    results.push({
+                        id: coa.id,
+                        status: 'success',
+                        oldPath,
+                        newPath
+                    });
+                    updatedCount++;
+                }
+
+                // Display results
+                displayResults(results, updatedCount, skippedCount, isDryRun);
+
+            } catch (error) {
+                resultsContent.innerHTML = `
+                    <div class="coa-item error">
+                        <strong>Error:</strong> ${error.message}
+                    </div>
+                `;
+            }
+        }
+
+        function displayResults(results, updatedCount, skippedCount, dryRun) {
+            const resultsContent = document.getElementById('results-content');
+            
+            let html = `
+                <div style="margin-bottom: 1rem;">
+                    <h4>${dryRun ? '🔍 DRY RUN - No Changes Made' : '✅ Migration Complete'}</h4>
+                    <p><strong>Updated:</strong> ${updatedCount} | <strong>Skipped:</strong> ${skippedCount}</p>
+                </div>
+            `;
+
+            results.forEach(result => {
+                if (result.status === 'success') {
+                    html += `
+                        <div class="coa-item success">
+                            <strong>COA ID:</strong> ${result.id}<br>
+                            <div class="path-change">
+                                <span class="old">${result.oldPath}</span> →
+                                <span class="new">${result.newPath}</span>
+                            </div>
+                        </div>
+                    `;
+                } else if (result.status === 'skipped') {
+                    html += `
+                        <div class="coa-item">
+                            <strong>COA ID:</strong> ${result.id}<br>
+                            <small>${result.reason}</small>
+                            ${result.path ? `<br><code>${result.path}</code>` : ''}
+                        </div>
+                    `;
+                } else if (result.status === 'error') {
+                    html += `
+                        <div class="coa-item error">
+                            <strong>COA ID:</strong> ${result.id}<br>
+                            <strong>Error:</strong> ${result.error}<br>
+                            <small>${result.oldPath} → ${result.newPath}</small>
+                        </div>
+                    `;
+                }
+            });
+
+            resultsContent.innerHTML = html;
+        }
+    </script>
+</body>
+</html>
+
