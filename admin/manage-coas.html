@@ -684,13 +684,13 @@
                 
                 // Update COA in database
                 const result = await SupabaseCOAManager.updateCOA(currentEditId, updateData);
-                if (result.success) {
+                if (result === true || result.success) {
                     alert('COA updated successfully!');
                     closeEditModal();
                     await loadCOAs();
                     await updateStats();
                 } else {
-                    alert('Error updating COA: ' + result.error);
+                    alert('Error updating COA: ' + (result.error || 'Unknown error'));
                 }
             } catch (error) {
                 console.error('Edit error:', error);
