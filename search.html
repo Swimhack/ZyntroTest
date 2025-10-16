@@ -340,11 +340,75 @@
         }
         
         function getPDFScreenshotUrl(coa) {
-            // Generate a screenshot URL based on COA data
-            // For demo purposes, we'll use a placeholder image that represents the COA
-            const baseUrl = 'https://via.placeholder.com/600x800/f8fafc/2563eb?text=';
-            const text = encodeURIComponent(`Certificate of Analysis\n\nCOA ID: ${coa.id}\nClient: ${coa.client}\nCompound: ${coa.compound}\nPurity: ${coa.purity}\nDate: ${coa.date}\nStatus: ${coa.status}\n\nZyntroTest Laboratory\nCollege Station, Texas`);
-            return baseUrl + text;
+            // Use a data URI to generate a simple certificate preview image
+            const canvas = document.createElement('canvas');
+            canvas.width = 600;
+            canvas.height = 800;
+            const ctx = canvas.getContext('2d');
+            
+            // Background
+            ctx.fillStyle = '#f8fafc';
+            ctx.fillRect(0, 0, 600, 800);
+            
+            // Header
+            ctx.fillStyle = '#2563eb';
+            ctx.fillRect(0, 0, 600, 100);
+            
+            // Title
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('Certificate of Analysis', 300, 50);
+            ctx.font = '16px Arial';
+            ctx.fillText('ZyntroTest Laboratory', 300, 75);
+            
+            // Content
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'bold 18px Arial';
+            ctx.textAlign = 'left';
+            const yStart = 140;
+            const lineHeight = 40;
+            
+            ctx.fillText('COA ID:', 50, yStart);
+            ctx.font = '16px Arial';
+            ctx.fillText(coa.id, 200, yStart);
+            
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText('Client:', 50, yStart + lineHeight);
+            ctx.font = '16px Arial';
+            ctx.fillText(coa.client, 200, yStart + lineHeight);
+            
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText('Compound:', 50, yStart + lineHeight * 2);
+            ctx.font = '16px Arial';
+            ctx.fillText(coa.compound, 200, yStart + lineHeight * 2);
+            
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText('Purity:', 50, yStart + lineHeight * 3);
+            ctx.font = 'bold 22px Arial';
+            ctx.fillStyle = '#10b981';
+            ctx.fillText(coa.purity || 'N/A', 200, yStart + lineHeight * 3);
+            
+            ctx.fillStyle = '#1e293b';
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText('Date:', 50, yStart + lineHeight * 4);
+            ctx.font = '16px Arial';
+            ctx.fillText(coa.date, 200, yStart + lineHeight * 4);
+            
+            ctx.font = 'bold 18px Arial';
+            ctx.fillText('Status:', 50, yStart + lineHeight * 5);
+            ctx.font = '16px Arial';
+            ctx.fillStyle = '#10b981';
+            ctx.fillText(coa.status, 200, yStart + lineHeight * 5);
+            
+            // Footer
+            ctx.fillStyle = '#64748b';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('College Station, Texas', 300, 750);
+            ctx.fillText('info@zyntrotest.com', 300, 775);
+            
+            return canvas.toDataURL('image/png');
         }
         
         function setupPDFToggle() {
