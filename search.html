@@ -289,7 +289,7 @@
                 console.warn('Error loading from Supabase:', error);
             }
             
-            // Fallback demo database
+            // Fallback demo database - USE ABSOLUTE LOCAL PATHS ONLY
             const fallbackDatabase = {
                 'ZT-2024-001': {
                     id: 'ZT-2024-001',
@@ -299,7 +299,7 @@
                     purity: '99.8%',
                     type: 'Peptide Analysis',
                     status: 'Complete',
-                    file_url: 'COAs/Zyntro BPC-157.pdf'
+                    file_url: './COAs/Zyntro BPC-157.pdf'
                 }
             };
             
