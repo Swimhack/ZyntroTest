@@ -264,6 +264,38 @@
         </div>
     </main>
     
+    <!-- View COA Modal -->
+    <div class="edit-modal" id="view-modal">
+        <div class="modal-content" style="max-width: 1000px;">
+            <div class="modal-header">
+                <h3 id="view-coa-title">View COA</h3>
+                <button class="modal-close" onclick="closeViewModal()">&times;</button>
+            </div>
+            
+            <!-- COA Data Display -->
+            <div id="view-coa-content" style="margin-bottom: 2rem;">
+                <!-- Data will be loaded here -->
+            </div>
+            
+            <!-- PDF Viewer -->
+            <div id="view-pdf-section" style="display: none; margin-top: 2rem; border-top: 1px solid #e5e7eb; padding-top: 2rem;">
+                <h4 style="margin-bottom: 1rem;">Certificate of Analysis PDF</h4>
+                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                    <button onclick="toggleViewPDF()" class="btn btn-primary" id="view-pdf-toggle-btn">Show PDF</button>
+                    <a id="view-pdf-download-link" class="btn btn-outline" style="text-decoration: none; display: none;">Download PDF</a>
+                </div>
+                <div id="view-pdf-viewer" style="display: none; border: 2px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden;">
+                    <iframe id="view-pdf-iframe" style="width: 100%; height: 600px; border: none;"></iframe>
+                </div>
+                <div id="view-pdf-error" style="display: none; text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem;">
+                    <p style="color: #92400e; margin: 0;">
+                        ⚠️ Unable to load PDF. The file may not be available yet.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
     <!-- Edit Modal -->
     <div class="edit-modal" id="edit-modal">
         <div class="modal-content">
@@ -429,6 +461,7 @@
                     <td>
                         <div class="table-actions">
                             <button onclick="editCOA('${coa.id}')" class="btn btn-primary btn-sm">Edit</button>
+                            <button onclick="viewCOA('${coa.id}')" class="btn btn-outline btn-sm">View</button>
                             <button onclick="deleteCOA('${coa.id}')" class="btn btn-danger btn-sm">Delete</button>
                             ${coa.fileUrl ? `<button onclick="downloadCOA('${coa.id}')" class="btn btn-outline btn-sm">Download</button>` : ''}
                         </div>
@@ -643,6 +676,59 @@
                 document.getElementById('peptide-count').textContent = '0';
                 document.getElementById('supplement-count').textContent = '0';
                 document.getElementById('biotech-count').textContent = '0';
+            }
+        }
+        
+        async function viewCOA(id) {
+            const coa = await SupabaseCOAManager.getCOAById(id);
+            if (!coa) {
+                alert('COA not found');
+                return;
+            }
+
+            document.getElementById('view-coa-title').textContent = `View COA: ${coa.id}`;
+            document.getElementById('view-coa-content').innerHTML = `
+                <p><strong>COA ID:</strong> ${coa.id}</p>
+                <p><strong>Client:</strong> ${coa.client}</p>
+                <p><strong>Compound:</strong> ${coa.compound}</p>
+                <p><strong>Type:</strong> ${coa.type}</p>
+                <p><strong>Date:</strong> ${coa.date ? new Date(coa.date).toLocaleDateString() : 'N/A'}</p>
+                <p><strong>Status:</strong> <span class="status-badge ${getStatusBadgeClass(coa.status)}">${coa.status}</span></p>
+                <p><strong>Purity:</strong> ${coa.purity || 'N/A'}</p>
+                <p><strong>Result:</strong> ${coa.result || 'N/A'}</p>
+                <p><strong>Notes:</strong> ${coa.notes || 'N/A'}</p>
+                <p><strong>Added:</strong> ${new Date(coa.dateAdded).toLocaleDateString()}</p>
+            `;
+
+            if (coa.fileUrl) {
+                document.getElementById('view-pdf-section').style.display = 'block';
+                document.getElementById('view-pdf-viewer').style.display = 'block';
+                document.getElementById('view-pdf-iframe').src = coa.fileUrl;
+                document.getElementById('view-pdf-download-link').href = coa.fileUrl;
+                document.getElementById('view-pdf-download-link').style.display = 'inline-block';
+                document.getElementById('view-pdf-error').style.display = 'none';
+            } else {
+                document.getElementById('view-pdf-section').style.display = 'none';
+                document.getElementById('view-pdf-viewer').style.display = 'none';
+                document.getElementById('view-pdf-download-link').style.display = 'none';
+                document.getElementById('view-pdf-error').style.display = 'block';
+            }
+
+            document.getElementById('view-modal').classList.add('show');
+        }
+
+        function closeViewModal() {
+            document.getElementById('view-modal').classList.remove('show');
+        }
+
+        function toggleViewPDF() {
+            const pdfViewer = document.getElementById('view-pdf-viewer');
+            const iframe = document.getElementById('view-pdf-iframe');
+            if (pdfViewer.style.display === 'none') {
+                pdfViewer.style.display = 'block';
+                iframe.src = iframe.src; // Force reload iframe content
+            } else {
+                pdfViewer.style.display = 'none';
             }
         }
         
