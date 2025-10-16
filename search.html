@@ -87,26 +87,15 @@
                 <div id="pdf-preview-section" style="margin-top: 2rem; display: none;">
                     <h3 style="margin-bottom: 1rem;">PDF Preview</h3>
                     <div class="pdf-preview-container">
-                        <!-- PDF Screenshot Preview -->
-                        <div class="pdf-screenshot-preview" style="text-align: center;">
-                            <img id="pdf-screenshot" src="" alt="PDF Report Preview" style="width: 100%; max-width: 600px; height: auto; border: 2px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); margin: 0 auto; display: block;">
-                            <div class="pdf-overlay-info">
-                                <p style="margin: 1rem 0; color: #6b7280; font-size: 0.875rem; text-align: center;">
-                                    📄 Certificate of Analysis Report Preview
-                                </p>
-                                <p style="margin: 0.5rem 0; color: #9ca3af; font-size: 0.75rem; text-align: center;">
-                                    Generated preview - click "View Full PDF" to see the complete document
-                                </p>
-                            </div>
-                        </div>
-                        <!-- Full PDF Viewer (Hidden by default) -->
-                        <div id="full-pdf-viewer" style="display: none;">
+                        <!-- Full PDF Viewer (Show by default) -->
+                        <div id="full-pdf-viewer" style="display: block;">
                             <iframe id="pdf-viewer" style="width: 100%; height: 800px; border: 2px solid #e5e7eb; border-radius: 0.5rem;"></iframe>
                         </div>
-                        <!-- PDF Actions -->
-                        <div class="pdf-actions" style="margin-top: 1rem; text-align: center;">
-                            <button id="view-full-pdf" class="btn btn-outline" style="margin-right: 0.5rem;">View Full PDF</button>
-                            <button id="hide-pdf" class="btn btn-secondary" style="display: none;">Hide PDF</button>
+                        <!-- Fallback message if PDF cannot load -->
+                        <div id="pdf-error-message" style="display: none; text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem; margin-top: 1rem;">
+                            <p style="color: #92400e; font-size: 1rem; margin: 0;">
+                                ⚠️ Unable to load PDF. Please contact <a href="mailto:info@zyntrotest.com" style="color: #2563eb; text-decoration: underline;">info@zyntrotest.com</a> for assistance.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -322,124 +311,28 @@
             coaContent.innerHTML = generateCOAContent(coa, fileUrl);
             resultsSection.style.display = 'block';
             
-            // Always show canvas preview
-            const screenshotUrl = getPDFScreenshotUrl(coa);
-            pdfScreenshot.src = screenshotUrl;
+            // Show PDF preview section
             pdfPreview.style.display = 'block';
             
-            // Only set up PDF viewer if file URL exists
+            // Load PDF directly if URL exists
+            const pdfErrorMessage = document.getElementById('pdf-error-message');
             if (fileUrl) {
+                console.log('Loading PDF from:', fileUrl);
                 pdfViewer.src = fileUrl;
-                setupPDFToggle();
-                document.getElementById('view-full-pdf').style.display = 'inline-block';
+                pdfErrorMessage.style.display = 'none';
+                
+                // Add error handler for iframe
+                pdfViewer.onerror = function() {
+                    console.error('Failed to load PDF from:', fileUrl);
+                    pdfErrorMessage.style.display = 'block';
+                };
             } else {
-                // Hide the "View Full PDF" button if no PDF available
-                document.getElementById('view-full-pdf').style.display = 'none';
-                // Show message that PDF is not available
-                const pdfActions = document.querySelector('.pdf-actions');
-                if (pdfActions && !pdfActions.querySelector('.no-pdf-message')) {
-                    const message = document.createElement('p');
-                    message.className = 'no-pdf-message';
-                    message.style.cssText = 'color: #f59e0b; font-size: 0.875rem; margin-top: 1rem; text-align: center;';
-                    message.innerHTML = '⚠️ PDF file not found in database record. Please contact <a href="mailto:info@zyntrotest.com" style="color: #2563eb; text-decoration: underline;">info@zyntrotest.com</a> for assistance.';
-                    pdfActions.appendChild(message);
-                }
+                console.warn('No file URL found for COA:', coa.id);
+                pdfViewer.style.display = 'none';
+                pdfErrorMessage.style.display = 'block';
             }
             
             resultsSection.scrollIntoView({ behavior: 'smooth' });
-        }
-        
-        function getPDFScreenshotUrl(coa) {
-            // Use a data URI to generate a simple certificate preview image
-            const canvas = document.createElement('canvas');
-            canvas.width = 600;
-            canvas.height = 800;
-            const ctx = canvas.getContext('2d');
-            
-            // Background
-            ctx.fillStyle = '#f8fafc';
-            ctx.fillRect(0, 0, 600, 800);
-            
-            // Header
-            ctx.fillStyle = '#2563eb';
-            ctx.fillRect(0, 0, 600, 100);
-            
-            // Title
-            ctx.fillStyle = '#ffffff';
-            ctx.font = 'bold 24px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('Certificate of Analysis', 300, 50);
-            ctx.font = '16px Arial';
-            ctx.fillText('ZyntroTest Laboratory', 300, 75);
-            
-            // Content
-            ctx.fillStyle = '#1e293b';
-            ctx.font = 'bold 18px Arial';
-            ctx.textAlign = 'left';
-            const yStart = 140;
-            const lineHeight = 40;
-            
-            ctx.fillText('COA ID:', 50, yStart);
-            ctx.font = '16px Arial';
-            ctx.fillText(coa.id, 200, yStart);
-            
-            ctx.font = 'bold 18px Arial';
-            ctx.fillText('Client:', 50, yStart + lineHeight);
-            ctx.font = '16px Arial';
-            ctx.fillText(coa.client, 200, yStart + lineHeight);
-            
-            ctx.font = 'bold 18px Arial';
-            ctx.fillText('Compound:', 50, yStart + lineHeight * 2);
-            ctx.font = '16px Arial';
-            ctx.fillText(coa.compound, 200, yStart + lineHeight * 2);
-            
-            ctx.font = 'bold 18px Arial';
-            ctx.fillText('Purity:', 50, yStart + lineHeight * 3);
-            ctx.font = 'bold 22px Arial';
-            ctx.fillStyle = '#10b981';
-            ctx.fillText(coa.purity || 'N/A', 200, yStart + lineHeight * 3);
-            
-            ctx.fillStyle = '#1e293b';
-            ctx.font = 'bold 18px Arial';
-            ctx.fillText('Date:', 50, yStart + lineHeight * 4);
-            ctx.font = '16px Arial';
-            ctx.fillText(coa.date, 200, yStart + lineHeight * 4);
-            
-            ctx.font = 'bold 18px Arial';
-            ctx.fillText('Status:', 50, yStart + lineHeight * 5);
-            ctx.font = '16px Arial';
-            ctx.fillStyle = '#10b981';
-            ctx.fillText(coa.status, 200, yStart + lineHeight * 5);
-            
-            // Footer
-            ctx.fillStyle = '#64748b';
-            ctx.font = '14px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText('College Station, Texas', 300, 750);
-            ctx.fillText('info@zyntrotest.com', 300, 775);
-            
-            return canvas.toDataURL('image/png');
-        }
-        
-        function setupPDFToggle() {
-            const viewFullBtn = document.getElementById('view-full-pdf');
-            const hideBtn = document.getElementById('hide-pdf');
-            const screenshotPreview = document.querySelector('.pdf-screenshot-preview');
-            const fullPdfViewer = document.getElementById('full-pdf-viewer');
-            
-            viewFullBtn.addEventListener('click', function() {
-                screenshotPreview.style.display = 'none';
-                fullPdfViewer.style.display = 'block';
-                viewFullBtn.style.display = 'none';
-                hideBtn.style.display = 'inline-block';
-            });
-            
-            hideBtn.addEventListener('click', function() {
-                screenshotPreview.style.display = 'block';
-                fullPdfViewer.style.display = 'none';
-                viewFullBtn.style.display = 'inline-block';
-                hideBtn.style.display = 'none';
-            });
         }
         
         function getProperFileUrl(coa) {
