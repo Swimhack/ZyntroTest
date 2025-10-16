@@ -368,6 +368,15 @@
                     <textarea id="edit-notes" rows="3"></textarea>
                 </div>
                 
+                <div class="form-group">
+                    <label for="edit-pdf-file">Update PDF File (optional)</label>
+                    <input type="file" id="edit-pdf-file" accept="application/pdf" style="padding: 0.5rem; border: 1px solid var(--gray-300); border-radius: var(--radius-md); width: 100%;">
+                    <small style="color: var(--gray-600); display: block; margin-top: 0.5rem;">
+                        <span id="current-file-name" style="display: none;">Current file: <strong id="current-filename-text"></strong></span>
+                        Leave empty to keep the current PDF. Select a new PDF to replace it.
+                    </small>
+                </div>
+                
                 <div class="form-actions">
                     <button type="button" onclick="closeEditModal()" class="btn btn-secondary">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -581,6 +590,17 @@
             document.getElementById('edit-result').value = coa.result || '';
             document.getElementById('edit-notes').value = coa.notes || '';
             
+            // Show current file name if PDF exists
+            if (coa.fileName) {
+                document.getElementById('current-file-name').style.display = 'block';
+                document.getElementById('current-filename-text').textContent = coa.fileName;
+            } else {
+                document.getElementById('current-file-name').style.display = 'none';
+            }
+            
+            // Clear file input
+            document.getElementById('edit-pdf-file').value = '';
+            
             // Show modal
             document.getElementById('edit-modal').classList.add('show');
         }
@@ -595,19 +615,74 @@
             
             if (!currentEditId) return;
             
-            const updateData = {
-                id: document.getElementById('edit-coa-id').value,
-                client: document.getElementById('edit-client').value,
-                compound: document.getElementById('edit-compound').value,
-                type: document.getElementById('edit-type').value,
-                status: document.getElementById('edit-status').value,
-                date: document.getElementById('edit-date').value,
-                purity: document.getElementById('edit-purity').value || null,
-                result: document.getElementById('edit-result').value || null,
-                notes: document.getElementById('edit-notes').value || ''
-            };
-            
             try {
+                const submitBtn = event.target.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Saving...';
+                
+                const updateData = {
+                    id: document.getElementById('edit-coa-id').value,
+                    client: document.getElementById('edit-client').value,
+                    compound: document.getElementById('edit-compound').value,
+                    type: document.getElementById('edit-type').value,
+                    status: document.getElementById('edit-status').value,
+                    date: document.getElementById('edit-date').value,
+                    purity: document.getElementById('edit-purity').value || null,
+                    result: document.getElementById('edit-result').value || null,
+                    notes: document.getElementById('edit-notes').value || ''
+                };
+                
+                // Handle PDF file upload if selected
+                const fileInput = document.getElementById('edit-pdf-file');
+                if (fileInput.files && fileInput.files.length > 0) {
+                    const file = fileInput.files[0];
+                    
+                    // Validate file
+                    if (file.type !== 'application/pdf') {
+                        alert('Please select a valid PDF file');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                        return;
+                    }
+                    
+                    if (file.size > 10 * 1024 * 1024) {
+                        alert('File size exceeds 10MB limit');
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = originalText;
+                        return;
+                    }
+                    
+                    console.log('Uploading new PDF:', file.name);
+                    
+                    // Upload new file to Supabase
+                    const timestamp = Date.now();
+                    const fileName = `${updateData.id}_${timestamp}.pdf`;
+                    const filePath = `coa-files/${fileName}`;
+                    
+                    const { data, error } = await window.supabaseClient.storage
+                        .from('coa-files')
+                        .upload(filePath, file, {
+                            contentType: 'application/pdf',
+                            upsert: true
+                        });
+                    
+                    if (error) {
+                        throw new Error('PDF upload failed: ' + error.message);
+                    }
+                    
+                    // Get public URL
+                    const { data: { publicUrl } } = window.supabaseClient.storage
+                        .from('coa-files')
+                        .getPublicUrl(filePath);
+                    
+                    updateData.fileUrl = publicUrl;
+                    updateData.fileName = fileName;
+                    
+                    console.log('PDF uploaded successfully:', fileName);
+                }
+                
+                // Update COA in database
                 const result = await SupabaseCOAManager.updateCOA(currentEditId, updateData);
                 if (result.success) {
                     alert('COA updated successfully!');
@@ -618,7 +693,12 @@
                     alert('Error updating COA: ' + result.error);
                 }
             } catch (error) {
+                console.error('Edit error:', error);
                 alert('Error updating COA: ' + error.message);
+            } finally {
+                const submitBtn = event.target.querySelector('button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Save Changes';
             }
         }
         
