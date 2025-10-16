@@ -341,7 +341,7 @@
                     const message = document.createElement('p');
                     message.className = 'no-pdf-message';
                     message.style.cssText = 'color: #f59e0b; font-size: 0.875rem; margin-top: 1rem; text-align: center;';
-                    message.innerHTML = '⚠️ Full PDF not available yet. Please run the <a href="/admin/migrate-coa-paths.html" style="color: #2563eb; text-decoration: underline;">database migration tool</a> to fix existing records.';
+                    message.innerHTML = '⚠️ PDF file not found in database record. Please contact <a href="mailto:info@zyntrotest.com" style="color: #2563eb; text-decoration: underline;">info@zyntrotest.com</a> for assistance.';
                     pdfActions.appendChild(message);
                 }
             }
@@ -443,30 +443,41 @@
         }
         
         function getProperFileUrl(coa) {
-            // ONLY use local file URLs - NO Supabase bucket access
+            // Accept BOTH local file paths AND Supabase storage URLs
             // Priority order:
-            // 1. fileUrl field (direct URL)
+            // 1. fileUrl field (direct URL or local path)
             // 2. file_url field (legacy format)
             // 3. fileName field (local path)
             
             let fileUrl = coa.fileUrl || coa.file_url || coa.fileName;
             
-            // VALIDATE: Only accept local file paths starting with ./COAs/ or COAs/
-            // Reject any Supabase storage URLs or absolute URLs
             if (fileUrl) {
-                // Fix path if it doesn't start with ./
+                // Case 1: Supabase storage URL (contains supabase)
+                if (fileUrl.includes('supabase.co') || fileUrl.includes('supabase.in')) {
+                    console.log('Using Supabase storage URL:', fileUrl);
+                    return fileUrl;
+                }
+                
+                // Case 2: Local file path - Fix path if it doesn't start with ./
                 if (fileUrl.startsWith('COAs/')) {
                     fileUrl = './' + fileUrl;
                 }
                 
-                // Only return if it's a valid local path
+                // Case 3: Validate local path format
                 if (fileUrl.startsWith('./COAs/') || fileUrl.startsWith('COAs/')) {
+                    console.log('Using local file path:', fileUrl);
                     return fileUrl;
                 }
                 
-                // If it's a Supabase URL or invalid, ignore it
-                console.warn('Invalid file URL detected, ignoring:', fileUrl);
-                return null;
+                // Case 4: Absolute URL (http/https)
+                if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+                    console.log('Using absolute URL:', fileUrl);
+                    return fileUrl;
+                }
+                
+                // Unknown format - log warning but try to use it anyway
+                console.warn('Unknown file URL format, attempting to use:', fileUrl);
+                return fileUrl;
             }
             
             return null;
