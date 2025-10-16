@@ -134,32 +134,20 @@
         <nav class="sidebar-nav">
             <div class="nav-item">
                 <a href="dashboard.html" class="nav-link">
-                    <span class="nav-icon">📊</span>
-                    Dashboard
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="upload-coa.html" class="nav-link">
-                    <span class="nav-icon">⬆️</span>
-                    Upload COA
+                    <span class="nav-icon">🏠</span>
+                    Admin Home
                 </a>
             </div>
             <div class="nav-item">
                 <a href="manage-coas.html" class="nav-link active">
                     <span class="nav-icon">📋</span>
-                    Manage COAs
+                    COAs
                 </a>
             </div>
             <div class="nav-item">
-                <a href="../coa-samples.html" class="nav-link" target="_blank">
+                <a href="../search.html" class="nav-link" target="_blank">
                     <span class="nav-icon">🔍</span>
                     Public Search
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="../index.html" class="nav-link" target="_blank">
-                    <span class="nav-icon">🌐</span>
-                    Main Website
                 </a>
             </div>
         </nav>
@@ -179,9 +167,12 @@
         </header>
         
         <div class="card">
-            <div class="card-header">
-                <h2 class="card-title">All COAs</h2>
-                <p class="card-description">View, edit, and manage your certificates of analysis</p>
+            <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h2 class="card-title">All COAs</h2>
+                    <p class="card-description">View, edit, and manage your certificates of analysis</p>
+                </div>
+                <button onclick="openAddCOAModal()" class="btn btn-primary">+ Add COA</button>
             </div>
             
             <!-- Search and Filters -->
@@ -569,6 +560,32 @@
             }
         }
         
+        function openAddCOAModal() {
+            currentEditId = null;
+            
+            // Clear all form fields
+            document.getElementById('edit-id').value = '';
+            document.getElementById('edit-coa-id').value = '';
+            document.getElementById('edit-client').value = '';
+            document.getElementById('edit-compound').value = '';
+            document.getElementById('edit-type').value = 'Peptide Analysis';
+            document.getElementById('edit-status').value = 'Complete';
+            document.getElementById('edit-date').value = '';
+            document.getElementById('edit-purity').value = '';
+            document.getElementById('edit-result').value = '';
+            document.getElementById('edit-notes').value = '';
+            document.getElementById('edit-pdf-file').value = '';
+            
+            // Hide current file info since this is a new COA
+            document.getElementById('current-file-name').style.display = 'none';
+            
+            // Update modal title
+            document.querySelector('#edit-modal .modal-header h3').textContent = 'Add New COA';
+            
+            // Show modal
+            document.getElementById('edit-modal').classList.add('show');
+        }
+        
         async function editCOA(id) {
             const coa = await SupabaseCOAManager.getCOAById(id);
             if (!coa) {
@@ -613,8 +630,6 @@
         async function handleEditSubmit(event) {
             event.preventDefault();
             
-            if (!currentEditId) return;
-            
             try {
                 const submitBtn = event.target.querySelector('button[type="submit"]');
                 const originalText = submitBtn.textContent;
@@ -632,6 +647,14 @@
                     result: document.getElementById('edit-result').value || null,
                     notes: document.getElementById('edit-notes').value || ''
                 };
+                
+                // Validate required fields
+                if (!updateData.id || !updateData.client || !updateData.compound) {
+                    alert('Please fill in all required fields (COA ID, Client, Compound)');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                    return;
+                }
                 
                 // Handle PDF file upload if selected
                 const fileInput = document.getElementById('edit-pdf-file');
@@ -653,7 +676,7 @@
                         return;
                     }
                     
-                    console.log('Uploading new PDF:', file.name);
+                    console.log('Uploading PDF:', file.name);
                     
                     // Upload new file to Supabase
                     const timestamp = Date.now();
@@ -682,22 +705,30 @@
                     console.log('PDF uploaded successfully:', fileName);
                 }
                 
-                // Update COA in database
-                const result = await SupabaseCOAManager.updateCOA(currentEditId, updateData);
+                // Add new COA or update existing
+                let result;
+                if (currentEditId) {
+                    // Update existing COA
+                    result = await SupabaseCOAManager.updateCOA(currentEditId, updateData);
+                } else {
+                    // Add new COA
+                    result = await SupabaseCOAManager.addCOA(updateData);
+                }
+                
                 if (result === true || result.success) {
-                    alert('COA updated successfully!');
+                    alert(currentEditId ? 'COA updated successfully!' : 'COA added successfully!');
                     closeEditModal();
                     await loadCOAs();
                     await updateStats();
                 } else {
                     const errorMsg = result.error || result.message || 'Unknown error';
-                    console.error('Update failed:', result);
-                    alert('Error updating COA: ' + errorMsg);
+                    console.error('Operation failed:', result);
+                    alert('Error: ' + errorMsg);
                 }
             } catch (error) {
                 console.error('Edit error:', error);
                 const errorMsg = error.message || error || 'Unknown error';
-                alert('Error updating COA: ' + errorMsg);
+                alert('Error: ' + errorMsg);
             } finally {
                 const submitBtn = event.target.querySelector('button[type="submit"]');
                 submitBtn.disabled = false;
