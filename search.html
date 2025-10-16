@@ -88,11 +88,14 @@
                     <h3 style="margin-bottom: 1rem;">PDF Preview</h3>
                     <div class="pdf-preview-container">
                         <!-- PDF Screenshot Preview -->
-                        <div class="pdf-screenshot-preview">
-                            <img id="pdf-screenshot" src="" alt="PDF Report Preview" style="width: 100%; max-width: 600px; height: auto; border: 2px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);">
+                        <div class="pdf-screenshot-preview" style="text-align: center;">
+                            <img id="pdf-screenshot" src="" alt="PDF Report Preview" style="width: 100%; max-width: 600px; height: auto; border: 2px solid #e5e7eb; border-radius: 0.5rem; box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1); margin: 0 auto; display: block;">
                             <div class="pdf-overlay-info">
                                 <p style="margin: 1rem 0; color: #6b7280; font-size: 0.875rem; text-align: center;">
                                     📄 Certificate of Analysis Report Preview
+                                </p>
+                                <p style="margin: 0.5rem 0; color: #9ca3af; font-size: 0.75rem; text-align: center;">
+                                    Generated preview - click "View Full PDF" to see the complete document
                                 </p>
                             </div>
                         </div>
@@ -328,9 +331,19 @@
             if (fileUrl) {
                 pdfViewer.src = fileUrl;
                 setupPDFToggle();
+                document.getElementById('view-full-pdf').style.display = 'inline-block';
             } else {
                 // Hide the "View Full PDF" button if no PDF available
                 document.getElementById('view-full-pdf').style.display = 'none';
+                // Show message that PDF is not available
+                const pdfActions = document.querySelector('.pdf-actions');
+                if (pdfActions && !pdfActions.querySelector('.no-pdf-message')) {
+                    const message = document.createElement('p');
+                    message.className = 'no-pdf-message';
+                    message.style.cssText = 'color: #f59e0b; font-size: 0.875rem; margin-top: 1rem; text-align: center;';
+                    message.innerHTML = '⚠️ Full PDF not available yet. Please run the <a href="/admin/migrate-coa-paths.html" style="color: #2563eb; text-decoration: underline;">database migration tool</a> to fix existing records.';
+                    pdfActions.appendChild(message);
+                }
             }
             
             resultsSection.scrollIntoView({ behavior: 'smooth' });
@@ -438,8 +451,25 @@
             
             let fileUrl = coa.fileUrl || coa.file_url || coa.fileName;
             
-            // If no URL, return null (will show canvas preview only)
-            return fileUrl || null;
+            // VALIDATE: Only accept local file paths starting with ./COAs/ or COAs/
+            // Reject any Supabase storage URLs or absolute URLs
+            if (fileUrl) {
+                // Fix path if it doesn't start with ./
+                if (fileUrl.startsWith('COAs/')) {
+                    fileUrl = './' + fileUrl;
+                }
+                
+                // Only return if it's a valid local path
+                if (fileUrl.startsWith('./COAs/') || fileUrl.startsWith('COAs/')) {
+                    return fileUrl;
+                }
+                
+                // If it's a Supabase URL or invalid, ignore it
+                console.warn('Invalid file URL detected, ignoring:', fileUrl);
+                return null;
+            }
+            
+            return null;
         }
         
         function generateCOAContent(coa, fileUrl) {
