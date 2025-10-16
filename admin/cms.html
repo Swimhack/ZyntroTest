@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Management System - ZyntroTest Admin</title>
+    <link rel="stylesheet" href="css/admin.css">
+    <style>
+        .cms-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .cms-header {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .cms-header h1 {
+            color: #1e293b;
+            margin: 0 0 0.5rem 0;
+            font-size: 2rem;
+        }
+        
+        .cms-header p {
+            color: #64748b;
+            margin: 0;
+        }
+        
+        .cms-tabs {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .tab-nav {
+            display: flex;
+            background: #f8fafc;
+            border-bottom: 1px solid #e2e8f0;
+            overflow-x: auto;
+        }
+        
+        .tab-button {
+            background: none;
+            border: none;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+            font-weight: 500;
+            transition: all 0.2s;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .tab-button:hover {
+            background: #f1f5f9;
+            color: #334155;
+        }
+        
+        .tab-button.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            background: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #374151;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1rem;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+        
+        .content-list {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+        }
+        
+        .content-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .content-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .content-item-info h4 {
+            margin: 0 0 0.25rem 0;
+            color: #1e293b;
+        }
+        
+        .content-item-info p {
+            margin: 0;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
+        .content-item-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn-small {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-badge.active {
+            background: #dcfce7;
+            color: #166534;
+        }
+        
+        .status-badge.draft {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-badge.inactive {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #3b82f6;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
+        .notification {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 6px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: #10b981;
+        }
+        
+        .notification.error {
+            background: #ef4444;
+        }
+        
+        .notification.info {
+            background: #3b82f6;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .json-editor {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            min-height: 200px;
+        }
+        
+        @media (max-width: 768px) {
+            .cms-container {
+                padding: 1rem;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .tab-nav {
+                flex-direction: column;
+            }
+            
+            .content-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .content-item-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>ZyntroTest Admin</h2>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="dashboard.html" class="nav-link">
+                <span class="nav-icon">🏠</span>
+                Admin Home
+            </a>
+            <a href="cms.html" class="nav-link active">
+                <span class="nav-icon">📝</span>
+                Content Management
+            </a>
+            <a href="manage-coas.html" class="nav-link">
+                <span class="nav-icon">📄</span>
+                COAs
+            </a>
+            <a href="../search.html" class="nav-link" target="_blank">
+                <span class="nav-icon">🔍</span>
+                Public Search
+            </a>
+            <a href="migrate-content.html" class="nav-link">
+                <span class="nav-icon">🔄</span>
+                Migrate Content
+            </a>
+            <a href="../index.html" class="nav-link" target="_blank">
+                <span class="nav-icon">🌐</span>
+                View Website
+            </a>
+            <a href="#" class="nav-link" onclick="logout()">
+                <span class="nav-icon">🚪</span>
+                Logout
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="cms-container">
+            <div class="cms-header">
+                <h1>📝 Content Management System</h1>
+                <p>Manage all website content including pages, services, blog posts, and settings</p>
+            </div>
+
+            <!-- Stats Overview -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="servicesCount">-</div>
+                    <div class="stat-label">Active Services</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="blogPostsCount">-</div>
+                    <div class="stat-label">Blog Posts</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="testimonialsCount">-</div>
+                    <div class="stat-label">Testimonials</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="pagesCount">-</div>
+                    <div class="stat-label">Pages</div>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <div class="cms-tabs">
+                <div class="tab-nav">
+                    <button class="tab-button active" data-tab="pages">📄 Pages</button>
+                    <button class="tab-button" data-tab="services">🔬 Services</button>
+                    <button class="tab-button" data-tab="blog">📰 Blog</button>
+                    <button class="tab-button" data-tab="testimonials">💬 Testimonials</button>
+                    <button class="tab-button" data-tab="settings">⚙️ Settings</button>
+                </div>
+
+                <!-- Pages Tab -->
+                <div class="tab-content active" id="pages-tab">
+                    <h3>Page Content Management</h3>
+                    <p>Edit hero sections and main content for each page.</p>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Select Page</label>
+                        <select class="form-select" id="pageSelector">
+                            <option value="index">Homepage (index)</option>
+                            <option value="services">Services</option>
+                            <option value="contact">Contact</option>
+                            <option value="blog">Blog</option>
+                            <option value="sample-submission">Sample Submission</option>
+                            <option value="search">COA Search</option>
+                        </select>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Page Title</label>
+                            <input type="text" class="form-input" id="pageTitle" placeholder="Enter page title">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Meta Description</label>
+                            <input type="text" class="form-input" id="metaDescription" placeholder="Enter meta description">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Hero Title</label>
+                            <input type="text" class="form-input" id="heroTitle" placeholder="Enter hero title">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hero Subtitle</label>
+                            <input type="text" class="form-input" id="heroSubtitle" placeholder="Enter hero subtitle">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Hero Image URL</label>
+                            <input type="text" class="form-input" id="heroImageUrl" placeholder="Enter image URL">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Hero Description</label>
+                            <textarea class="form-textarea" id="heroDescription" placeholder="Enter hero description"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn-primary" onclick="savePageContent()">
+                            <span class="loading" id="pageLoading" style="display: none;"></span>
+                            Save Page Content
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Services Tab -->
+                <div class="tab-content" id="services-tab">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3>Services Management</h3>
+                        <button class="btn-primary" onclick="showAddServiceModal()">Add New Service</button>
+                    </div>
+
+                    <div class="content-list" id="servicesList">
+                        <p>Loading services...</p>
+                    </div>
+                </div>
+
+                <!-- Blog Tab -->
+                <div class="tab-content" id="blog-tab">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3>Blog Management</h3>
+                        <button class="btn-primary" onclick="showAddBlogModal()">Add New Post</button>
+                    </div>
+
+                    <div class="content-list" id="blogList">
+                        <p>Loading blog posts...</p>
+                    </div>
+                </div>
+
+                <!-- Testimonials Tab -->
+                <div class="tab-content" id="testimonials-tab">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+                        <h3>Testimonials Management</h3>
+                        <button class="btn-primary" onclick="showAddTestimonialModal()">Add New Testimonial</button>
+                    </div>
+
+                    <div class="content-list" id="testimonialsList">
+                        <p>Loading testimonials...</p>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div class="tab-content" id="settings-tab">
+                    <h3>Site Settings</h3>
+                    <p>Manage global site settings and configuration.</p>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Site Name</label>
+                            <input type="text" class="form-input" id="siteName" placeholder="Enter site name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Site Tagline</label>
+                            <input type="text" class="form-input" id="siteTagline" placeholder="Enter site tagline">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Email</label>
+                            <input type="email" class="form-input" id="contactEmail" placeholder="Enter contact email">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Phone</label>
+                            <input type="tel" class="form-input" id="contactPhone" placeholder="Enter contact phone">
+                        </div>
+                        <div class="form-group full-width">
+                            <label class="form-label">Contact Address</label>
+                            <textarea class="form-textarea" id="contactAddress" placeholder="Enter contact address"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Logo URL</label>
+                            <input type="text" class="form-input" id="logoUrl" placeholder="Enter logo URL">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Footer Text</label>
+                            <input type="text" class="form-input" id="footerText" placeholder="Enter footer text">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn-primary" onclick="saveSiteSettings()">
+                            <span class="loading" id="settingsLoading" style="display: none;"></span>
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals will be added here by JavaScript -->
+    <div id="modalsContainer"></div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <script type="module" src="js/cms-manager.js"></script>
+</body>
+</html>

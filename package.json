@@ -1,0 +1,13 @@
+{
+  "name": "zyntrotest-site-testing",
+  "version": "1.0.0",
+  "description": "Automated testing for ZyntroTest.com",
+  "scripts": {
+    "test": "node test-site.js",
+    "test:headed": "node test-site.js"
+  },
+  "devDependencies": {
+    "playwright": "^1.40.0"
+  }
+}
+

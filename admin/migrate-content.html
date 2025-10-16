@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Content Migration Tool - ZyntroTest</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: #f8fafc;
+        }
+        .container {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+        .status {
+            padding: 1rem;
+            border-radius: 6px;
+            margin: 1rem 0;
+        }
+        .status.success {
+            background: #dcfce7;
+            border: 1px solid #16a34a;
+            color: #166534;
+        }
+        .status.error {
+            background: #fef2f2;
+            border: 1px solid #dc2626;
+            color: #991b1b;
+        }
+        .status.info {
+            background: #dbeafe;
+            border: 1px solid #2563eb;
+            color: #1e40af;
+        }
+        .btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 0.5rem;
+        }
+        .btn:hover {
+            background: #2563eb;
+        }
+        .btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+        }
+        .log {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+        }
+        .section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+        }
+        .section h3 {
+            margin-top: 0;
+            color: #374151;
+        }
+        .progress {
+            width: 100%;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #3b82f6;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 CMS Content Migration Tool</h1>
+        <p>This tool will extract existing content from your HTML files and populate the CMS database.</p>
+        
+        <div class="section">
+            <h3>Migration Steps</h3>
+            <ol>
+                <li>Extract hero sections from index.html</li>
+                <li>Extract services data from index.html and services.html</li>
+                <li>Extract testimonials from index.html</li>
+                <li>Extract page content from all pages</li>
+                <li>Extract blog posts from blog.html</li>
+                <li>Populate database with extracted content</li>
+            </ol>
+            
+            <button id="startMigration" class="btn">Start Content Migration</button>
+            <button id="clearLog" class="btn" style="background: #6b7280;">Clear Log</button>
+        </div>
+
+        <div class="progress" id="progressContainer" style="display: none;">
+            <div class="progress-bar" id="progressBar" style="width: 0%;"></div>
+        </div>
+
+        <div class="log" id="logContainer">Ready to migrate content...</div>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2';
+        import { supabaseConfig } from '../js/supabase-config.js';
+
+        const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey);
+        const logContainer = document.getElementById('logContainer');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressBar = document.getElementById('progressBar');
+        
+        let log = '';
+
+        function addLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            log += `[${timestamp}] ${message}\n`;
+            logContainer.textContent = log;
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        function updateProgress(percent) {
+            progressContainer.style.display = 'block';
+            progressBar.style.width = `${percent}%`;
+        }
+
+        // Content extraction functions
+        const contentExtractor = {
+            async extractIndexContent() {
+                addLog('📄 Extracting content from index.html...');
+                const response = await fetch('../index.html');
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const content = {
+                    hero: {
+                        title: doc.querySelector('.hero-title')?.textContent?.trim() || '',
+                        subtitle: doc.querySelector('.hero-subtitle')?.textContent?.trim() || '',
+                        description: doc.querySelector('.hero-description')?.textContent?.trim() || '',
+                        cta_primary_text: doc.querySelector('.hero-cta .btn-primary')?.textContent?.trim() || '',
+                        cta_primary_link: doc.querySelector('.hero-cta .btn-primary')?.getAttribute('href') || '',
+                        cta_secondary_text: doc.querySelector('.hero-cta .btn-outline')?.textContent?.trim() || '',
+                        cta_secondary_link: doc.querySelector('.hero-cta .btn-outline')?.getAttribute('href') || '',
+                        image_url: doc.querySelector('.hero-image img')?.getAttribute('src') || '',
+                        stats: Array.from(doc.querySelectorAll('.hero-stats .stat')).map(stat => ({
+                            number: stat.querySelector('.stat-number')?.textContent?.trim() || '',
+                            label: stat.querySelector('.stat-label')?.textContent?.trim() || ''
+                        }))
+                    },
+                    overview: doc.querySelector('.overview p')?.textContent?.trim() || '',
+                    services: Array.from(doc.querySelectorAll('.services-grid .service-card')).map(card => ({
+                        title: card.querySelector('h3')?.textContent?.trim() || '',
+                        description: card.querySelector('p')?.textContent?.trim() || '',
+                        price_range: card.querySelector('.price-range')?.textContent?.trim() || '',
+                        link: card.querySelector('.service-link')?.getAttribute('href') || ''
+                    })),
+                    testimonials: Array.from(doc.querySelectorAll('.testimonials .testimonial')).map(testimonial => ({
+                        content: testimonial.querySelector('.testimonial-content')?.textContent?.trim() || '',
+                        author_name: testimonial.querySelector('.testimonial-author')?.textContent?.trim() || '',
+                        company: testimonial.querySelector('.testimonial-company')?.textContent?.trim() || ''
+                    }))
+                };
+                
+                addLog(`✅ Extracted hero section, ${content.services.length} services, ${content.testimonials.length} testimonials`);
+                return content;
+            },
+
+            async extractServicesContent() {
+                addLog('📄 Extracting content from services.html...');
+                const response = await fetch('../services.html');
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const services = Array.from(doc.querySelectorAll('.service-detail-card')).map(card => {
+                    const title = card.querySelector('h2')?.textContent?.trim() || '';
+                    const slug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                    
+                    return {
+                        slug,
+                        title,
+                        subtitle: card.querySelector('.service-subtitle')?.textContent?.trim() || '',
+                        base_price: card.querySelector('.price-range-large')?.textContent?.trim() || '',
+                        description: card.querySelector('.service-description p')?.textContent?.trim() || '',
+                        features: Array.from(card.querySelectorAll('.service-description ul:first-of-type li')).map(li => li.textContent?.trim()).filter(Boolean),
+                        add_ons: Array.from(card.querySelectorAll('.service-description ul:last-of-type li')).map(li => {
+                            const text = li.textContent?.trim() || '';
+                            const match = text.match(/^(.+?):\s*(.+)$/);
+                            return match ? { name: match[1], price: match[2] } : { name: text, price: '' };
+                        }).filter(item => item.name)
+                    };
+                });
+
+                // Extract pricing table
+                const pricingRows = Array.from(doc.querySelectorAll('.pricing-table tbody tr')).map(row => ({
+                    test_type: row.querySelector('td[data-label="Test Type"]')?.textContent?.trim() || '',
+                    base_price: row.querySelector('td[data-label="Base Price"]')?.textContent?.trim() || '',
+                    add_ons: row.querySelector('td[data-label="Add-Ons"]')?.textContent?.trim() || ''
+                }));
+
+                addLog(`✅ Extracted ${services.length} detailed services and ${pricingRows.length} pricing items`);
+                return { services, pricingRows };
+            },
+
+            async extractPageContent(pageName) {
+                addLog(`📄 Extracting content from ${pageName}.html...`);
+                const response = await fetch(`../${pageName}.html`);
+                const html = await response.text();
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                
+                const content = {
+                    page_title: doc.querySelector('title')?.textContent?.trim() || '',
+                    meta_description: doc.querySelector('meta[name="description"]')?.getAttribute('content') || '',
+                    hero_title: doc.querySelector('.hero-title, .section-title, h1')?.textContent?.trim() || '',
+                    main_content: Array.from(doc.querySelectorAll('section')).map(section => ({
+                        class: section.className,
+                        content: section.textContent?.trim().substring(0, 500) || ''
+                    }))
+                };
+                
+                addLog(`✅ Extracted ${content.main_content.length} sections from ${pageName}`);
+                return content;
+            }
+        };
+
+        // Database population functions
+        const dbPopulator = {
+            async populateHeroSection(content) {
+                const { data, error } = await supabase
+                    .from('hero_sections')
+                    .upsert({
+                        page: 'index',
+                        title: content.title,
+                        subtitle: content.subtitle,
+                        description: content.description,
+                        cta_primary_text: content.cta_primary_text,
+                        cta_primary_link: content.cta_primary_link,
+                        cta_secondary_text: content.cta_secondary_text,
+                        cta_secondary_link: content.cta_secondary_link,
+                        image_url: content.image_url,
+                        stats: content.stats
+                    }, { onConflict: 'page' });
+
+                if (error) throw error;
+                return data;
+            },
+
+            async populateServices(services) {
+                const results = [];
+                for (let i = 0; i < services.length; i++) {
+                    const service = services[i];
+                    const { data, error } = await supabase
+                        .from('services')
+                        .upsert({
+                            slug: service.slug,
+                            title: service.title,
+                            subtitle: service.subtitle,
+                            description: service.description,
+                            base_price: service.base_price,
+                            features: service.features || [],
+                            add_ons: service.add_ons || [],
+                            display_order: i + 1,
+                            status: 'active'
+                        }, { onConflict: 'slug' });
+
+                    if (error) throw error;
+                    results.push(data);
+                }
+                return results;
+            },
+
+            async populateTestimonials(testimonials) {
+                const results = [];
+                for (let i = 0; i < testimonials.length; i++) {
+                    const testimonial = testimonials[i];
+                    if (!testimonial.content) continue;
+                    
+                    const { data, error } = await supabase
+                        .from('testimonials')
+                        .upsert({
+                            author_name: testimonial.author_name,
+                            company: testimonial.company,
+                            content: testimonial.content,
+                            rating: 5,
+                            display_order: i + 1,
+                            active: true
+                        });
+
+                    if (error) throw error;
+                    results.push(data);
+                }
+                return results;
+            },
+
+            async populatePageContent(pageName, content) {
+                const pageContent = [
+                    { section_key: 'page_title', content_type: 'text', content_value: content.page_title },
+                    { section_key: 'meta_description', content_type: 'text', content_value: content.meta_description },
+                    { section_key: 'hero_title', content_type: 'text', content_value: content.hero_title }
+                ];
+
+                const results = [];
+                for (const item of pageContent) {
+                    const { data, error } = await supabase
+                        .from('page_content')
+                        .upsert({
+                            page: pageName,
+                            section_key: item.section_key,
+                            content_type: item.content_type,
+                            content_value: item.content_value
+                        }, { onConflict: 'page,section_key' });
+
+                    if (error) throw error;
+                    results.push(data);
+                }
+                return results;
+            }
+        };
+
+        // Main migration function
+        async function startMigration() {
+            const startBtn = document.getElementById('startMigration');
+            startBtn.disabled = true;
+            startBtn.textContent = 'Migrating...';
+            
+            try {
+                addLog('🚀 Starting content migration...');
+                updateProgress(10);
+
+                // Step 1: Extract index content
+                const indexContent = await contentExtractor.extractIndexContent();
+                updateProgress(20);
+
+                // Step 2: Extract services content
+                const servicesContent = await contentExtractor.extractServicesContent();
+                updateProgress(30);
+
+                // Step 3: Populate hero section
+                addLog('💾 Saving hero section to database...');
+                await dbPopulator.populateHeroSection(indexContent.hero);
+                updateProgress(40);
+
+                // Step 4: Populate services
+                addLog('💾 Saving services to database...');
+                await dbPopulator.populateServices(servicesContent.services);
+                updateProgress(50);
+
+                // Step 5: Populate testimonials
+                addLog('💾 Saving testimonials to database...');
+                await dbPopulator.populateTestimonials(indexContent.testimonials);
+                updateProgress(60);
+
+                // Step 6: Extract and populate page content for all pages
+                const pages = ['services', 'contact', 'blog', 'sample-submission', 'search'];
+                for (let i = 0; i < pages.length; i++) {
+                    const page = pages[i];
+                    addLog(`📄 Processing ${page} page...`);
+                    const pageContent = await contentExtractor.extractPageContent(page);
+                    await dbPopulator.populatePageContent(page, pageContent);
+                    updateProgress(60 + (i + 1) * 8);
+                }
+
+                // Step 7: Populate index page content
+                await dbPopulator.populatePageContent('index', {
+                    page_title: 'Zyntro: Precision LCMS Testing Nationwide | Peptide & Supplement Analysis',
+                    meta_description: 'Zyntro provides high-accuracy LCMS testing for peptide purity, supplement safety, and biotech research. Texas-based lab with advanced Agilent LCMS and DAD technology.',
+                    hero_title: indexContent.hero.title
+                });
+
+                updateProgress(100);
+                addLog('✅ Content migration completed successfully!');
+                addLog('🎉 Your CMS is now populated with existing content.');
+                addLog('📝 You can now use the CMS interface to edit content.');
+
+            } catch (error) {
+                addLog(`❌ Migration failed: ${error.message}`, 'error');
+                console.error('Migration error:', error);
+            } finally {
+                startBtn.disabled = false;
+                startBtn.textContent = 'Start Content Migration';
+                updateProgress(0);
+                progressContainer.style.display = 'none';
+            }
+        }
+
+        // Event listeners
+        document.getElementById('startMigration').addEventListener('click', startMigration);
+        document.getElementById('clearLog').addEventListener('click', () => {
+            log = '';
+            logContainer.textContent = 'Log cleared. Ready for new migration...';
+        });
+
+        // Check if database is accessible
+        addLog('🔍 Checking database connection...');
+        supabase.from('site_settings').select('count').then(({ error }) => {
+            if (error) {
+                addLog(`❌ Database connection failed: ${error.message}`, 'error');
+                addLog('💡 Please run the database setup script first.', 'error');
+            } else {
+                addLog('✅ Database connection successful!');
+                addLog('🚀 Ready to start migration.');
+            }
+        });
+    </script>
+</body>
+</html>
