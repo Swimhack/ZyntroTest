@@ -150,6 +150,68 @@ const SupabaseUtils = {
             console.error('Database setup error:', error);
             return false;
         }
+    },
+    
+    /**
+     * Setup storage bucket for COA files
+     * @returns {Promise<boolean>}
+     */
+    async setupBucket() {
+        try {
+            const admin = this.getAdminClient();
+            
+            // List existing buckets
+            const { data: buckets, error: listError } = await admin.storage.listBuckets();
+            
+            if (listError) {
+                console.error('Error listing buckets:', listError);
+                return false;
+            }
+            
+            console.log('Existing buckets:', buckets);
+            
+            // Check if coa-files bucket exists
+            const bucketExists = buckets.some(b => b.name === 'coa-files');
+            
+            if (!bucketExists) {
+                console.log('Creating coa-files bucket...');
+                const { data, error } = await admin.storage.createBucket('coa-files', {
+                    public: true,
+                    fileSizeLimit: 10485760, // 10MB
+                    allowedMimeTypes: ['application/pdf']
+                });
+                
+                if (error) {
+                    console.error('Error creating bucket:', error);
+                    return false;
+                }
+                
+                console.log('Bucket created:', data);
+            } else {
+                console.log('Bucket coa-files already exists');
+                
+                // Check if it's public
+                const bucket = buckets.find(b => b.name === 'coa-files');
+                if (!bucket.public) {
+                    console.log('Making bucket public...');
+                    const { error } = await admin.storage.updateBucket('coa-files', {
+                        public: true
+                    });
+                    
+                    if (error) {
+                        console.error('Error making bucket public:', error);
+                        return false;
+                    }
+                    
+                    console.log('Bucket is now public');
+                }
+            }
+            
+            return true;
+        } catch (error) {
+            console.error('Bucket setup error:', error);
+            return false;
+        }
     }
 };
 

@@ -161,33 +161,24 @@
         <div class="card">
             <div class="card-header">
                 <h2 class="card-title">System Status</h2>
-                <p class="card-description">Current system health and configuration</p>
+                <p class="card-description">Check database and storage connectivity</p>
             </div>
             
-            <div style="display: grid; gap: 1rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: var(--gray-50); border-radius: var(--radius-md);">
-                    <div>
-                        <strong>Database Connection</strong>
-                        <div class="text-sm text-gray">Configuration file access</div>
-                    </div>
-                    <span class="status-badge success">Connected</span>
+            <div class="info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="status-item" style="padding: 1rem; background: #f0f9ff; border-radius: var(--radius-md); border: 1px solid #bfdbfe;">
+                    <h4 style="margin: 0 0 0.5rem 0;">Database Connection</h4>
+                    <div id="db-status" style="font-size: 0.875rem; color: #1f2937;">Checking...</div>
                 </div>
                 
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: var(--gray-50); border-radius: var(--radius-md);">
-                    <div>
-                        <strong>File Storage</strong>
-                        <div class="text-sm text-gray">PDF upload directory</div>
-                    </div>
-                    <span class="status-badge success">Available</span>
+                <div class="status-item" style="padding: 1rem; background: #f0f9ff; border-radius: var(--radius-md); border: 1px solid #bfdbfe;">
+                    <h4 style="margin: 0 0 0.5rem 0;">Storage Bucket</h4>
+                    <div id="bucket-status" style="font-size: 0.875rem; color: #1f2937;">Checking...</div>
                 </div>
-                
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background-color: var(--gray-50); border-radius: var(--radius-md);">
-                    <div>
-                        <strong>Public Search</strong>
-                        <div class="text-sm text-gray">Client-facing COA lookup</div>
-                    </div>
-                    <span class="status-badge success">Operational</span>
-                </div>
+            </div>
+            
+            <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+                <button onclick="setupBucket()" class="btn btn-primary">Setup Storage Bucket</button>
+                <button onclick="checkStatus()" class="btn btn-outline">Refresh Status</button>
             </div>
         </div>
     </main>
@@ -277,6 +268,55 @@
                 Auth.logout();
             }
         }
+        
+        async function checkStatus() {
+            // Check database status
+            try {
+                const isConnected = await SupabaseUtils.isConnected();
+                document.getElementById('db-status').innerHTML = isConnected ? 
+                    '<span style="color: #10b981;">✓ Connected</span>' : 
+                    '<span style="color: #ef4444;">✗ Disconnected</span>';
+            } catch (error) {
+                document.getElementById('db-status').innerHTML = '<span style="color: #ef4444;">✗ Error: ' + error.message + '</span>';
+            }
+            
+            // Check bucket status
+            try {
+                const bucketSetup = await SupabaseUtils.setupBucket();
+                document.getElementById('bucket-status').innerHTML = bucketSetup ? 
+                    '<span style="color: #10b981;">✓ Bucket Ready</span>' : 
+                    '<span style="color: #ef4444;">✗ Bucket Error</span>';
+            } catch (error) {
+                document.getElementById('bucket-status').innerHTML = '<span style="color: #ef4444;">✗ Error: ' + error.message + '</span>';
+            }
+        }
+        
+        async function setupBucket() {
+            try {
+                const btn = event.target;
+                btn.disabled = true;
+                btn.textContent = 'Setting up...';
+                
+                const success = await SupabaseUtils.setupBucket();
+                if (success) {
+                    alert('Storage bucket setup completed successfully!');
+                    checkStatus();
+                } else {
+                    alert('There was an error setting up the storage bucket. Check the console for details.');
+                }
+            } catch (error) {
+                console.error('Setup error:', error);
+                alert('Error: ' + error.message);
+            } finally {
+                event.target.disabled = false;
+                event.target.textContent = 'Setup Storage Bucket';
+            }
+        }
+        
+        // Run initial status check on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(checkStatus, 1000);
+        });
         
         function exportBackup() {
             try {

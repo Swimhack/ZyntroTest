@@ -484,6 +484,8 @@
                 const fileName = `${coaId}_${timestamp}.${fileExtension}`;
                 const filePath = `coa-files/${fileName}`;
                 
+                console.log('Uploading file to:', filePath);
+                
                 // Upload to Supabase Storage
                 const { data, error } = await window.supabaseClient.storage
                     .from('coa-files')
@@ -493,18 +495,28 @@
                     });
                 
                 if (error) {
+                    console.error('Upload error:', error);
                     throw error;
                 }
                 
-                // Get public URL
+                console.log('File uploaded successfully:', data);
+                
+                // Get public URL - this will work if bucket is public
+                // If not, we'll need to construct the URL manually
                 const { data: { publicUrl } } = window.supabaseClient.storage
                     .from('coa-files')
                     .getPublicUrl(filePath);
                 
+                console.log('Public URL:', publicUrl);
+                
+                // Also store the raw file path for alternative access
+                const rawUrl = `https://hctdzwmlkgnuxcuhjooe.supabase.co/storage/v1/object/public/coa-files/${filePath}`;
+                
                 return {
                     success: true,
                     file_path: filePath,
-                    file_url: publicUrl,
+                    file_url: publicUrl || rawUrl,
+                    raw_url: rawUrl,
                     data: data
                 };
                 
