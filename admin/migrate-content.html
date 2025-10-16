@@ -122,11 +122,9 @@
         <div class="log" id="logContainer">Ready to migrate content...</div>
     </div>
 
-    <script type="module">
-        import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2';
-        import { supabaseConfig } from '../js/supabase-config.js';
-
-        const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey);
+    <script src="js/supabase-config.js"></script>
+    <script>
+        let supabase = null;
         const logContainer = document.getElementById('logContainer');
         const progressContainer = document.getElementById('progressContainer');
         const progressBar = document.getElementById('progressBar');
@@ -346,6 +344,14 @@
             startBtn.disabled = true;
             startBtn.textContent = 'Migrating...';
             
+            // Check if Supabase is initialized
+            if (!supabase) {
+                addLog('❌ Supabase not initialized. Please refresh the page and try again.', 'error');
+                startBtn.disabled = false;
+                startBtn.textContent = 'Start Content Migration';
+                return;
+            }
+            
             try {
                 addLog('🚀 Starting content migration...');
                 updateProgress(10);
@@ -413,17 +419,42 @@
             logContainer.textContent = 'Log cleared. Ready for new migration...';
         });
 
-        // Check if database is accessible
-        addLog('🔍 Checking database connection...');
-        supabase.from('site_settings').select('count').then(({ error }) => {
-            if (error) {
-                addLog(`❌ Database connection failed: ${error.message}`, 'error');
-                addLog('💡 Please run the database setup script first.', 'error');
-            } else {
-                addLog('✅ Database connection successful!');
-                addLog('🚀 Ready to start migration.');
+        // Initialize Supabase and check connection
+        async function initializeSupabase() {
+            try {
+                addLog('🔍 Initializing Supabase connection...');
+                
+                // Wait for Supabase to be initialized
+                await new Promise((resolve) => {
+                    const checkSupabase = () => {
+                        if (window.supabaseClient) {
+                            supabase = window.supabaseClient;
+                            resolve();
+                        } else {
+                            setTimeout(checkSupabase, 100);
+                        }
+                    };
+                    checkSupabase();
+                });
+                
+                addLog('✅ Supabase client initialized');
+                
+                // Test database connection
+                const { error } = await supabase.from('site_settings').select('count').limit(1);
+                if (error) {
+                    addLog(`❌ Database connection failed: ${error.message}`, 'error');
+                    addLog('💡 Please run the database setup script first.', 'error');
+                } else {
+                    addLog('✅ Database connection successful!');
+                    addLog('🚀 Ready to start migration.');
+                }
+            } catch (error) {
+                addLog(`❌ Supabase initialization failed: ${error.message}`, 'error');
             }
-        });
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initializeSupabase);
     </script>
 </body>
 </html>
