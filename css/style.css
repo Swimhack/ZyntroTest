@@ -974,77 +974,7 @@ p {
     border-radius: var(--radius-sm);
 }
 
-/* COA PDF Preview Styles */
-.coa-pdf-preview {
-    margin-top: 1.5rem;
-    border: 2px solid var(--gray-200);
-    border-radius: var(--radius-xl);
-    background: var(--white);
-    box-shadow: var(--shadow-lg);
-    overflow: hidden;
-}
-
-.pdf-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
-    color: var(--white);
-    border-bottom: 1px solid var(--gray-200);
-}
-
-.pdf-header h4 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--white);
-}
-
-.pdf-header .btn {
-    background: rgba(255, 255, 255, 0.2);
-    color: var(--white);
-    border-color: rgba(255, 255, 255, 0.3);
-}
-
-.pdf-header .btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: var(--white);
-}
-
-.pdf-viewer {
-    position: relative;
-    min-height: 500px;
-    background: var(--gray-50);
-}
-
-.pdf-viewer iframe {
-    border: none;
-    width: 100%;
-    height: 500px;
-    background: var(--white);
-}
-
-.pdf-error {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 500px;
-    padding: 2rem;
-    text-align: center;
-    color: var(--gray-600);
-    background: var(--gray-50);
-}
-
-.pdf-error p {
-    margin: 0;
-    font-size: 0.875rem;
-}
-
-#show-pdf-btn {
-    margin-top: 0.75rem;
-    width: 100%;
-}
+/* COA PDF Preview Styles - Now using search page structure (inline styles) */
 
 /* COA Data Display Styles (Search Results Style) */
 .coa-data-display {

@@ -672,10 +672,9 @@ class CMSLoader {
     }
 
     setupPDFPreview(coa) {
-        const pdfIframe = document.getElementById('coa-pdf-iframe');
-        const pdfError = document.getElementById('coa-pdf-error');
-        const showBtn = document.getElementById('show-pdf-btn');
-        const pdfPreview = document.getElementById('coa-pdf-preview');
+        const pdfIframe = document.getElementById('pdf-viewer');
+        const pdfError = document.getElementById('pdf-error-message');
+        const pdfPreview = document.getElementById('pdf-preview-section');
 
         if (!pdfIframe || !coa.file_url) {
             console.log('CMS Loader: No PDF iframe or file URL available');
@@ -685,11 +684,6 @@ class CMSLoader {
         // Automatically show PDF preview on homepage (like search results)
         if (pdfPreview) {
             pdfPreview.style.display = 'block';
-        }
-
-        // Hide the show button since PDF is already visible
-        if (showBtn) {
-            showBtn.style.display = 'none';
         }
 
         // Set up iframe error handling
