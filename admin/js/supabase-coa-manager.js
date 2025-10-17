@@ -182,6 +182,28 @@ const SupabaseCOAManager = {
         try {
             const client = SupabaseUtils.getClient();
             
+            // Check if ID is being changed
+            const newId = updateData.id;
+            const isIdChanging = newId && newId !== id;
+            
+            if (isIdChanging) {
+                // Check if new ID already exists
+                const { data: existingCOA, error: checkError } = await client
+                    .from('coas')
+                    .select('id')
+                    .eq('id', newId)
+                    .single();
+                
+                if (checkError && checkError.code !== 'PGRST116') { // PGRST116 = no rows found
+                    console.error('Error checking for existing COA:', checkError);
+                    return { success: false, error: 'Error checking for existing COA ID' };
+                }
+                
+                if (existingCOA) {
+                    return { success: false, error: 'COA ID already exists. Please choose a different ID.' };
+                }
+            }
+            
             // Transform data for database
             const dbData = {
                 client: updateData.client,
@@ -196,6 +218,11 @@ const SupabaseCOAManager = {
                 file_size: updateData.fileSize || null,
                 file_url: updateData.fileUrl || null
             };
+            
+            // Include ID update if it's changing
+            if (isIdChanging) {
+                dbData.id = newId;
+            }
             
             // Remove undefined values
             Object.keys(dbData).forEach(key => {
@@ -216,7 +243,7 @@ const SupabaseCOAManager = {
                 return { success: false, error: SupabaseUtils.handleError(error) };
             }
             
-            console.log('SupabaseCOAManager: Updated COA:', id);
+            console.log('SupabaseCOAManager: Updated COA:', isIdChanging ? `${id} -> ${newId}` : id);
             return { success: true, data: data };
         } catch (error) {
             console.error('SupabaseCOAManager: Error updating COA:', error);

@@ -734,10 +734,19 @@
                 }
                 
                 if (result === true || result.success) {
+                    // Check if ID was changed
+                    const newId = document.getElementById('edit-coa-id').value;
+                    const idChanged = currentEditId && newId !== currentEditId;
+                    
                     alert(currentEditId ? 'COA updated successfully!' : 'COA added successfully!');
                     closeEditModal();
                     await loadCOAs();
                     await updateStats();
+                    
+                    // If ID was changed, show additional info
+                    if (idChanged) {
+                        console.log(`COA ID changed from ${currentEditId} to ${newId}`);
+                    }
                 } else {
                     const errorMsg = result.error || result.message || 'Unknown error';
                     console.error('Operation failed:', result);
