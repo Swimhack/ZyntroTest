@@ -2007,13 +2007,16 @@ p {
 }
 
 .newsletter-form .btn {
-    background: var(--white);
-    color: var(--primary-blue);
+    background: rgba(255, 255, 255, 0.2);
+    color: var(--white);
     white-space: nowrap;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
 }
 
 .newsletter-form .btn:hover {
-    background: var(--gray-100);
+    background: rgba(255, 255, 255, 0.3);
+    border-color: var(--white);
 }
 
 .newsletter-features {
