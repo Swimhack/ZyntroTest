@@ -699,7 +699,8 @@ class CMSLoader {
             if (pdfError) pdfError.style.display = 'none';
         };
 
-        // Load the PDF
+        // Load the PDF immediately
+        console.log('CMS Loader: Loading PDF:', coa.file_url);
         pdfIframe.src = coa.file_url;
         console.log('CMS Loader: PDF preview setup complete for:', coa.file_url);
     }
