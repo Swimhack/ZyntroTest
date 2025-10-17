@@ -112,6 +112,7 @@
             </ol>
             
             <button id="startMigration" class="btn">Start Content Migration</button>
+            <button id="showSetupScript" class="btn" style="background: #059669;">Show Database Setup Script</button>
             <button id="clearLog" class="btn" style="background: #6b7280;">Clear Log</button>
         </div>
 
@@ -414,10 +415,38 @@
 
         // Event listeners
         document.getElementById('startMigration').addEventListener('click', startMigration);
+        document.getElementById('showSetupScript').addEventListener('click', showSetupScript);
         document.getElementById('clearLog').addEventListener('click', () => {
             log = '';
             logContainer.textContent = 'Log cleared. Ready for new migration...';
         });
+
+        // Show setup script function
+        async function showSetupScript() {
+            try {
+                addLog('📄 Loading database setup script...');
+                const response = await fetch('setup-cms-database.sql');
+                const script = await response.text();
+                
+                addLog('📋 DATABASE SETUP SCRIPT:');
+                addLog('========================');
+                addLog('Copy this script and run it in your Supabase SQL Editor:');
+                addLog('');
+                addLog(script);
+                addLog('');
+                addLog('📋 SETUP INSTRUCTIONS:');
+                addLog('1. Go to https://supabase.com/dashboard');
+                addLog('2. Select your project');
+                addLog('3. Go to SQL Editor');
+                addLog('4. Paste the script above');
+                addLog('5. Click "Run"');
+                addLog('6. Refresh this page');
+                addLog('7. Click "Start Content Migration"');
+                
+            } catch (error) {
+                addLog(`❌ Failed to load setup script: ${error.message}`, 'error');
+            }
+        }
 
         // Initialize Supabase and check connection
         async function initializeSupabase() {
@@ -442,8 +471,18 @@
                 // Test database connection
                 const { error } = await supabase.from('site_settings').select('count').limit(1);
                 if (error) {
-                    addLog(`❌ Database connection failed: ${error.message}`, 'error');
-                    addLog('💡 Please run the database setup script first.', 'error');
+                    if (error.message.includes('Could not find the table') || error.message.includes('relation') || error.message.includes('does not exist')) {
+                        addLog('❌ CMS database tables not found', 'error');
+                        addLog('📋 SETUP REQUIRED:', 'error');
+                        addLog('1. Go to your Supabase dashboard', 'error');
+                        addLog('2. Navigate to SQL Editor', 'error');
+                        addLog('3. Copy and run the contents of admin/setup-cms-database.sql', 'error');
+                        addLog('4. Refresh this page after setup', 'error');
+                        addLog('5. Then click "Start Content Migration"', 'error');
+                    } else {
+                        addLog(`❌ Database connection failed: ${error.message}`, 'error');
+                        addLog('💡 Please check your Supabase configuration.', 'error');
+                    }
                 } else {
                     addLog('✅ Database connection successful!');
                     addLog('🚀 Ready to start migration.');
