@@ -275,31 +275,33 @@
     
     <!-- View COA Modal -->
     <div class="edit-modal" id="view-modal">
-        <div class="modal-content" style="max-width: 1000px;">
-            <div class="modal-header">
+        <div class="modal-content" style="max-width: 1000px; max-height: 90vh; display: flex; flex-direction: column;">
+            <div class="modal-header" style="position: sticky; top: 0; background: white; z-index: 10; border-bottom: 1px solid #e5e7eb; padding: 1rem 1.5rem; margin: -1.5rem -1.5rem 0 -1.5rem;">
                 <h3 id="view-coa-title">View COA</h3>
-                <button class="modal-close" onclick="closeViewModal()">&times;</button>
+                <button class="modal-close" onclick="closeViewModal()" style="position: absolute; top: 1rem; right: 1rem; background: #ef4444; color: white; border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">&times;</button>
             </div>
             
-            <!-- COA Data Display -->
-            <div id="view-coa-content" style="margin-bottom: 2rem;">
-                <!-- Data will be loaded here -->
-            </div>
-            
-            <!-- PDF Viewer -->
-            <div id="view-pdf-section" style="display: none; margin-top: 2rem; border-top: 1px solid #e5e7eb; padding-top: 2rem;">
-                <h4 style="margin-bottom: 1rem;">Certificate of Analysis PDF</h4>
-                <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
-                    <button onclick="toggleViewPDF()" class="btn btn-primary" id="view-pdf-toggle-btn">Show PDF</button>
-                    <a id="view-pdf-download-link" class="btn btn-outline" style="text-decoration: none; display: none;">Download PDF</a>
+            <div style="overflow-y: auto; flex: 1; padding: 1.5rem;">
+                <!-- COA Data Display -->
+                <div id="view-coa-content" style="margin-bottom: 2rem;">
+                    <!-- Data will be loaded here -->
                 </div>
-                <div id="view-pdf-viewer" style="display: none; border: 2px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden;">
-                    <iframe id="view-pdf-iframe" style="width: 100%; height: 600px; border: none;"></iframe>
-                </div>
-                <div id="view-pdf-error" style="display: none; text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem;">
-                    <p style="color: #92400e; margin: 0;">
-                        ⚠️ Unable to load PDF. The file may not be available yet.
-                    </p>
+                
+                <!-- PDF Viewer -->
+                <div id="view-pdf-section" style="display: none; margin-top: 2rem; border-top: 1px solid #e5e7eb; padding-top: 2rem;">
+                    <h4 style="margin-bottom: 1rem;">Certificate of Analysis PDF</h4>
+                    <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                        <button onclick="toggleViewPDF()" class="btn btn-primary" id="view-pdf-toggle-btn">Hide PDF</button>
+                        <a id="view-pdf-download-link" class="btn btn-outline" style="text-decoration: none; display: none;">Download PDF</a>
+                    </div>
+                    <div id="view-pdf-viewer" style="display: block; border: 2px solid #e5e7eb; border-radius: 0.5rem; overflow: hidden;">
+                        <iframe id="view-pdf-iframe" style="width: 100%; height: 600px; border: none;"></iframe>
+                    </div>
+                    <div id="view-pdf-error" style="display: none; text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem;">
+                        <p style="color: #92400e; margin: 0;">
+                            ⚠️ Unable to load PDF. The file may not be available yet.
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -843,11 +845,40 @@
 
             if (coa.fileUrl) {
                 document.getElementById('view-pdf-section').style.display = 'block';
+                // Show PDF by default instead of hiding it
                 document.getElementById('view-pdf-viewer').style.display = 'block';
                 document.getElementById('view-pdf-iframe').src = coa.fileUrl;
                 document.getElementById('view-pdf-download-link').href = coa.fileUrl;
                 document.getElementById('view-pdf-download-link').style.display = 'inline-block';
                 document.getElementById('view-pdf-error').style.display = 'none';
+                
+                // Update button text since PDF is now shown by default
+                document.getElementById('view-pdf-toggle-btn').textContent = 'Hide PDF';
+                
+                // Add error handling for iframe
+                document.getElementById('view-pdf-iframe').onerror = function() {
+                    console.error('Failed to load PDF:', coa.fileUrl);
+                    document.getElementById('view-pdf-viewer').style.display = 'none';
+                    document.getElementById('view-pdf-error').style.display = 'block';
+                };
+                
+                // Add load handler to detect JSON errors
+                document.getElementById('view-pdf-iframe').onload = function() {
+                    try {
+                        const iframeContent = this.contentDocument || this.contentWindow.document;
+                        const text = iframeContent.body.innerText || '';
+                        
+                        // Check if iframe contains JSON error response
+                        if (text.includes('statusCode') || text.includes('Bucket not found')) {
+                            console.error('PDF iframe contains error response:', text);
+                            document.getElementById('view-pdf-viewer').style.display = 'none';
+                            document.getElementById('view-pdf-error').style.display = 'block';
+                        }
+                    } catch (e) {
+                        // Cross-origin error is fine - means PDF loaded
+                        console.log('PDF loaded successfully');
+                    }
+                };
             } else {
                 document.getElementById('view-pdf-section').style.display = 'none';
                 document.getElementById('view-pdf-viewer').style.display = 'none';
@@ -864,12 +895,16 @@
 
         function toggleViewPDF() {
             const pdfViewer = document.getElementById('view-pdf-viewer');
+            const toggleBtn = document.getElementById('view-pdf-toggle-btn');
             const iframe = document.getElementById('view-pdf-iframe');
+            
             if (pdfViewer.style.display === 'none') {
                 pdfViewer.style.display = 'block';
+                toggleBtn.textContent = 'Hide PDF';
                 iframe.src = iframe.src; // Force reload iframe content
             } else {
                 pdfViewer.style.display = 'none';
+                toggleBtn.textContent = 'Show PDF';
             }
         }
         
