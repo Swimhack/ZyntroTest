@@ -217,42 +217,23 @@
             </div>
             <div class="coa-preview">
                 <h3>Sample Certificate of Analysis</h3>
-                <div class="coa-thumbnail">
-                    <div class="coa-sample">
-                        <div class="coa-header">
-                            <div class="coa-logo">Zyntro</div>
-                            <div class="coa-title">Certificate of Analysis</div>
-                        </div>
-                        <div class="coa-content">
-                            <div class="coa-line">Sample ID: ZT-2024-001</div>
-                            <div class="coa-line short">Compound: BPC-157</div>
-                            <div class="coa-line">Analysis Date: 2024-01-15</div>
-                            <div class="coa-data">
-                                <div class="data-row">
-                                    <div class="data-label">Purity:</div>
-                                    <div class="data-value">99.2%</div>
-                                </div>
-                                <div class="data-row">
-                                    <div class="data-label short">Impurities:</div>
-                                    <div class="data-value">&lt;0.1%</div>
-                                </div>
-                            </div>
+                <!-- COA Data Display (Search Results Style) -->
+                <div id="coa-content" class="coa-data-display">
+                    <!-- COA data will be loaded here by CMS loader -->
+                </div>
+                
+                <!-- PDF Preview Section -->
+                <div class="coa-pdf-preview" id="coa-pdf-preview" style="display: none;">
+                    <div class="pdf-header">
+                        <h4>Live PDF Preview</h4>
+                        <button class="btn btn-sm btn-outline" onclick="togglePDFPreview()">Hide PDF</button>
+                    </div>
+                    <div class="pdf-viewer">
+                        <iframe id="coa-pdf-iframe" src="" width="100%" height="500" frameborder="0"></iframe>
+                        <div id="coa-pdf-error" class="pdf-error" style="display: none;">
+                            <p>⚠️ Unable to load PDF preview. The file may not be available yet.</p>
                         </div>
                     </div>
-                    <!-- PDF Preview Section -->
-                    <div class="coa-pdf-preview" id="coa-pdf-preview" style="display: none;">
-                        <div class="pdf-header">
-                            <h4>Live PDF Preview</h4>
-                            <button class="btn btn-sm btn-outline" onclick="togglePDFPreview()">Hide PDF</button>
-                        </div>
-                        <div class="pdf-viewer">
-                            <iframe id="coa-pdf-iframe" src="" width="100%" height="500" frameborder="0"></iframe>
-                            <div id="coa-pdf-error" class="pdf-error" style="display: none;">
-                                <p>⚠️ Unable to load PDF preview. The file may not be available yet.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <button class="btn btn-outline btn-sm" id="show-pdf-btn" onclick="togglePDFPreview()" style="display: none;">View PDF Preview</button>
                 </div>
                 <a href="search.html" class="btn btn-outline">Search COAs</a>
             </div>

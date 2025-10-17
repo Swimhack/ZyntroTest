@@ -574,32 +574,101 @@ class CMSLoader {
     }
 
     applySampleCOA(coa) {
-        const coaThumbnail = document.querySelector('.coa-thumbnail .coa-sample');
-        if (!coaThumbnail) return;
+        const coaContent = document.getElementById('coa-content');
+        if (!coaContent) return;
 
-        // Update COA content with real data
-        const coaId = coaThumbnail.querySelector('.coa-line');
-        if (coaId) coaId.textContent = `Sample ID: ${coa.id}`;
-
-        const compoundLine = coaThumbnail.querySelectorAll('.coa-line')[1];
-        if (compoundLine) compoundLine.textContent = `Compound: ${coa.compound}`;
-
-        const analysisDate = coaThumbnail.querySelectorAll('.coa-line')[2];
-        if (analysisDate) {
-            const date = coa.analysis_date ? new Date(coa.analysis_date).toLocaleDateString() : 'N/A';
-            analysisDate.textContent = `Analysis Date: ${date}`;
-        }
-
-        // Update purity data
-        const purityValue = coaThumbnail.querySelector('.data-value');
-        if (purityValue && coa.purity) {
-            purityValue.textContent = `${coa.purity}%`;
-        }
+        // Generate the same content format as search results page
+        coaContent.innerHTML = this.generateCOAContent(coa);
 
         // Setup PDF preview
         this.setupPDFPreview(coa);
 
         console.log('CMS Loader: Sample COA updated with real data');
+    }
+
+    generateCOAContent(coa) {
+        // Format the test date properly - handle database format (YYYY-MM-DD)
+        const formatDate = (dateString) => {
+            if (!dateString) return 'N/A';
+            
+            // If it's already in MM/DD/YYYY format, return as is
+            if (dateString.includes('/')) {
+                return dateString;
+            }
+            
+            // If it's in YYYY-MM-DD format (database format), convert to MM/DD/YYYY
+            if (dateString.includes('-') && dateString.length === 10) {
+                try {
+                    const [year, month, day] = dateString.split('-');
+                    return `${month}/${day}/${year}`;
+                } catch (error) {
+                    return dateString;
+                }
+            }
+            
+            // Try to parse as a date and format
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) {
+                    return dateString; // Return original if not a valid date
+                }
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                });
+            } catch (error) {
+                return dateString;
+            }
+        };
+
+        return `
+            <div class="data-grid">
+                <div class="data-item">
+                    <strong>COA ID:</strong>
+                    <span>${coa.id || 'N/A'}</span>
+                </div>
+                <div class="data-item">
+                    <strong>Client:</strong>
+                    <span>${coa.client || 'N/A'}</span>
+                </div>
+                <div class="data-item">
+                    <strong>Compound:</strong>
+                    <span>${coa.compound || 'N/A'}</span>
+                </div>
+                <div class="data-item">
+                    <strong>Type:</strong>
+                    <span>${coa.analysis_type || 'N/A'}</span>
+                </div>
+                <div class="data-item">
+                    <strong>Date:</strong>
+                    <span>${formatDate(coa.test_date)}</span>
+                </div>
+                <div class="data-item">
+                    <strong>Status:</strong>
+                    <span class="status-badge">${coa.status || 'N/A'}</span>
+                </div>
+            </div>
+            
+            ${coa.purity ? `
+                <div class="result-highlight">
+                    <strong>Purity:</strong> ${coa.purity}%
+                </div>
+            ` : ''}
+            
+            ${coa.result ? `
+                <div class="result-highlight">
+                    <strong>Test Result:</strong> ${coa.result}
+                </div>
+            ` : ''}
+            
+            ${coa.notes ? `
+                <div class="notes-section">
+                    <strong>Notes:</strong>
+                    <p>${coa.notes}</p>
+                </div>
+            ` : ''}
+        `;
     }
 
     setupPDFPreview(coa) {
