@@ -269,16 +269,31 @@
         
         async function findCOAInDatabase(coaNumber) {
             try {
+                // Wait for Supabase client to be ready
+                let attempts = 0;
+                while (typeof window.supabaseClient === 'undefined' && attempts < 10) {
+                    await new Promise(resolve => setTimeout(resolve, 100));
+                    attempts++;
+                }
+                
                 if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient) {
+                    console.log('Searching database for COA:', coaNumber.toUpperCase());
                     const { data, error } = await window.supabaseClient
                         .from('coas')
                         .select('*')
                         .eq('id', coaNumber.toUpperCase())
                         .single();
                     
-                    if (!error && data) {
+                    if (error) {
+                        console.warn('Database query error:', error);
+                    } else if (data) {
+                        console.log('Found COA in database:', data);
                         return data;
+                    } else {
+                        console.log('No COA found in database for:', coaNumber.toUpperCase());
                     }
+                } else {
+                    console.warn('Supabase client not available after waiting');
                 }
             } catch (error) {
                 console.warn('Error loading from Supabase:', error);
@@ -302,6 +317,8 @@
         }
         
         function displayCOAResults(coa) {
+            console.log('Displaying COA results with data:', coa);
+            
             const resultsSection = document.getElementById('search-results');
             const coaContent = document.getElementById('coa-content');
             const pdfPreview = document.getElementById('pdf-preview-section');
@@ -399,11 +416,31 @@
         }
         
         function generateCOAContent(coa, fileUrl) {
-            // Format the test date properly
+            // Format the test date properly - handle database format (YYYY-MM-DD)
             const formatDate = (dateString) => {
                 if (!dateString) return 'N/A';
+                
+                // If it's already in MM/DD/YYYY format, return as is
+                if (dateString.includes('/')) {
+                    return dateString;
+                }
+                
+                // If it's in YYYY-MM-DD format (database format), convert to MM/DD/YYYY
+                if (dateString.includes('-') && dateString.length === 10) {
+                    try {
+                        const [year, month, day] = dateString.split('-');
+                        return `${month}/${day}/${year}`;
+                    } catch (error) {
+                        return dateString;
+                    }
+                }
+                
+                // Try to parse as a date and format
                 try {
                     const date = new Date(dateString);
+                    if (isNaN(date.getTime())) {
+                        return dateString; // Return original if not a valid date
+                    }
                     return date.toLocaleDateString('en-US', {
                         year: 'numeric',
                         month: '2-digit',
