@@ -553,13 +553,23 @@ class CMSLoader {
     async loadSampleCOA() {
         try {
             console.log('CMS Loader: Loading sample COA...');
+            console.log('CMS Loader: Supabase client available:', !!supabase);
+            
+            if (!supabase) {
+                console.error('CMS Loader: Supabase client not available');
+                return;
+            }
+            
             const { data: coas, error } = await supabase
                 .from('coas')
                 .select('*')
                 .order('created_at', { ascending: true })
                 .limit(1);
 
-            if (error) throw error;
+            if (error) {
+                console.error('CMS Loader: Database error:', error);
+                throw error;
+            }
 
             if (coas.length === 0) {
                 console.warn('CMS Loader: No COAs found for sample display');
@@ -567,18 +577,25 @@ class CMSLoader {
             }
 
             const coa = coas[0];
+            console.log('CMS Loader: Found COA for sample:', coa.id, coa.file_url);
             this.applySampleCOA(coa);
         } catch (error) {
-            console.warn('CMS Loader: Failed to load sample COA:', error);
+            console.error('CMS Loader: Failed to load sample COA:', error);
         }
     }
 
     applySampleCOA(coa) {
+        console.log('CMS Loader: Applying sample COA:', coa.id);
+        
         const coaContent = document.getElementById('coa-content');
-        if (!coaContent) return;
+        if (!coaContent) {
+            console.error('CMS Loader: coa-content element not found');
+            return;
+        }
 
         // Generate the same content format as search results page
         coaContent.innerHTML = this.generateCOAContent(coa);
+        console.log('CMS Loader: COA content generated');
 
         // Setup PDF preview
         this.setupPDFPreview(coa);
