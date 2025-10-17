@@ -399,38 +399,66 @@
         }
         
         function generateCOAContent(coa, fileUrl) {
+            // Format the test date properly
+            const formatDate = (dateString) => {
+                if (!dateString) return 'N/A';
+                try {
+                    const date = new Date(dateString);
+                    return date.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit'
+                    });
+                } catch (error) {
+                    return dateString;
+                }
+            };
+
             return `
                 <div class="coa-data-display">
                     <div class="data-grid">
                         <div class="data-item">
                             <strong>COA ID:</strong>
-                            <span>${coa.id}</span>
+                            <span>${coa.id || 'N/A'}</span>
                         </div>
                         <div class="data-item">
                             <strong>Client:</strong>
-                            <span>${coa.client}</span>
+                            <span>${coa.client || 'N/A'}</span>
                         </div>
                         <div class="data-item">
                             <strong>Compound:</strong>
-                            <span>${coa.compound}</span>
+                            <span>${coa.compound || 'N/A'}</span>
                         </div>
                         <div class="data-item">
                             <strong>Type:</strong>
-                            <span>${coa.type}</span>
+                            <span>${coa.analysis_type || 'N/A'}</span>
                         </div>
                         <div class="data-item">
                             <strong>Date:</strong>
-                            <span>${coa.date}</span>
+                            <span>${formatDate(coa.test_date)}</span>
                         </div>
                         <div class="data-item">
                             <strong>Status:</strong>
-                            <span class="status-badge">${coa.status}</span>
+                            <span class="status-badge">${coa.status || 'N/A'}</span>
                         </div>
                     </div>
                     
                     ${coa.purity ? `
                         <div class="result-highlight">
-                            <strong>Purity:</strong> ${coa.purity}
+                            <strong>Purity:</strong> ${coa.purity}%
+                        </div>
+                    ` : ''}
+                    
+                    ${coa.result ? `
+                        <div class="result-highlight">
+                            <strong>Test Result:</strong> ${coa.result}
+                        </div>
+                    ` : ''}
+                    
+                    ${coa.notes ? `
+                        <div class="notes-section">
+                            <strong>Notes:</strong>
+                            <p>${coa.notes}</p>
                         </div>
                     ` : ''}
                 </div>
@@ -549,6 +577,28 @@
             text-align: center;
             font-size: 1.5rem;
             margin-bottom: 2rem;
+        }
+        
+        .notes-section {
+            background: var(--white);
+            padding: 1.5rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--gray-200);
+            margin-top: 1rem;
+        }
+        
+        .notes-section strong {
+            color: var(--gray-900);
+            font-size: 1rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 0.75rem;
+        }
+        
+        .notes-section p {
+            color: var(--gray-700);
+            line-height: 1.6;
+            margin: 0;
         }
         
         .download-actions {
