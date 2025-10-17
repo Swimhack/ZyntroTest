@@ -67,8 +67,11 @@
                 <div class="coa-search-form">
                     <form class="search-form" onsubmit="searchCOA(event)">
                         <div class="form-group">
-                            <input type="text" id="coa-number" placeholder="Enter COA Number (e.g., ZT-2024-001)" required class="coa-search-input">
-                            <button type="submit" class="btn btn-primary btn-large">Search</button>
+                            <label for="coa-number" class="search-label">COA Number:</label>
+                            <div class="search-input-group">
+                                <input type="text" id="coa-number" placeholder="Enter COA Number (e.g., ZT-2024-001)" required class="coa-search-input">
+                                <button type="submit" class="btn btn-primary btn-large">Search</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -530,6 +533,18 @@
         
         .form-group {
             display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .search-label {
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 1rem;
+        }
+        
+        .search-input-group {
+            display: flex;
             gap: 1rem;
         }
         
@@ -543,10 +558,19 @@
             background: var(--white);
         }
         
+        .coa-search-input::placeholder {
+            color: var(--gray-500);
+            font-style: italic;
+        }
+        
         .coa-search-input:focus {
             outline: none;
             border-color: var(--primary-blue);
             box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .coa-search-input:focus::placeholder {
+            color: var(--gray-400);
         }
         
         /* Results section */
