@@ -10,7 +10,7 @@
     --primary-blue: #2563eb;
     --primary-dark: #1d4ed8;
     --primary-light: #3b82f6;
-    --secondary-green: #10b981;
+    --secondary-blue: #2563eb;
     --secondary-dark: #059669;
     --secondary-light: #34d399;
     --accent-teal: #06b6d4;
@@ -675,7 +675,7 @@ p {
     left: 0;
     right: 0;
     height: 4px;
-    background: linear-gradient(90deg, var(--primary-blue), var(--secondary-green));
+    background: linear-gradient(90deg, var(--primary-blue), var(--secondary-blue));
 }
 
 .service-card:hover {
@@ -699,7 +699,7 @@ p {
 }
 
 .service-card:nth-child(2) .service-icon {
-    background: linear-gradient(135deg, var(--secondary-green), var(--secondary-light));
+    background: linear-gradient(135deg, var(--secondary-blue), var(--secondary-light));
 }
 
 .service-card:nth-child(3) .service-icon {
@@ -852,7 +852,7 @@ p {
 }
 
 .shipping-badge {
-    background: linear-gradient(135deg, var(--secondary-green), var(--secondary-dark));
+    background: linear-gradient(135deg, var(--secondary-blue), var(--secondary-dark));
 }
 
 .shipping-badge .icon {
@@ -914,7 +914,7 @@ p {
 }
 
 .coa-header {
-    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
     color: var(--white);
     padding: 1rem;
     text-align: center;
@@ -1027,7 +1027,7 @@ p {
 /* CTA Section */
 .cta-section {
     padding: var(--space-3xl) 0;
-    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
     color: var(--white);
     text-align: center;
 }
@@ -1594,6 +1594,8 @@ p {
     display: block !important;
     margin: 0 !important;
     float: none !important;
+    border-radius: 1rem !important;
+    vertical-align: top !important;
 }
 
 .featured-article .featured-content {
@@ -1610,7 +1612,7 @@ p {
 .featured-article .featured-badge {
     display: inline-block !important;
     padding: 0.5rem 1.25rem !important;
-    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green)) !important;
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue)) !important;
     color: var(--white) !important;
     border-radius: 50px !important;
     font-size: 0.875rem !important;
@@ -1865,7 +1867,7 @@ p {
 /* Newsletter Section */
 .blog-newsletter {
     padding: var(--space-3xl) 0;
-    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
+    background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
     color: var(--white);
 }
 
