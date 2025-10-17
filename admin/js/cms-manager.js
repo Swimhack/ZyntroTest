@@ -410,6 +410,11 @@ class CMSManager {
             this.showNotification('Page content saved successfully!', 'success');
             this.loadStats(); // Refresh stats
 
+            // Clear frontend cache
+            if (window.opener && !window.opener.closed) {
+                window.opener.postMessage({ type: 'cms-content-updated', page: pageName }, '*');
+            }
+
         } catch (error) {
             this.showNotification('Error saving page content: ' + error.message, 'error');
         } finally {

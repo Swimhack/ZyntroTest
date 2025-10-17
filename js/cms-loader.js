@@ -267,14 +267,19 @@ class CMSLoader {
 
         // Update stats
         if (hero.stats && Array.isArray(hero.stats)) {
+            console.log('CMS Loader: Loading hero stats:', hero.stats);
             const statsContainer = document.querySelector('.hero-stats');
             if (statsContainer) {
+                console.log('CMS Loader: Stats container found, updating...');
                 statsContainer.innerHTML = hero.stats.map(stat => `
                     <div class="stat">
                         <div class="stat-number">${stat.number}</div>
                         <div class="stat-label">${stat.label}</div>
                     </div>
                 `).join('');
+                console.log('CMS Loader: Stats updated successfully');
+            } else {
+                console.warn('CMS Loader: Stats container not found');
             }
         }
     }
@@ -540,6 +545,7 @@ class CMSLoader {
 
     // Public method to refresh content
     refresh() {
+        console.log('CMS Loader: Manual refresh triggered, clearing cache...');
         this.cache.clear();
         this.loadPageContent();
     }
@@ -550,3 +556,15 @@ const cmsLoader = new CMSLoader();
 
 // Make it globally available
 window.cmsLoader = cmsLoader;
+
+// Make refresh accessible globally for testing
+window.refreshCMS = () => cmsLoader.refresh();
+
+// Listen for CMS updates
+window.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'cms-content-updated') {
+        console.log('CMS Loader: Content updated, clearing cache...');
+        cmsLoader.cache.clear();
+        cmsLoader.loadPageContent();
+    }
+});
