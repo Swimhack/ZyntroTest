@@ -710,3 +710,17 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+// PDF Preview Toggle Function for Homepage
+function togglePDFPreview() {
+    const pdfPreview = document.getElementById('coa-pdf-preview');
+    const showBtn = document.getElementById('show-pdf-btn');
+    
+    if (pdfPreview.style.display === 'none') {
+        pdfPreview.style.display = 'block';
+        showBtn.style.display = 'none';
+    } else {
+        pdfPreview.style.display = 'none';
+        showBtn.style.display = 'block';
+    }
+}

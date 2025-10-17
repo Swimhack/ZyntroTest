@@ -596,7 +596,43 @@ class CMSLoader {
             purityValue.textContent = `${coa.purity}%`;
         }
 
+        // Setup PDF preview
+        this.setupPDFPreview(coa);
+
         console.log('CMS Loader: Sample COA updated with real data');
+    }
+
+    setupPDFPreview(coa) {
+        const pdfIframe = document.getElementById('coa-pdf-iframe');
+        const pdfError = document.getElementById('coa-pdf-error');
+        const showBtn = document.getElementById('show-pdf-btn');
+
+        if (!pdfIframe || !coa.file_url) {
+            console.log('CMS Loader: No PDF iframe or file URL available');
+            return;
+        }
+
+        // Show the PDF preview button
+        if (showBtn) {
+            showBtn.style.display = 'block';
+        }
+
+        // Set up iframe error handling
+        pdfIframe.onerror = () => {
+            console.warn('CMS Loader: PDF failed to load');
+            pdfIframe.style.display = 'none';
+            if (pdfError) pdfError.style.display = 'block';
+        };
+
+        pdfIframe.onload = () => {
+            console.log('CMS Loader: PDF loaded successfully');
+            pdfIframe.style.display = 'block';
+            if (pdfError) pdfError.style.display = 'none';
+        };
+
+        // Load the PDF
+        pdfIframe.src = coa.file_url;
+        console.log('CMS Loader: PDF preview setup complete for:', coa.file_url);
     }
 
     // Public method to refresh content

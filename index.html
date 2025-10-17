@@ -239,6 +239,20 @@
                             </div>
                         </div>
                     </div>
+                    <!-- PDF Preview Section -->
+                    <div class="coa-pdf-preview" id="coa-pdf-preview" style="display: none;">
+                        <div class="pdf-header">
+                            <h4>PDF Preview</h4>
+                            <button class="btn btn-sm btn-outline" onclick="togglePDFPreview()">Hide PDF</button>
+                        </div>
+                        <div class="pdf-viewer">
+                            <iframe id="coa-pdf-iframe" src="" width="100%" height="400" frameborder="0"></iframe>
+                            <div id="coa-pdf-error" class="pdf-error" style="display: none;">
+                                <p>⚠️ Unable to load PDF preview. The file may not be available yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn btn-outline btn-sm" id="show-pdf-btn" onclick="togglePDFPreview()" style="display: none;">View PDF Preview</button>
                 </div>
                 <a href="search.html" class="btn btn-outline">Search COAs</a>
             </div>
