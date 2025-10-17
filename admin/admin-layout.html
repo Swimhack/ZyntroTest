@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{PAGE_TITLE}} | ZyntroTest Admin</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="description" content="ZyntroTest Admin Panel - {{PAGE_DESCRIPTION}}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/admin.css">
+    <link rel="icon" type="image/x-icon" href="../favicon.ico">
+    {{ADDITIONAL_HEAD}}
+</head>
+<body class="dashboard-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <img src="../images/zyntrotest-logo.svg" alt="ZyntroTest">
+            </div>
+            <h2>Admin Panel</h2>
+            <p>ZyntroTest Management</p>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <div class="nav-item">
+                <a href="dashboard.html" class="nav-link {{DASHBOARD_ACTIVE}}">
+                    <span class="nav-icon">🏠</span>
+                    Admin Home
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="manage-coas.html" class="nav-link {{COAS_ACTIVE}}">
+                    <span class="nav-icon">📋</span>
+                    COAs
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="cms.html" class="nav-link {{CMS_ACTIVE}}">
+                    <span class="nav-icon">📝</span>
+                    Content Management
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="migrate-content.html" class="nav-link {{MIGRATE_ACTIVE}}">
+                    <span class="nav-icon">🔄</span>
+                    Migration Tool
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="../search.html" class="nav-link" target="_blank">
+                    <span class="nav-icon">🔍</span>
+                    Public Search
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="../index.html" class="nav-link" target="_blank">
+                    <span class="nav-icon">🌐</span>
+                    View Website
+                </a>
+            </div>
+        </nav>
+        
+        <div class="sidebar-footer">
+            <div class="user-info">
+                <div class="user-avatar">
+                    <span>👤</span>
+                </div>
+                <div class="user-details">
+                    <span class="user-name">Admin User</span>
+                    <span class="user-role">Administrator</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="content-header">
+            <div class="header-left">
+                <h1>{{PAGE_HEADING}}</h1>
+                <p class="page-description">{{PAGE_DESCRIPTION}}</p>
+            </div>
+            <div class="header-right">
+                <div class="header-actions">
+                    {{HEADER_ACTIONS}}
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <div class="content-body">
+            {{PAGE_CONTENT}}
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="admin-footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <p>&copy; 2024 ZyntroTest. All rights reserved.</p>
+            </div>
+            <div class="footer-right">
+                <div class="footer-links">
+                    <a href="../privacy.html" target="_blank">Privacy Policy</a>
+                    <a href="../terms.html" target="_blank">Terms of Service</a>
+                    <a href="../contact.html" target="_blank">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Common Scripts -->
+    <script src="js/supabase-config.js"></script>
+    {{ADDITIONAL_SCRIPTS}}
+    
+    <!-- Notification System -->
+    <div id="notification" class="notification"></div>
+</body>
+</html>

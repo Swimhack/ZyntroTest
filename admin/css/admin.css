@@ -597,3 +597,65 @@ body {
 .text-warning { color: var(--warning-color); }
 .text-error { color: var(--error-color); }
 .text-gray { color: var(--gray-600); }
+
+/* Admin Footer Styles */
+.admin-footer {
+    background: white;
+    border-top: 1px solid var(--gray-200);
+    padding: 1rem 0;
+    margin-top: auto;
+    position: relative;
+    z-index: 100;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.footer-left p {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    margin: 0;
+}
+
+.footer-right {
+    display: flex;
+    align-items: center;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1.5rem;
+    align-items: center;
+}
+
+.footer-links a {
+    color: var(--gray-600);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+    color: var(--primary-color);
+}
+
+/* Responsive Footer */
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+        gap: 0.5rem;
+    }
+    
+    .footer-links {
+        gap: 1rem;
+    }
+}
