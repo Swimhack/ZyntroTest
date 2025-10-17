@@ -162,6 +162,28 @@ CREATE POLICY "Public read access to testimonials" ON testimonials
 CREATE POLICY "Public read access to blog_posts" ON blog_posts
     FOR SELECT TO anon USING (status = 'published');
 
+-- Admin policies for migration and CMS operations
+CREATE POLICY "Admin full access to site_settings" ON site_settings
+    FOR ALL TO anon USING (true);
+
+CREATE POLICY "Admin full access to page_content" ON page_content
+    FOR ALL TO anon USING (true);
+
+CREATE POLICY "Admin full access to services" ON services
+    FOR ALL TO anon USING (true);
+
+CREATE POLICY "Admin full access to pricing_items" ON pricing_items
+    FOR ALL TO anon USING (true);
+
+CREATE POLICY "Admin full access to hero_sections" ON hero_sections
+    FOR ALL TO anon USING (true);
+
+CREATE POLICY "Admin full access to testimonials" ON testimonials
+    FOR ALL TO anon USING (true);
+
+CREATE POLICY "Admin full access to blog_posts" ON blog_posts
+    FOR ALL TO anon USING (true);
+
 -- Insert default site settings
 INSERT INTO site_settings (key, value, category) VALUES
     ('site_name', 'ZyntroTest', 'general'),
