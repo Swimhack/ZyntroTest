@@ -199,6 +199,18 @@ class CMSManager {
             document.getElementById('heroSubtitle').value = heroSection?.subtitle || '';
             document.getElementById('heroDescription').value = heroSection?.description || '';
             document.getElementById('heroImageUrl').value = heroSection?.image_url || '';
+            
+            // Load hero stats if they exist
+            if (heroSection?.stats && Array.isArray(heroSection.stats)) {
+                heroSection.stats.forEach((stat, index) => {
+                    const statLabelId = `heroStatLabel${index + 1}`;
+                    const statValueId = `heroStatValue${index + 1}`;
+                    const statLabelEl = document.getElementById(statLabelId);
+                    const statValueEl = document.getElementById(statValueId);
+                    if (statLabelEl) statLabelEl.value = stat.label || '';
+                    if (statValueEl) statValueEl.value = stat.number || '';
+                });
+            }
 
             console.log('Form fields populated successfully');
 
@@ -368,6 +380,19 @@ class CMSManager {
 
             if (pageError) throw pageError;
 
+            // Collect hero stats
+            const heroStats = [];
+            for (let i = 1; i <= 3; i++) {
+                const labelEl = document.getElementById(`heroStatLabel${i}`);
+                const valueEl = document.getElementById(`heroStatValue${i}`);
+                if (labelEl && valueEl && labelEl.value && valueEl.value) {
+                    heroStats.push({
+                        label: labelEl.value,
+                        number: valueEl.value
+                    });
+                }
+            }
+
             // Save hero section
             const { error: heroError } = await supabase
                 .from('hero_sections')
@@ -376,7 +401,8 @@ class CMSManager {
                     title: heroTitle,
                     subtitle: heroSubtitle,
                     description: heroDescription,
-                    image_url: heroImageUrl
+                    image_url: heroImageUrl,
+                    stats: heroStats
                 }, { onConflict: 'page' });
 
             if (heroError) throw heroError;

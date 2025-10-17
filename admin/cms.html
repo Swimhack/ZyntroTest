@@ -196,6 +196,208 @@
             padding: 1.5rem;
         }
         
+        /* Media Management Styles */
+        .media-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .media-header h3 {
+            margin: 0;
+            color: #1e293b;
+        }
+        
+        .media-header p {
+            margin: 0.5rem 0 0 0;
+            color: #64748b;
+        }
+        
+        .media-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1rem;
+        }
+        
+        .media-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .media-item:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        .media-thumbnail {
+            position: relative;
+            aspect-ratio: 1;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+        
+        .media-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.3s;
+        }
+        
+        .media-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .media-item:hover .media-overlay {
+            opacity: 1;
+        }
+        
+        .media-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem;
+            cursor: pointer;
+            color: #374151;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .media-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+        
+        .media-edit:hover {
+            color: #3b82f6;
+        }
+        
+        .media-delete:hover {
+            color: #ef4444;
+        }
+        
+        .media-copy:hover {
+            color: #10b981;
+        }
+        
+        .media-info {
+            padding: 1rem;
+        }
+        
+        .media-title {
+            font-weight: 500;
+            color: #1e293b;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .media-meta {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+        
+        /* Media Modal */
+        .media-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .media-modal-content {
+            background: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        
+        .media-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .media-modal-header h3 {
+            margin: 0;
+            color: #1e293b;
+        }
+        
+        .media-modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #64748b;
+            padding: 0.25rem;
+        }
+        
+        .media-modal-close:hover {
+            color: #1e293b;
+        }
+        
+        .media-modal-body {
+            padding: 1.5rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 1.5rem;
+        }
+        
+        .form-section {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .form-section h4 {
+            margin: 0 0 0.5rem 0;
+            color: #1e293b;
+            font-size: 1.125rem;
+        }
+        
+        .form-section p {
+            margin: 0 0 1.5rem 0;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+        
         .content-item {
             background: white;
             border: 1px solid #e2e8f0;
@@ -434,6 +636,7 @@
                     <button class="tab-button" data-tab="services">🔬 Services</button>
                     <button class="tab-button" data-tab="blog">📰 Blog</button>
                     <button class="tab-button" data-tab="testimonials">💬 Testimonials</button>
+                    <button class="tab-button" data-tab="media">🖼️ Media</button>
                     <button class="tab-button" data-tab="settings">⚙️ Settings</button>
                 </div>
 
@@ -481,6 +684,38 @@
                         </div>
                     </div>
 
+                    <!-- Hero Stats Section -->
+                    <div class="form-section">
+                        <h4>Hero Statistics</h4>
+                        <p>Edit the statistics displayed in the hero section (e.g., 99.8% Accuracy, 3-5 Days TAT, 500+ Tests/Month)</p>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="form-label">Stat 1 Label</label>
+                                <input type="text" class="form-input" id="heroStatLabel1" placeholder="e.g., Accuracy">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stat 1 Value</label>
+                                <input type="text" class="form-input" id="heroStatValue1" placeholder="e.g., 99.8%">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stat 2 Label</label>
+                                <input type="text" class="form-input" id="heroStatLabel2" placeholder="e.g., Days TAT">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stat 2 Value</label>
+                                <input type="text" class="form-input" id="heroStatValue2" placeholder="e.g., 3-5">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stat 3 Label</label>
+                                <input type="text" class="form-input" id="heroStatLabel3" placeholder="e.g., Tests/Month">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Stat 3 Value</label>
+                                <input type="text" class="form-input" id="heroStatValue3" placeholder="e.g., 500+">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group">
                         <button class="btn-primary" onclick="savePageContent()">
                             <span class="loading" id="pageLoading" style="display: none;"></span>
@@ -522,6 +757,19 @@
 
                     <div class="content-list" id="testimonialsList">
                         <p>Loading testimonials...</p>
+                    </div>
+                </div>
+
+                <!-- Media Tab -->
+                <div class="tab-content" id="media-tab">
+                    <div class="media-header">
+                        <h3>Media Library</h3>
+                        <p>Upload and manage images for your website content.</p>
+                        <button id="uploadMediaBtn" class="btn btn-primary">+ Upload Media</button>
+                    </div>
+                    
+                    <div id="mediaGrid" class="media-grid">
+                        <p>Loading media...</p>
                     </div>
                 </div>
 
@@ -580,6 +828,7 @@
 
     <script src="js/supabase-config.js"></script>
     <script src="js/cms-manager.js"></script>
+    <script src="js/media-manager.js"></script>
 
     <!-- Footer -->
     <footer class="admin-footer">
