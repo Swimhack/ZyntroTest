@@ -1,7 +1,14 @@
-import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2';
-import { supabaseConfig } from './supabase-config.js';
+// Wait for Supabase to be available
+let supabase = null;
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey);
+// Initialize Supabase when available
+const initSupabase = () => {
+    if (window.supabaseClient) {
+        supabase = window.supabaseClient;
+        return true;
+    }
+    return false;
+};
 
 class CMSLoader {
     constructor() {
@@ -11,11 +18,20 @@ class CMSLoader {
     }
 
     init() {
+        // Wait for Supabase to be available
+        const checkSupabase = () => {
+            if (initSupabase()) {
+                this.loadPageContent();
+            } else {
+                setTimeout(checkSupabase, 100);
+            }
+        };
+        
         // Load content when DOM is ready
         if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => this.loadPageContent());
+            document.addEventListener('DOMContentLoaded', checkSupabase);
         } else {
-            this.loadPageContent();
+            checkSupabase();
         }
     }
 
