@@ -18,9 +18,12 @@ class CMSLoader {
     }
 
     init() {
+        console.log('CMS Loader: Initializing...');
+        
         // Wait for Supabase to be available
         const checkSupabase = () => {
             if (initSupabase()) {
+                console.log('CMS Loader: Supabase client found, loading content...');
                 this.loadPageContent();
             } else {
                 setTimeout(checkSupabase, 100);
@@ -29,17 +32,24 @@ class CMSLoader {
         
         // Load content when DOM is ready
         if (document.readyState === 'loading') {
+            console.log('CMS Loader: Waiting for DOM ready...');
             document.addEventListener('DOMContentLoaded', checkSupabase);
         } else {
+            console.log('CMS Loader: DOM already ready, checking Supabase...');
             checkSupabase();
         }
     }
 
     async loadPageContent() {
         const currentPage = this.getCurrentPageName();
-        if (!currentPage) return;
+        console.log('CMS Loader: Loading content for page:', currentPage);
+        if (!currentPage) {
+            console.warn('CMS Loader: No current page found');
+            return;
+        }
 
         try {
+            console.log('CMS Loader: Starting parallel content loading...');
             await Promise.all([
                 this.loadSiteSettings(),
                 this.loadPageSpecificContent(currentPage),
@@ -48,6 +58,7 @@ class CMSLoader {
                 this.loadTestimonials(),
                 this.loadBlogPosts()
             ]);
+            console.log('CMS Loader: All content loaded successfully');
         } catch (error) {
             console.warn('CMS content loading failed, using fallback content:', error);
         }

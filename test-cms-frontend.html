@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Frontend Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+        .hero-title { font-size: 2rem; font-weight: bold; margin: 10px 0; }
+        .hero-subtitle { font-size: 1.2rem; color: #666; margin: 10px 0; }
+        .hero-description { margin: 10px 0; }
+        .hero-stats { display: flex; gap: 20px; margin: 20px 0; }
+        .stat { text-align: center; }
+        .stat-number { font-size: 1.5rem; font-weight: bold; color: #2563eb; }
+        .stat-label { font-size: 0.9rem; color: #666; }
+    </style>
+</head>
+<body>
+    <h1>CMS Frontend Loading Test</h1>
+    
+    <div class="test-section">
+        <h2>Page Content Test</h2>
+        <div id="pageContentStatus" class="status info">Loading page content...</div>
+        <div id="pageContentData"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Hero Section Test</h2>
+        <div id="heroSectionStatus" class="status info">Loading hero section...</div>
+        <div class="hero-title" id="heroTitle">Loading...</div>
+        <div class="hero-subtitle" id="heroSubtitle">Loading...</div>
+        <div class="hero-description" id="heroDescription">Loading...</div>
+        <div class="hero-stats" id="heroStats">Loading stats...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Services Test</h2>
+        <div id="servicesStatus" class="status info">Loading services...</div>
+        <div id="servicesData"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Console Log</h2>
+        <div id="consoleLog" style="background: #f8f9fa; padding: 10px; border: 1px solid #dee2e6; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- Load Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="admin/js/supabase-config.js"></script>
+    <script src="js/cms-loader.js"></script>
+    
+    <script>
+        // Override console.log to show in the page
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logDiv = document.getElementById('consoleLog');
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            logDiv.textContent += 'LOG: ' + args.join(' ') + '\n';
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            logDiv.textContent += 'ERROR: ' + args.join(' ') + '\n';
+        };
+        
+        // Test the CMS loader
+        async function testCMSLoader() {
+            console.log('Starting CMS loader test...');
+            
+            try {
+                // Wait for Supabase to be ready
+                await new Promise((resolve) => {
+                    let attempts = 0;
+                    const checkSupabase = () => {
+                        attempts++;
+                        if (window.supabaseClient) {
+                            console.log('Supabase client found');
+                            resolve();
+                        } else if (attempts >= 50) {
+                            console.error('Supabase client not found after maximum attempts');
+                            return;
+                        } else {
+                            console.log(`Waiting for Supabase client... (attempt ${attempts})`);
+                            setTimeout(checkSupabase, 100);
+                        }
+                    };
+                    checkSupabase();
+                });
+                
+                // Test loading page content
+                console.log('Testing page content loading...');
+                const { data: pageContent, error: pageError } = await window.supabaseClient
+                    .from('page_content')
+                    .select('*')
+                    .eq('page', 'index');
+                
+                if (pageError) {
+                    console.error('Page content error:', pageError);
+                    document.getElementById('pageContentStatus').innerHTML = '<div class="error">❌ Page content load failed</div>';
+                } else {
+                    console.log('Page content loaded:', pageContent?.length || 0, 'records');
+                    document.getElementById('pageContentStatus').innerHTML = '<div class="success">✅ Page content loaded successfully</div>';
+                    
+                    const pageContentDiv = document.getElementById('pageContentData');
+                    if (pageContent && pageContent.length > 0) {
+                        pageContentDiv.innerHTML = pageContent.map(item => 
+                            `<div style="margin: 5px 0; padding: 5px; background: #f8f9fa; border-radius: 4px;">
+                                <strong>${item.section_key}:</strong> ${item.content_value}
+                            </div>`
+                        ).join('');
+                    } else {
+                        pageContentDiv.innerHTML = '<div class="error">No page content found</div>';
+                    }
+                }
+                
+                // Test loading hero section
+                console.log('Testing hero section loading...');
+                const { data: heroSection, error: heroError } = await window.supabaseClient
+                    .from('hero_sections')
+                    .select('*')
+                    .eq('page', 'index')
+                    .single();
+                
+                if (heroError) {
+                    console.error('Hero section error:', heroError);
+                    document.getElementById('heroSectionStatus').innerHTML = '<div class="error">❌ Hero section load failed</div>';
+                } else {
+                    console.log('Hero section loaded:', heroSection ? 'Yes' : 'No');
+                    document.getElementById('heroSectionStatus').innerHTML = '<div class="success">✅ Hero section loaded successfully</div>';
+                    
+                    if (heroSection) {
+                        document.getElementById('heroTitle').textContent = heroSection.title || 'No title';
+                        document.getElementById('heroSubtitle').textContent = heroSection.subtitle || 'No subtitle';
+                        document.getElementById('heroDescription').textContent = heroSection.description || 'No description';
+                        
+                        if (heroSection.stats && Array.isArray(heroSection.stats)) {
+                            document.getElementById('heroStats').innerHTML = heroSection.stats.map(stat => 
+                                `<div class="stat">
+                                    <div class="stat-number">${stat.number}</div>
+                                    <div class="stat-label">${stat.label}</div>
+                                </div>`
+                            ).join('');
+                        }
+                    } else {
+                        document.getElementById('heroTitle').textContent = 'No hero section found';
+                    }
+                }
+                
+                // Test loading services
+                console.log('Testing services loading...');
+                const { data: services, error: servicesError } = await window.supabaseClient
+                    .from('services')
+                    .select('*');
+                
+                if (servicesError) {
+                    console.error('Services error:', servicesError);
+                    document.getElementById('servicesStatus').innerHTML = '<div class="error">❌ Services load failed</div>';
+                } else {
+                    console.log('Services loaded:', services?.length || 0, 'records');
+                    document.getElementById('servicesStatus').innerHTML = '<div class="success">✅ Services loaded successfully</div>';
+                    
+                    const servicesDiv = document.getElementById('servicesData');
+                    if (services && services.length > 0) {
+                        servicesDiv.innerHTML = services.map(service => 
+                            `<div style="margin: 10px 0; padding: 10px; background: #f8f9fa; border-radius: 4px;">
+                                <strong>${service.title}</strong><br>
+                                <small>${service.subtitle}</small><br>
+                                <small>Price: ${service.base_price}</small>
+                            </div>`
+                        ).join('');
+                    } else {
+                        servicesDiv.innerHTML = '<div class="error">No services found</div>';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Test failed:', error);
+            }
+        }
+        
+        // Start the test when page loads
+        document.addEventListener('DOMContentLoaded', testCMSLoader);
+    </script>
+</body>
+</html>
