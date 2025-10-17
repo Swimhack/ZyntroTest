@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMS Interface Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        .form-group { margin: 10px 0; }
+        .form-label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-input { width: 100%; padding: 8px; border: 1px solid #ccc; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    </style>
+</head>
+<body>
+    <h1>CMS Interface Test</h1>
+    
+    <div class="test-section">
+        <h2>Database Connection Test</h2>
+        <div id="connectionStatus" class="status">Testing connection...</div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Page Content Test</h2>
+        <div class="form-group">
+            <label class="form-label">Page Title</label>
+            <input type="text" class="form-input" id="pageTitle" placeholder="Enter page title">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Meta Description</label>
+            <input type="text" class="form-input" id="metaDescription" placeholder="Enter meta description">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Hero Title</label>
+            <input type="text" class="form-input" id="heroTitle" placeholder="Enter hero title">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Hero Subtitle</label>
+            <input type="text" class="form-input" id="heroSubtitle" placeholder="Enter hero subtitle">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Hero Description</label>
+            <textarea class="form-input" id="heroDescription" placeholder="Enter hero description"></textarea>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Hero Image URL</label>
+            <input type="text" class="form-input" id="heroImageUrl" placeholder="Enter hero image URL">
+        </div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Services Test</h2>
+        <div id="servicesList"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>Console Log</h2>
+        <div id="consoleLog" style="background: #f8f9fa; padding: 10px; border: 1px solid #dee2e6; font-family: monospace; white-space: pre-wrap; max-height: 300px; overflow-y: auto;"></div>
+    </div>
+
+    <!-- Load Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="admin/js/supabase-config.js"></script>
+    <script src="admin/js/cms-manager.js"></script>
+    
+    <script>
+        // Override console.log to show in the page
+        const originalLog = console.log;
+        const originalError = console.error;
+        const logDiv = document.getElementById('consoleLog');
+        
+        console.log = function(...args) {
+            originalLog.apply(console, args);
+            logDiv.textContent += 'LOG: ' + args.join(' ') + '\n';
+        };
+        
+        console.error = function(...args) {
+            originalError.apply(console, args);
+            logDiv.textContent += 'ERROR: ' + args.join(' ') + '\n';
+        };
+        
+        // Test the CMS functionality
+        async function testCMS() {
+            console.log('Starting CMS test...');
+            
+            try {
+                // Wait for Supabase to be ready
+                await new Promise((resolve) => {
+                    let attempts = 0;
+                    const checkSupabase = () => {
+                        attempts++;
+                        if (window.supabaseClient) {
+                            console.log('Supabase client found');
+                            resolve();
+                        } else if (attempts >= 50) {
+                            console.error('Supabase client not found after maximum attempts');
+                            document.getElementById('connectionStatus').innerHTML = '<div class="error">❌ Database connection failed</div>';
+                            return;
+                        } else {
+                            console.log(`Waiting for Supabase client... (attempt ${attempts})`);
+                            setTimeout(checkSupabase, 100);
+                        }
+                    };
+                    checkSupabase();
+                });
+                
+                document.getElementById('connectionStatus').innerHTML = '<div class="success">✅ Database connected</div>';
+                
+                // Test loading page content
+                console.log('Testing page content loading...');
+                const { data: pageContent, error: pageError } = await window.supabaseClient
+                    .from('page_content')
+                    .select('*')
+                    .eq('page', 'index');
+                
+                if (pageError) {
+                    console.error('Page content error:', pageError);
+                } else {
+                    console.log('Page content loaded:', pageContent?.length || 0, 'records');
+                    
+                    // Populate form fields
+                    const contentMap = {};
+                    pageContent?.forEach(item => {
+                        contentMap[item.section_key] = item.content_value;
+                    });
+                    
+                    document.getElementById('pageTitle').value = contentMap.page_title || '';
+                    document.getElementById('metaDescription').value = contentMap.meta_description || '';
+                    document.getElementById('heroTitle').value = contentMap.hero_title || '';
+                    document.getElementById('heroSubtitle').value = contentMap.hero_subtitle || '';
+                    document.getElementById('heroDescription').value = contentMap.hero_description || '';
+                    document.getElementById('heroImageUrl').value = contentMap.hero_image_url || '';
+                }
+                
+                // Test loading services
+                console.log('Testing services loading...');
+                const { data: services, error: servicesError } = await window.supabaseClient
+                    .from('services')
+                    .select('*');
+                
+                if (servicesError) {
+                    console.error('Services error:', servicesError);
+                } else {
+                    console.log('Services loaded:', services?.length || 0, 'records');
+                    
+                    const servicesList = document.getElementById('servicesList');
+                    if (services && services.length > 0) {
+                        servicesList.innerHTML = services.map(service => 
+                            `<div style="margin: 10px 0; padding: 10px; border: 1px solid #ddd;">
+                                <strong>${service.title}</strong><br>
+                                <small>${service.subtitle}</small><br>
+                                <small>Price: ${service.base_price}</small>
+                            </div>`
+                        ).join('');
+                    } else {
+                        servicesList.innerHTML = '<div class="error">No services found</div>';
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Test failed:', error);
+                document.getElementById('connectionStatus').innerHTML = '<div class="error">❌ Test failed: ' + error.message + '</div>';
+            }
+        }
+        
+        // Start the test when page loads
+        document.addEventListener('DOMContentLoaded', testCMS);
+    </script>
+</body>
+</html>

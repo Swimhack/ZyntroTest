@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         
         // Create and initialize CMS Manager after Supabase is ready
         cmsManagerInstance = new CMSManager();
+        cmsManagerInstance.init(); // Initialize the CMS manager
         window.cmsManager = cmsManagerInstance;
         
     } catch (error) {
@@ -165,12 +166,15 @@ class CMSManager {
 
     async loadPageContent(pageName) {
         try {
+            console.log('Loading page content for:', pageName);
+            
             const { data: pageContent, error } = await supabase
                 .from('page_content')
                 .select('*')
                 .eq('page', pageName);
 
             if (error) throw error;
+            console.log('Page content loaded:', pageContent?.length || 0, 'records');
 
             const { data: heroSection, error: heroError } = await supabase
                 .from('hero_sections')
@@ -179,12 +183,15 @@ class CMSManager {
                 .single();
 
             if (heroError && heroError.code !== 'PGRST116') throw heroError;
+            console.log('Hero section loaded:', heroSection ? 'Yes' : 'No');
 
             // Populate form fields
             const contentMap = {};
             pageContent?.forEach(item => {
                 contentMap[item.section_key] = item.content_value;
             });
+
+            console.log('Content map:', contentMap);
 
             document.getElementById('pageTitle').value = contentMap.page_title || '';
             document.getElementById('metaDescription').value = contentMap.meta_description || '';
@@ -193,7 +200,10 @@ class CMSManager {
             document.getElementById('heroDescription').value = heroSection?.description || '';
             document.getElementById('heroImageUrl').value = heroSection?.image_url || '';
 
+            console.log('Form fields populated successfully');
+
         } catch (error) {
+            console.error('Error loading page content:', error);
             this.showNotification('Error loading page content: ' + error.message, 'error');
         }
     }
