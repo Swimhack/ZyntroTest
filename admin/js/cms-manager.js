@@ -1,30 +1,62 @@
 // Wait for Supabase to be initialized
 let supabase = null;
+let cmsManagerInstance = null;
 
 // Initialize Supabase when the script loads
 document.addEventListener('DOMContentLoaded', async () => {
     try {
+        console.log('CMS Manager: Starting initialization...');
+        
         // Wait for Supabase to be initialized
-        await new Promise((resolve) => {
+        await new Promise((resolve, reject) => {
+            let attempts = 0;
+            const maxAttempts = 50; // 5 seconds max wait
+            
             const checkSupabase = () => {
+                attempts++;
+                
                 if (window.supabaseClient) {
                     supabase = window.supabaseClient;
+                    console.log('CMS Manager: Supabase client found');
                     resolve();
+                } else if (attempts >= maxAttempts) {
+                    console.error('CMS Manager: Supabase client not found after maximum attempts');
+                    reject(new Error('Supabase client not initialized'));
                 } else {
+                    console.log(`CMS Manager: Waiting for Supabase client... (attempt ${attempts})`);
                     setTimeout(checkSupabase, 100);
                 }
             };
             checkSupabase();
         });
         
-        console.log('CMS Manager: Supabase client initialized');
+        console.log('CMS Manager: Supabase client initialized successfully');
         
-        // Initialize CMS Manager after Supabase is ready
-        if (window.cmsManager) {
-            window.cmsManager.init();
-        }
+        // Create and initialize CMS Manager after Supabase is ready
+        cmsManagerInstance = new CMSManager();
+        window.cmsManager = cmsManagerInstance;
+        
     } catch (error) {
-        console.error('CMS Manager: Supabase initialization failed:', error);
+        console.error('CMS Manager: Initialization failed:', error);
+        
+        // Show user-friendly error message
+        const errorDiv = document.createElement('div');
+        errorDiv.innerHTML = `
+            <div style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626; padding: 1rem; margin: 1rem; border-radius: 0.5rem;">
+                <strong>Database Connection Error</strong><br>
+                Unable to connect to the database. Please check your internet connection and refresh the page.
+                <br><br>
+                <button onclick="window.location.reload()" style="background: #dc2626; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.25rem; cursor: pointer;">
+                    Refresh Page
+                </button>
+            </div>
+        `;
+        
+        // Insert error message at the top of the page
+        const mainContent = document.querySelector('.main-content') || document.querySelector('.cms-container') || document.body;
+        if (mainContent) {
+            mainContent.insertBefore(errorDiv, mainContent.firstChild);
+        }
     }
 });
 
@@ -32,14 +64,21 @@ class CMSManager {
     constructor() {
         this.currentTab = 'pages';
         this.editingItem = null;
-        this.init();
+        console.log('CMS Manager: Constructor called');
     }
-
+    
     init() {
+        console.log('CMS Manager: Initializing...');
+        if (!supabase) {
+            console.error('CMS Manager: Supabase client not available during init');
+            return;
+        }
+        
         this.setupTabNavigation();
         this.loadStats();
         this.loadCurrentTabContent();
         this.setupPageSelector();
+        console.log('CMS Manager: Initialization complete');
     }
 
     setupTabNavigation() {
