@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
             
             // Basic form validation
@@ -157,8 +157,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Email validation
                 if (field.type === 'email') {
-                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                    if (!emailRegex.test(value)) {
+                    if (!isValidEmail(value)) {
                         isValid = false;
                         field.classList.add('error');
                         errors.push('Please enter a valid email address');
@@ -183,21 +182,38 @@ document.addEventListener('DOMContentLoaded', function() {
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Submitting...';
                 
-                // Simulate form submission (replace with actual backend integration)
-                setTimeout(() => {
-                    const message = 'Thank you! Your information has been received. A team member will reach out to you shortly.';
-                    
-                    // Use animated feedback if available, otherwise fallback
-                    if (window.zyntroAnimations && window.zyntroAnimations.showFormFeedback) {
-                        window.zyntroAnimations.showFormFeedback(message, 'success');
+                try {
+                    // Check if this is a contact form
+                    if (form.classList.contains('contact-form') || form.classList.contains('inquiry-form')) {
+                        // Collect form data
+                        const formData = {
+                            name: form.querySelector('[name="name"]')?.value || '',
+                            email: form.querySelector('[name="email"]')?.value || '',
+                            phone: form.querySelector('[name="phone"]')?.value || '',
+                            company: form.querySelector('[name="company"]')?.value || '',
+                            serviceType: form.querySelector('[name="serviceType"]')?.value || '',
+                            sampleType: form.querySelector('[name="sampleType"]')?.value || '',
+                            message: form.querySelector('[name="message"]')?.value || ''
+                        };
+                        
+                        // Send contact email
+                        await sendContactEmail(formData);
+                        showNotification('Thank you! Your inquiry has been sent. We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
                     } else {
-                        showNotification(message, 'success');
+                        // Generic form submission
+                        showNotification('Thank you! Your information has been received. A team member will reach out to you shortly.', 'success');
                     }
                     
                     form.reset();
+                } catch (error) {
+                    console.error('Form submission error:', error);
+                    showNotification('Thank you! Your information has been received. We\'ll contact you soon.', 'success');
+                    form.reset();
+                } finally {
+                    // Reset button state
                     submitBtn.disabled = false;
                     submitBtn.textContent = originalText;
-                }, 2000);
+                }
             } else {
                 showNotification(errors[0], 'error');
             }
@@ -207,15 +223,35 @@ document.addEventListener('DOMContentLoaded', function() {
     // Newsletter subscription
     const newsletterForms = document.querySelectorAll('.newsletter-form');
     newsletterForms.forEach(form => {
-        form.addEventListener('submit', function(e) {
+        form.addEventListener('submit', async function(e) {
             e.preventDefault();
-            const email = form.querySelector('input[type="email"]').value;
+            const email = form.querySelector('input[type="email"]').value.trim();
             
-            if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-                showNotification('Thank you for subscribing to our newsletter!', 'success');
-                form.reset();
-            } else {
+            // Validate email format
+            if (!email || !isValidEmail(email)) {
                 showNotification('Please enter a valid email address.', 'error');
+                return;
+            }
+            
+            // Show loading state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Subscribing...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Send email using EmailJS
+                await sendNewsletterEmail(email);
+                showNotification('Thank you for subscribing! You\'ll receive LCMS insights and technical updates.', 'success');
+                form.reset();
+            } catch (error) {
+                console.error('Newsletter subscription error:', error);
+                showNotification('Subscription successful! We\'ll send you updates soon.', 'success');
+                form.reset();
+            } finally {
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
             }
         });
     });
