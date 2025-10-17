@@ -656,6 +656,13 @@
                 submitBtn.disabled = true;
                 submitBtn.textContent = 'Saving...';
                 
+                // Get existing COA data to preserve PDF information
+                let existingCOA = null;
+                if (currentEditId) {
+                    existingCOA = await SupabaseCOAManager.getCOAById(currentEditId);
+                    console.log('Preserving existing COA data:', existingCOA);
+                }
+                
                 const updateData = {
                     id: document.getElementById('edit-coa-id').value,
                     client: document.getElementById('edit-client').value,
@@ -667,6 +674,14 @@
                     result: document.getElementById('edit-result').value || null,
                     notes: document.getElementById('edit-notes').value || ''
                 };
+                
+                // PRESERVE EXISTING PDF INFORMATION - This is critical!
+                if (existingCOA && existingCOA.fileUrl) {
+                    updateData.fileUrl = existingCOA.fileUrl;
+                    updateData.fileName = existingCOA.fileName;
+                    updateData.fileSize = existingCOA.fileSize;
+                    console.log('Preserving existing PDF:', existingCOA.fileUrl);
+                }
                 
                 // Validate required fields
                 if (!updateData.id || !updateData.client || !updateData.compound) {
@@ -696,7 +711,7 @@
                         return;
                     }
                     
-                    console.log('Uploading PDF:', file.name);
+                    console.log('Uploading new PDF:', file.name);
                     
                     // Upload new file to Supabase
                     const timestamp = Date.now();
@@ -719,10 +734,21 @@
                         .from('coa-files')
                         .getPublicUrl(filePath);
                     
+                    // OVERWRITE existing PDF information with new file
                     updateData.fileUrl = publicUrl;
                     updateData.fileName = fileName;
+                    updateData.fileSize = file.size;
                     
-                    console.log('PDF uploaded successfully:', fileName);
+                    console.log('New PDF uploaded successfully:', fileName);
+                    console.log('New PDF URL:', publicUrl);
+                } else {
+                    // NO NEW PDF UPLOADED - Keep existing PDF information
+                    console.log('No new PDF uploaded - preserving existing PDF information');
+                    if (existingCOA && existingCOA.fileUrl) {
+                        console.log('Keeping existing PDF:', existingCOA.fileUrl);
+                    } else {
+                        console.log('No existing PDF to preserve');
+                    }
                 }
                 
                 // Add new COA or update existing
@@ -736,19 +762,32 @@
                 }
                 
                 if (result === true || result.success) {
-                    // Check if ID was changed
-                    const newId = document.getElementById('edit-coa-id').value;
-                    const idChanged = currentEditId && newId !== currentEditId;
-                    
-                    alert(currentEditId ? 'COA updated successfully!' : 'COA added successfully!');
-                    closeEditModal();
-                    await loadCOAs();
-                    await updateStats();
-                    
-                    // If ID was changed, show additional info
-                    if (idChanged) {
-                        console.log(`COA ID changed from ${currentEditId} to ${newId}`);
-                    }
+                // Check if ID was changed
+                const newId = document.getElementById('edit-coa-id').value;
+                const idChanged = currentEditId && newId !== currentEditId;
+                
+                // Check if PDF was preserved
+                const pdfPreserved = existingCOA && existingCOA.fileUrl && !fileInput.files.length;
+                
+                let successMessage = currentEditId ? 'COA updated successfully!' : 'COA added successfully!';
+                if (pdfPreserved) {
+                    successMessage += ' (PDF preserved)';
+                }
+                
+                alert(successMessage);
+                closeEditModal();
+                await loadCOAs();
+                await updateStats();
+                
+                // If ID was changed, show additional info
+                if (idChanged) {
+                    console.log(`COA ID changed from ${currentEditId} to ${newId}`);
+                }
+                
+                // Log PDF preservation status
+                if (pdfPreserved) {
+                    console.log('✅ PDF functionality preserved during edit');
+                }
                 } else {
                     const errorMsg = result.error || result.message || 'Unknown error';
                     console.error('Operation failed:', result);
