@@ -1,7 +1,31 @@
 // ZyntroTest Website JavaScript
 // Enhanced functionality for mobile navigation, form handling, and user interactions
 
+// Footer include functionality
+async function loadFooter() {
+    try {
+        const response = await fetch('includes/footer.html');
+        if (response.ok) {
+            const footerHTML = await response.text();
+            const footerElement = document.querySelector('footer');
+            if (footerElement) {
+                footerElement.outerHTML = footerHTML;
+            }
+        }
+    } catch (error) {
+        console.log('Footer include not available, using static footer');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Load footer include
+    loadFooter();
+    
+    // Update copyright year automatically
+    const currentYearElements = document.querySelectorAll('#current-year');
+    currentYearElements.forEach(element => {
+        element.textContent = new Date().getFullYear();
+    });
     // Mobile menu toggle functionality
     const navToggle = document.getElementById('nav-toggle');
     const navMenu = document.getElementById('nav-menu');
