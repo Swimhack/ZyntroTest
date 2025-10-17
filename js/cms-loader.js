@@ -50,14 +50,21 @@ class CMSLoader {
 
         try {
             console.log('CMS Loader: Starting parallel content loading...');
-            await Promise.all([
+            const loadPromises = [
                 this.loadSiteSettings(),
                 this.loadPageSpecificContent(currentPage),
                 this.loadHeroSection(currentPage),
                 this.loadServices(),
                 this.loadTestimonials(),
                 this.loadBlogPosts()
-            ]);
+            ];
+
+            // Load sample COA on homepage
+            if (currentPage === 'index') {
+                loadPromises.push(this.loadSampleCOA());
+            }
+
+            await Promise.all(loadPromises);
             console.log('CMS Loader: All content loaded successfully');
         } catch (error) {
             console.warn('CMS content loading failed, using fallback content:', error);
@@ -541,6 +548,55 @@ class CMSLoader {
             data,
             timestamp: Date.now()
         });
+    }
+
+    async loadSampleCOA() {
+        try {
+            console.log('CMS Loader: Loading sample COA...');
+            const { data: coas, error } = await supabase
+                .from('coas')
+                .select('*')
+                .order('created_at', { ascending: true })
+                .limit(1);
+
+            if (error) throw error;
+
+            if (coas.length === 0) {
+                console.warn('CMS Loader: No COAs found for sample display');
+                return;
+            }
+
+            const coa = coas[0];
+            this.applySampleCOA(coa);
+        } catch (error) {
+            console.warn('CMS Loader: Failed to load sample COA:', error);
+        }
+    }
+
+    applySampleCOA(coa) {
+        const coaThumbnail = document.querySelector('.coa-thumbnail .coa-sample');
+        if (!coaThumbnail) return;
+
+        // Update COA content with real data
+        const coaId = coaThumbnail.querySelector('.coa-line');
+        if (coaId) coaId.textContent = `Sample ID: ${coa.id}`;
+
+        const compoundLine = coaThumbnail.querySelectorAll('.coa-line')[1];
+        if (compoundLine) compoundLine.textContent = `Compound: ${coa.compound}`;
+
+        const analysisDate = coaThumbnail.querySelectorAll('.coa-line')[2];
+        if (analysisDate) {
+            const date = coa.analysis_date ? new Date(coa.analysis_date).toLocaleDateString() : 'N/A';
+            analysisDate.textContent = `Analysis Date: ${date}`;
+        }
+
+        // Update purity data
+        const purityValue = coaThumbnail.querySelector('.data-value');
+        if (purityValue && coa.purity) {
+            purityValue.textContent = `${coa.purity}%`;
+        }
+
+        console.log('CMS Loader: Sample COA updated with real data');
     }
 
     // Public method to refresh content
