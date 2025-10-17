@@ -572,6 +572,13 @@
     <!-- Notification -->
     <div id="notification" class="notification"></div>
 
-    <script type="module" src="js/cms-manager.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/cms-manager.js"></script>
+    <script>
+        // Initialize CMS Manager after everything is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            window.cmsManager = new CMSManager();
+        });
+    </script>
 </body>
 </html>

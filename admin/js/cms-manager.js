@@ -1,7 +1,32 @@
-import { createClient } from 'https://cdn.skypack.dev/@supabase/supabase-js@2';
-import { supabaseConfig } from '../../js/supabase-config.js';
+// Wait for Supabase to be initialized
+let supabase = null;
 
-const supabase = createClient(supabaseConfig.url, supabaseConfig.anonKey);
+// Initialize Supabase when the script loads
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Wait for Supabase to be initialized
+        await new Promise((resolve) => {
+            const checkSupabase = () => {
+                if (window.supabaseClient) {
+                    supabase = window.supabaseClient;
+                    resolve();
+                } else {
+                    setTimeout(checkSupabase, 100);
+                }
+            };
+            checkSupabase();
+        });
+        
+        console.log('CMS Manager: Supabase client initialized');
+        
+        // Initialize CMS Manager after Supabase is ready
+        if (window.cmsManager) {
+            window.cmsManager.init();
+        }
+    } catch (error) {
+        console.error('CMS Manager: Supabase initialization failed:', error);
+    }
+});
 
 class CMSManager {
     constructor() {
@@ -67,22 +92,35 @@ class CMSManager {
     }
 
     async loadCurrentTabContent() {
-        switch (this.currentTab) {
-            case 'pages':
-                await this.loadPageContent('index');
-                break;
-            case 'services':
-                await this.loadServices();
-                break;
-            case 'blog':
-                await this.loadBlogPosts();
-                break;
-            case 'testimonials':
-                await this.loadTestimonials();
-                break;
-            case 'settings':
-                await this.loadSiteSettings();
-                break;
+        try {
+            console.log('Loading content for tab:', this.currentTab);
+            
+            if (!supabase) {
+                console.error('Supabase client not initialized');
+                this.showNotification('Database connection not ready. Please refresh the page.', 'error');
+                return;
+            }
+            
+            switch (this.currentTab) {
+                case 'pages':
+                    await this.loadPageContent('index');
+                    break;
+                case 'services':
+                    await this.loadServices();
+                    break;
+                case 'blog':
+                    await this.loadBlogPosts();
+                    break;
+                case 'testimonials':
+                    await this.loadTestimonials();
+                    break;
+                case 'settings':
+                    await this.loadSiteSettings();
+                    break;
+            }
+        } catch (error) {
+            console.error('Error loading tab content:', error);
+            this.showNotification('Error loading content: ' + error.message, 'error');
         }
     }
 
