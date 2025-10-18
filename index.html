@@ -219,12 +219,42 @@
                 <h3>Sample Certificate of Analysis</h3>
                 <!-- Debug button for manual testing -->
                 <button onclick="loadCOANow()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">🔍 Load Sample COA (Debug)</button>
+                
+                <!-- COA Data Display -->
+                <div id="coa-content" class="coa-data-display">
+                    <!-- COA data will be loaded here -->
+                </div>
+                
+                <!-- Status indicator -->
+                <div id="cms-status" style="padding: 1rem; margin: 1rem 0; background: #fef3c7; border-radius: 0.5rem; font-size: 0.9rem; color: #92400e;">
+                    🔄 Loading COA data...
+                </div>
+                
+                <!-- PDF Preview Section - Same as search page -->
+                <div id="pdf-preview-section" style="margin-top: 2rem; display: none;">
+                    <h3 style="margin-bottom: 1rem;">PDF Preview</h3>
+                    <div class="pdf-preview-container">
+                        <div id="full-pdf-viewer" style="display: block;">
+                            <iframe id="pdf-viewer" style="width: 100%; height: 800px; border: 2px solid #e5e7eb; border-radius: 0.5rem;"></iframe>
+                        </div>
+                        <div id="pdf-error-message" style="display: none; text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem; margin-top: 1rem;">
+                            <p style="color: #92400e; font-size: 1rem; margin: 0;">
+                                ⚠️ Unable to load PDF. Please contact <a href="mailto:info@zyntrotest.com" style="color: #2563eb; text-decoration: underline;">info@zyntrotest.com</a> for assistance.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="search.html" class="btn btn-outline">Search COAs</a>
+                
                 <script>
                 async function loadCOANow() {
                     console.log('Loading COA directly...');
                     const statusEl = document.getElementById('cms-status');
                     const coaContent = document.getElementById('coa-content');
                     const pdfViewer = document.getElementById('pdf-viewer');
+                    const pdfSection = document.getElementById('pdf-preview-section');
+                    const pdfError = document.getElementById('pdf-error-message');
                     
                     try {
                         statusEl.innerHTML = '🔄 Loading Supabase...';
@@ -261,7 +291,7 @@
                         const coa = coas[0];
                         statusEl.innerHTML = '✅ COA loaded! Displaying data...';
                         
-                        // Display COA data
+                        // Display COA data - same format as search page
                         coaContent.innerHTML = `
                             <div class="data-grid">
                                 <div class="data-item"><strong>COA ID:</strong> <span>${coa.id}</span></div>
@@ -273,16 +303,24 @@
                             ${coa.purity ? `<div class="result-highlight"><strong>Purity:</strong> ${coa.purity}%</div>` : ''}
                         `;
                         
-                        // Load PDF
+                        // Show PDF section and load PDF
+                        if (pdfSection) pdfSection.style.display = 'block';
                         if (pdfViewer && coa.file_url) {
                             pdfViewer.src = coa.file_url;
-                            pdfViewer.style.display = 'block';
+                            pdfViewer.onload = () => {
+                                console.log('PDF loaded successfully');
+                                if (pdfError) pdfError.style.display = 'none';
+                            };
+                            pdfViewer.onerror = () => {
+                                console.error('PDF failed to load');
+                                if (pdfError) pdfError.style.display = 'block';
+                            };
                         }
                         
-                        // Hide status
+                        // Hide status after success
                         setTimeout(() => {
                             statusEl.style.display = 'none';
-                        }, 2000);
+                        }, 1500);
                         
                     } catch (error) {
                         console.error('Error loading COA:', error);
@@ -295,34 +333,9 @@
                 // Auto-load when page is ready
                 document.addEventListener('DOMContentLoaded', () => {
                     console.log('Page loaded, auto-loading COA...');
-                    setTimeout(loadCOANow, 1000); // Wait 1 second for everything to settle
+                    setTimeout(loadCOANow, 1000);
                 });
                 </script>
-                <!-- COA Data Display (Search Results Style) -->
-                <div id="coa-content" class="coa-data-display">
-                <!-- COA data will be loaded here by CMS loader -->
-                <div id="cms-status" style="padding: 1rem; margin: 1rem 0; background: #fef3c7; border-radius: 0.5rem; font-size: 0.9rem; color: #92400e;">
-                    🔄 Loading COA data...
-                </div>
-                </div>
-                
-                <!-- PDF Preview Section -->
-                <div id="pdf-preview-section" style="margin-top: 2rem; display: block;">
-                    
-                    <div class="pdf-preview-container">
-                        <!-- Full PDF Viewer (Show by default) -->
-                        <div id="full-pdf-viewer" style="display: block;">
-                            <iframe id="pdf-viewer" style="width: 100%; height: 800px; border: 2px solid #e5e7eb; border-radius: 0.5rem;"></iframe>
-                        </div>
-                        <!-- Fallback message if PDF cannot load -->
-                        <div id="pdf-error-message" style="display: none; text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem; margin-top: 1rem;">
-                            <p style="color: #92400e; font-size: 1rem; margin: 0;">
-                                ⚠️ Unable to load PDF. Please contact <a href="mailto:info@zyntrotest.com" style="color: #2563eb; text-decoration: underline;">info@zyntrotest.com</a> for assistance.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                <a href="search.html" class="btn btn-outline">Search COAs</a>
             </div>
         </div>
     </section>
