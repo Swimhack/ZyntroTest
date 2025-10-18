@@ -557,30 +557,77 @@ class CMSLoader {
             
             if (!supabase) {
                 console.error('CMS Loader: Supabase client not available');
+                this.showSampleCOAError('Database connection not available');
                 return;
             }
             
+            // Try to get the most recent COA with a file URL first
             const { data: coas, error } = await supabase
                 .from('coas')
                 .select('*')
-                .order('created_at', { ascending: true })
+                .not('file_url', 'is', null)
+                .neq('file_url', '')
+                .order('created_at', { ascending: false })
                 .limit(1);
 
             if (error) {
                 console.error('CMS Loader: Database error:', error);
-                throw error;
+                this.showSampleCOAError('Database query failed: ' + error.message);
+                return;
             }
 
             if (coas.length === 0) {
-                console.warn('CMS Loader: No COAs found for sample display');
+                console.warn('CMS Loader: No COAs with file URLs found for sample display');
+                // Try to get any COA as fallback
+                const { data: fallbackCoas, error: fallbackError } = await supabase
+                    .from('coas')
+                    .select('*')
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+                    
+                if (fallbackError || fallbackCoas.length === 0) {
+                    this.showSampleCOAError('No sample COAs available');
+                    return;
+                }
+                
+                const coa = fallbackCoas[0];
+                console.log('CMS Loader: Found fallback COA (no file):', coa.id);
+                this.applySampleCOA(coa);
                 return;
             }
 
             const coa = coas[0];
-            console.log('CMS Loader: Found COA for sample:', coa.id, coa.file_url);
+            console.log('CMS Loader: Found COA for sample:', coa.id, 'File URL:', coa.file_url);
             this.applySampleCOA(coa);
         } catch (error) {
             console.error('CMS Loader: Failed to load sample COA:', error);
+            this.showSampleCOAError('Failed to load sample COA: ' + error.message);
+        }
+    }
+    
+    showSampleCOAError(message) {
+        console.warn('CMS Loader: Showing sample COA error:', message);
+        const coaContent = document.getElementById('coa-content');
+        const pdfError = document.getElementById('pdf-error-message');
+        const pdfIframe = document.getElementById('pdf-viewer');
+        
+        if (coaContent) {
+            coaContent.innerHTML = `
+                <div style="text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem; margin: 1rem 0;">
+                    <p style="color: #92400e; font-size: 1rem; margin: 0;">
+                        ⚠️ ${message}
+                    </p>
+                    <p style="color: #92400e; font-size: 0.9rem; margin: 0.5rem 0 0 0;">
+                        Please check back later or <a href="contact.html" style="color: #2563eb; text-decoration: underline;">contact us</a> for assistance.
+                    </p>
+                </div>
+            `;
+        }
+        
+        if (pdfIframe) pdfIframe.style.display = 'none';
+        if (pdfError) {
+            pdfError.style.display = 'block';
+            pdfError.innerHTML = `<p style="color: #92400e; font-size: 1rem; margin: 0;">⚠️ ${message}</p>`;
         }
     }
 
@@ -695,6 +742,10 @@ class CMSLoader {
 
         if (!pdfIframe || !coa.file_url) {
             console.log('CMS Loader: No PDF iframe or file URL available');
+            if (pdfError) {
+                pdfError.style.display = 'block';
+                pdfError.innerHTML = '<p style="color: #92400e; font-size: 1rem; margin: 0;">⚠️ No PDF file available for this COA.</p>';
+            }
             return;
         }
 
@@ -703,22 +754,77 @@ class CMSLoader {
             pdfPreview.style.display = 'block';
         }
 
-        // Set up iframe error handling
-        pdfIframe.onerror = () => {
-            console.warn('CMS Loader: PDF failed to load');
-            pdfIframe.style.display = 'none';
-            if (pdfError) pdfError.style.display = 'block';
-        };
+        // Hide error initially
+        if (pdfError) pdfError.style.display = 'none';
 
-        pdfIframe.onload = () => {
-            console.log('CMS Loader: PDF loaded successfully');
-            pdfIframe.style.display = 'block';
-            if (pdfError) pdfError.style.display = 'none';
-        };
+        // For Supabase storage URLs, we need to handle them properly
+        let pdfUrl = coa.file_url;
+        let attemptedDirectLoad = false;
+        
+        // If it's a Supabase storage URL, ensure it's accessible
+        if (pdfUrl.includes('supabase.co/storage')) {
+            console.log('CMS Loader: Using Supabase storage URL:', pdfUrl);
+            
+            // Try direct PDF loading first (most reliable for iframes)
+            const loadDirect = () => {
+                console.log('CMS Loader: Loading PDF directly:', pdfUrl);
+                attemptedDirectLoad = true;
+                pdfIframe.src = pdfUrl;
+                
+                // Set timeout to check if direct load worked
+                setTimeout(() => {
+                    // If iframe still doesn't have proper content, try Google viewer
+                    if (pdfIframe.contentDocument === null || 
+                        (pdfIframe.contentDocument && pdfIframe.contentDocument.body && 
+                         pdfIframe.contentDocument.body.innerHTML.trim() === '')) {
+                        console.log('CMS Loader: Direct load may have failed, trying Google viewer...');
+                        const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+                        pdfIframe.src = googleViewerUrl;
+                    }
+                }, 2000);
+            };
+            
+            // Set up iframe error handling
+            pdfIframe.onerror = () => {
+                console.warn('CMS Loader: PDF failed to load');
+                if (!attemptedDirectLoad) {
+                    // If Google viewer failed, try direct
+                    loadDirect();
+                } else {
+                    // Both failed, show error
+                    if (pdfError) {
+                        pdfError.style.display = 'block';
+                        pdfIframe.style.display = 'none';
+                    }
+                }
+            };
 
-        // Load the PDF immediately
-        console.log('CMS Loader: Loading PDF:', coa.file_url);
-        pdfIframe.src = coa.file_url;
+            pdfIframe.onload = () => {
+                console.log('CMS Loader: PDF loaded successfully');
+                pdfIframe.style.display = 'block';
+                if (pdfError) pdfError.style.display = 'none';
+            };
+
+            // Start with direct loading for better performance
+            loadDirect();
+        } else {
+            // Direct PDF URL
+            pdfIframe.onerror = () => {
+                console.warn('CMS Loader: PDF failed to load');
+                pdfIframe.style.display = 'none';
+                if (pdfError) pdfError.style.display = 'block';
+            };
+
+            pdfIframe.onload = () => {
+                console.log('CMS Loader: PDF loaded successfully');
+                pdfIframe.style.display = 'block';
+                if (pdfError) pdfError.style.display = 'none';
+            };
+
+            console.log('CMS Loader: Loading PDF directly:', pdfUrl);
+            pdfIframe.src = pdfUrl;
+        }
+        
         console.log('CMS Loader: PDF preview setup complete for:', coa.file_url);
     }
 
@@ -738,6 +844,23 @@ window.cmsLoader = cmsLoader;
 
 // Make refresh accessible globally for testing
 window.refreshCMS = () => cmsLoader.refresh();
+
+// Add debug functions for testing PDF loading
+window.debugSampleCOA = async () => {
+    console.log('=== DEBUG: Sample COA Loading ===');
+    await cmsLoader.loadSampleCOA();
+};
+
+window.testPDFUrl = (url) => {
+    console.log('=== DEBUG: Testing PDF URL ===', url);
+    const iframe = document.getElementById('pdf-viewer');
+    if (iframe) {
+        iframe.src = url;
+        console.log('PDF URL set to iframe');
+    } else {
+        console.error('PDF iframe not found');
+    }
+};
 
 // Listen for CMS updates
 window.addEventListener('message', (event) => {
