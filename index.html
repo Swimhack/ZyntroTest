@@ -289,17 +289,7 @@
                         const coa = coas[0];
                         statusEl.innerHTML = '✅ COA loaded! Displaying data...';
                         
-                        // Display COA data - same format as search page
-                        coaContent.innerHTML = `
-                            <div class="data-grid">
-                                <div class="data-item"><strong>COA ID:</strong> <span>${coa.id}</span></div>
-                                <div class="data-item"><strong>Client:</strong> <span>${coa.client}</span></div>
-                                <div class="data-item"><strong>Compound:</strong> <span>${coa.compound}</span></div>
-                                <div class="data-item"><strong>Type:</strong> <span>${coa.analysis_type}</span></div>
-                                <div class="data-item"><strong>Status:</strong> <span class="status-badge">${coa.status}</span></div>
-                            </div>
-                            ${coa.purity ? `<div class="result-highlight"><strong>Purity:</strong> ${coa.purity}%</div>` : ''}
-                        `;
+                        // Skip displaying COA data, just show PDF
                         
                         // Show PDF section and load PDF
                         if (pdfSection) pdfSection.style.display = 'block';
