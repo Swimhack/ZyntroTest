@@ -98,7 +98,7 @@ h2 {
     transition: 0.3s;
 }
 
-/* Sample Requirements Icons Fix */
+/* Sample Requirements Icons Fix - All Blue Theme */
 .requirement-icon {
     width: 80px;
     height: 80px;
@@ -112,7 +112,7 @@ h2 {
     position: relative;
 }
 
-/* Force override inline styles and ensure emoji icons show */
+/* Force override inline styles and ensure emoji icons show - All Blue Gradients */
 .peptide-req {
     background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
 }
@@ -124,7 +124,7 @@ h2 {
 }
 
 .supplement-req {
-    background: linear-gradient(135deg, #059669, #10b981) !important;
+    background: linear-gradient(135deg, #1d4ed8, #2563eb) !important;
 }
 
 .supplement-req::before {
@@ -134,7 +134,7 @@ h2 {
 }
 
 .hemp-req {
-    background: linear-gradient(135deg, #0891b2, #06b6d4) !important;
+    background: linear-gradient(135deg, #1e40af, #3b82f6) !important;
 }
 
 .hemp-req::before {
@@ -307,6 +307,16 @@ h2 {
     .nav-toggle {
         display: none;
     }
+    
+    /* Image containers at tablet */
+    .image-container {
+        min-height: 450px !important;
+    }
+    
+    .hero-main-image,
+    .image-container img {
+        min-height: 450px !important;
+    }
 }
 
 /* Desktop Styles */
@@ -325,10 +335,20 @@ h2 {
         gap: 3rem;
     }
     
-    .featured-image {
-        min-height: 350px;
+        .featured-image {
+            min-height: 350px;
+        }
+        
+        /* Image containers at desktop */
+        .image-container {
+            min-height: 500px !important;
+        }
+        
+        .hero-main-image,
+        .image-container img {
+            min-height: 500px !important;
+        }
     }
-}
 
 /* Large Desktop */
 @media (min-width: 1200px) {
@@ -341,25 +361,35 @@ h2 {
     }
 }
 
-/* Fix Image Clipping Issues */
+/* Fix Image Container Filling - Mobile Responsive */
 .hero-main-image,
 .image-container img {
-    object-fit: contain !important;
+    object-fit: cover !important;
     width: 100% !important;
-    height: auto !important;
-    max-height: none !important;
+    height: 100% !important;
+    min-height: 400px !important;
+    border-radius: var(--radius-xl);
 }
 
 .image-container {
-    overflow: visible !important;
-    min-height: auto !important;
+    overflow: hidden !important;
+    min-height: 400px !important;
+    height: 100% !important;
+    width: 100% !important;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
 }
 
-/* Ensure full image visibility */
-.hero-image,
+/* Ensure full image container filling */
+.hero-image {
+    height: 100% !important;
+    min-height: 400px !important;
+}
+
 .featured-image,
 .blog-image {
-    overflow: visible !important;
+    overflow: hidden !important;
+    border-radius: var(--radius-xl);
 }
 
 /* High DPI Displays */
