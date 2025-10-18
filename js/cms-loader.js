@@ -5,8 +5,20 @@ let supabase = null;
 const initSupabase = () => {
     if (window.supabaseClient) {
         supabase = window.supabaseClient;
+        console.log('CMS Loader: Using existing supabaseClient');
         return true;
     }
+    
+    // Fallback: Create Supabase client directly if window.supabase is available
+    if (window.supabase) {
+        console.log('CMS Loader: Creating Supabase client directly');
+        supabase = window.supabase.createClient(
+            'https://hctdzwmlkgnuxcuhjooe.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
+        );
+        return true;
+    }
+    
     return false;
 };
 
@@ -23,14 +35,27 @@ class CMSLoader {
         console.log('CMS Loader: Document ready state:', document.readyState);
         
         // Wait for Supabase to be available
+        let retryCount = 0;
+        const maxRetries = 100; // 10 seconds total
+        
         const checkSupabase = () => {
-            console.log('CMS Loader: Checking Supabase availability...');
+            console.log('CMS Loader: Checking Supabase availability... (attempt', retryCount + 1, 'of', maxRetries, ')');
+            console.log('CMS Loader: window.supabaseClient:', !!window.supabaseClient);
+            console.log('CMS Loader: window.supabase:', !!window.supabase);
+            
             if (initSupabase()) {
                 console.log('CMS Loader: Supabase client found, loading content...');
                 this.loadPageContent();
             } else {
-                console.log('CMS Loader: Supabase not ready, retrying in 100ms...');
-                setTimeout(checkSupabase, 100);
+                retryCount++;
+                if (retryCount >= maxRetries) {
+                    console.error('CMS Loader: Failed to initialize Supabase after', maxRetries, 'attempts');
+                    // Try to load Supabase from CDN as last resort
+                    this.loadSupabaseFromCDN();
+                } else {
+                    console.log('CMS Loader: Supabase not ready, retrying in 100ms...');
+                    setTimeout(checkSupabase, 100);
+                }
             }
         };
         
@@ -42,6 +67,35 @@ class CMSLoader {
             console.log('CMS Loader: DOM already ready, checking Supabase...');
             checkSupabase();
         }
+    }
+    
+    loadSupabaseFromCDN() {
+        console.log('CMS Loader: Loading Supabase from CDN as fallback...');
+        
+        // Check if already loaded
+        if (window.supabase) {
+            console.log('CMS Loader: Supabase already available from CDN');
+            if (initSupabase()) {
+                this.loadPageContent();
+                return;
+            }
+        }
+        
+        // Load Supabase from CDN
+        const script = document.createElement('script');
+        script.src = 'https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js';
+        script.onload = () => {
+            console.log('CMS Loader: Supabase loaded from CDN');
+            if (initSupabase()) {
+                this.loadPageContent();
+            } else {
+                console.error('CMS Loader: Failed to initialize even after CDN load');
+            }
+        };
+        script.onerror = () => {
+            console.error('CMS Loader: Failed to load Supabase from CDN');
+        };
+        document.head.appendChild(script);
     }
 
     async loadPageContent() {
@@ -768,73 +822,26 @@ class CMSLoader {
         // Hide error initially
         if (pdfError) pdfError.style.display = 'none';
 
-        // For Supabase storage URLs, we need to handle them properly
+        // Use simple direct PDF loading like the debug page
         let pdfUrl = coa.file_url;
-        let attemptedDirectLoad = false;
         
-        // If it's a Supabase storage URL, ensure it's accessible
-        if (pdfUrl.includes('supabase.co/storage')) {
-            console.log('CMS Loader: Using Supabase storage URL:', pdfUrl);
-            
-            // Try direct PDF loading first (most reliable for iframes)
-            const loadDirect = () => {
-                console.log('CMS Loader: Loading PDF directly:', pdfUrl);
-                attemptedDirectLoad = true;
-                pdfIframe.src = pdfUrl;
-                
-                // Set timeout to check if direct load worked
-                setTimeout(() => {
-                    // If iframe still doesn't have proper content, try Google viewer
-                    if (pdfIframe.contentDocument === null || 
-                        (pdfIframe.contentDocument && pdfIframe.contentDocument.body && 
-                         pdfIframe.contentDocument.body.innerHTML.trim() === '')) {
-                        console.log('CMS Loader: Direct load may have failed, trying Google viewer...');
-                        const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
-                        pdfIframe.src = googleViewerUrl;
-                    }
-                }, 2000);
-            };
-            
-            // Set up iframe error handling
-            pdfIframe.onerror = () => {
-                console.warn('CMS Loader: PDF failed to load');
-                if (!attemptedDirectLoad) {
-                    // If Google viewer failed, try direct
-                    loadDirect();
-                } else {
-                    // Both failed, show error
-                    if (pdfError) {
-                        pdfError.style.display = 'block';
-                        pdfIframe.style.display = 'none';
-                    }
-                }
-            };
+        console.log('CMS Loader: Loading PDF directly:', pdfUrl);
+        
+        // Set up iframe error handling
+        pdfIframe.onerror = () => {
+            console.warn('CMS Loader: PDF failed to load, showing error');
+            pdfIframe.style.display = 'none';
+            if (pdfError) pdfError.style.display = 'block';
+        };
 
-            pdfIframe.onload = () => {
-                console.log('CMS Loader: PDF loaded successfully');
-                pdfIframe.style.display = 'block';
-                if (pdfError) pdfError.style.display = 'none';
-            };
+        pdfIframe.onload = () => {
+            console.log('CMS Loader: PDF loaded successfully');
+            pdfIframe.style.display = 'block';
+            if (pdfError) pdfError.style.display = 'none';
+        };
 
-            // Start with direct loading for better performance
-            loadDirect();
-        } else {
-            // Direct PDF URL
-            pdfIframe.onerror = () => {
-                console.warn('CMS Loader: PDF failed to load');
-                pdfIframe.style.display = 'none';
-                if (pdfError) pdfError.style.display = 'block';
-            };
-
-            pdfIframe.onload = () => {
-                console.log('CMS Loader: PDF loaded successfully');
-                pdfIframe.style.display = 'block';
-                if (pdfError) pdfError.style.display = 'none';
-            };
-
-            console.log('CMS Loader: Loading PDF directly:', pdfUrl);
-            pdfIframe.src = pdfUrl;
-        }
+        // Load PDF directly - same as debug page approach
+        pdfIframe.src = pdfUrl;
         
         console.log('CMS Loader: PDF preview setup complete for:', coa.file_url);
     }
