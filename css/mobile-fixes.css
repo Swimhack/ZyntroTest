@@ -308,14 +308,14 @@ h2 {
         display: none;
     }
     
-    /* Image containers at tablet */
+    /* Image containers at tablet - Reduced Size */
     .image-container {
-        min-height: 450px !important;
+        min-height: 225px !important;
     }
     
     .hero-main-image,
     .image-container img {
-        min-height: 450px !important;
+        min-height: 225px !important;
     }
 }
 
@@ -339,14 +339,14 @@ h2 {
             min-height: 350px;
         }
         
-        /* Image containers at desktop */
+        /* Image containers at desktop - Reduced Size */
         .image-container {
-            min-height: 500px !important;
+            min-height: 250px !important;
         }
         
         .hero-main-image,
         .image-container img {
-            min-height: 500px !important;
+            min-height: 250px !important;
         }
     }
 
@@ -361,19 +361,19 @@ h2 {
     }
 }
 
-/* Fix Image Container Filling - Mobile Responsive */
+/* Fix Image Container Filling - Mobile Responsive - Reduced Size */
 .hero-main-image,
 .image-container img {
     object-fit: cover !important;
     width: 100% !important;
     height: 100% !important;
-    min-height: 400px !important;
+    min-height: 200px !important;
     border-radius: var(--radius-xl);
 }
 
 .image-container {
     overflow: hidden !important;
-    min-height: 400px !important;
+    min-height: 200px !important;
     height: 100% !important;
     width: 100% !important;
     border-radius: var(--radius-xl);
@@ -383,7 +383,7 @@ h2 {
 /* Ensure full image container filling */
 .hero-image {
     height: 100% !important;
-    min-height: 400px !important;
+    min-height: 200px !important;
 }
 
 .featured-image,
