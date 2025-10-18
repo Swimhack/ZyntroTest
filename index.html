@@ -218,7 +218,86 @@
                 <div class="coa-preview">
                 <h3>Sample Certificate of Analysis</h3>
                 <!-- Debug button for manual testing -->
-                <button onclick="window.debugSampleCOA ? window.debugSampleCOA() : alert('Debug function not available')" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">🔍 Load Sample COA (Debug)</button>
+                <button onclick="loadCOANow()" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">🔍 Load Sample COA (Debug)</button>
+                <script>
+                async function loadCOANow() {
+                    console.log('Loading COA directly...');
+                    const statusEl = document.getElementById('cms-status');
+                    const coaContent = document.getElementById('coa-content');
+                    const pdfViewer = document.getElementById('pdf-viewer');
+                    
+                    try {
+                        statusEl.innerHTML = '🔄 Loading Supabase...';
+                        
+                        // Load Supabase if not available
+                        if (!window.supabase) {
+                            await new Promise((resolve, reject) => {
+                                const script = document.createElement('script');
+                                script.src = 'https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js';
+                                script.onload = resolve;
+                                script.onerror = reject;
+                                document.head.appendChild(script);
+                            });
+                        }
+                        
+                        statusEl.innerHTML = '📊 Creating Supabase client...';
+                        const client = supabase.createClient(
+                            'https://hctdzwmlkgnuxcuhjooe.supabase.co',
+                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
+                        );
+                        
+                        statusEl.innerHTML = '📄 Loading COA data...';
+                        const { data: coas, error } = await client
+                            .from('coas')
+                            .select('*')
+                            .not('file_url', 'is', null)
+                            .neq('file_url', '')
+                            .order('created_at', { ascending: false })
+                            .limit(1);
+                        
+                        if (error) throw error;
+                        if (coas.length === 0) throw new Error('No COAs found');
+                        
+                        const coa = coas[0];
+                        statusEl.innerHTML = '✅ COA loaded! Displaying data...';
+                        
+                        // Display COA data
+                        coaContent.innerHTML = `
+                            <div class="data-grid">
+                                <div class="data-item"><strong>COA ID:</strong> <span>${coa.id}</span></div>
+                                <div class="data-item"><strong>Client:</strong> <span>${coa.client}</span></div>
+                                <div class="data-item"><strong>Compound:</strong> <span>${coa.compound}</span></div>
+                                <div class="data-item"><strong>Type:</strong> <span>${coa.analysis_type}</span></div>
+                                <div class="data-item"><strong>Status:</strong> <span class="status-badge">${coa.status}</span></div>
+                            </div>
+                            ${coa.purity ? `<div class="result-highlight"><strong>Purity:</strong> ${coa.purity}%</div>` : ''}
+                        `;
+                        
+                        // Load PDF
+                        if (pdfViewer && coa.file_url) {
+                            pdfViewer.src = coa.file_url;
+                            pdfViewer.style.display = 'block';
+                        }
+                        
+                        // Hide status
+                        setTimeout(() => {
+                            statusEl.style.display = 'none';
+                        }, 2000);
+                        
+                    } catch (error) {
+                        console.error('Error loading COA:', error);
+                        statusEl.innerHTML = '❌ Error: ' + error.message;
+                        statusEl.style.background = '#fecaca';
+                        statusEl.style.color = '#991b1b';
+                    }
+                }
+                
+                // Auto-load when page is ready
+                document.addEventListener('DOMContentLoaded', () => {
+                    console.log('Page loaded, auto-loading COA...');
+                    setTimeout(loadCOANow, 1000); // Wait 1 second for everything to settle
+                });
+                </script>
                 <!-- COA Data Display (Search Results Style) -->
                 <div id="coa-content" class="coa-data-display">
                 <!-- COA data will be loaded here by CMS loader -->
