@@ -198,7 +198,12 @@ class CMSManager {
             document.getElementById('heroTitle').value = heroSection?.title || contentMap.hero_title || '';
             document.getElementById('heroSubtitle').value = heroSection?.subtitle || '';
             document.getElementById('heroDescription').value = heroSection?.description || '';
-            document.getElementById('heroImageUrl').value = heroSection?.image_url || '';
+            // Load hero image (handle both URLs and media IDs)
+            const heroImageUrl = heroSection?.image_url || '';
+            document.getElementById('heroImageUrl').value = heroImageUrl;
+            if (heroImageUrl) {
+                this.updateHeroImagePreview(heroImageUrl);
+            }
             
             // Load hero stats if they exist
             if (heroSection?.stats && Array.isArray(heroSection.stats)) {
@@ -711,6 +716,141 @@ class CMSManager {
             notification.classList.remove('show');
         }, 4000);
     }
+    
+    // Hero image media selection methods
+    async updateHeroImagePreview(imageValue) {
+        const preview = document.getElementById('heroImagePreview');
+        const thumbnail = document.getElementById('heroImageThumbnail');
+        const imageName = document.getElementById('heroImageName');
+        
+        if (!imageValue) {
+            preview.style.display = 'none';
+            return;
+        }
+        
+        // Check if it's a media ID (UUID format) or direct URL
+        const isMediaId = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(imageValue);
+        
+        if (isMediaId) {
+            // Load from media table
+            try {
+                const { data: media, error } = await supabase
+                    .from('cms_media')
+                    .select('*')
+                    .eq('id', imageValue)
+                    .single();
+                    
+                if (error) throw error;
+                
+                if (media) {
+                    thumbnail.src = media.file_url;
+                    thumbnail.alt = media.alt_text || media.original_name;
+                    imageName.textContent = media.original_name;
+                    preview.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Error loading media:', error);
+                this.showNotification('Error loading image from media library', 'error');
+            }
+        } else {
+            // Direct URL
+            thumbnail.src = imageValue;
+            thumbnail.alt = 'Hero Image';
+            imageName.textContent = 'Direct URL: ' + imageValue.substring(0, 50) + '...';
+            preview.style.display = 'block';
+        }
+    }
+    
+    selectHeroImage() {
+        this.showMediaSelector('Select Hero Image', (selectedMedia) => {
+            document.getElementById('heroImageUrl').value = selectedMedia.id;
+            this.updateHeroImagePreview(selectedMedia.id);
+        });
+    }
+    
+    clearHeroImage() {
+        document.getElementById('heroImageUrl').value = '';
+        document.getElementById('heroImagePreview').style.display = 'none';
+    }
+    
+    async showMediaSelector(title, onSelect) {
+        try {
+            // Load media from database
+            const { data: mediaItems, error } = await supabase
+                .from('cms_media')
+                .select('*')
+                .order('created_at', { ascending: false });
+                
+            if (error) throw error;
+            
+            const mediaHTML = mediaItems.map(media => `
+                <div class="media-item" style="display: inline-block; margin: 0.5rem; padding: 0.5rem; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer; text-align: center;" onclick="cmsManager.handleMediaSelect('${media.id}', this)">
+                    <img src="${media.file_url}" alt="${media.alt_text || media.original_name}" style="width: 120px; height: 80px; object-fit: cover; border-radius: 4px; display: block; margin-bottom: 0.5rem;">
+                    <p style="margin: 0; font-size: 0.75rem; color: #64748b; word-break: break-all;">${media.original_name}</p>
+                </div>
+            `).join('');
+            
+            const modalContent = `
+                <div style="max-height: 400px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 6px; padding: 1rem; margin: 1rem 0;">
+                    ${mediaItems.length > 0 ? mediaHTML : '<p style="text-align: center; color: #64748b;">No media files found. Upload some images first.</p>'}
+                </div>
+                <p style="color: #64748b; font-size: 0.875rem;">Click on an image to select it, or <a href="#" onclick="document.querySelector('[data-tab=\"media\"]').click(); this.closest('.modal-overlay').remove();">upload new media</a>.</p>
+            `;
+            
+            const modalHTML = `
+                <div class="modal-overlay" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000;" onclick="if(event.target === this) this.remove()">
+                    <div class="modal-content" style="background: white; border-radius: 8px; padding: 2rem; max-width: 800px; width: 90%; max-height: 80%; overflow-y: auto;">
+                        <h3 style="margin-top: 0;">${title}</h3>
+                        ${modalContent}
+                        <div style="margin-top: 2rem; text-align: right;">
+                            <button class="btn-secondary" onclick="this.closest('.modal-overlay').remove()">Cancel</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            
+            // Store the onSelect callback
+            this.mediaSelectCallback = onSelect;
+            
+        } catch (error) {
+            console.error('Error loading media:', error);
+            this.showNotification('Error loading media library', 'error');
+        }
+    }
+    
+    handleMediaSelect(mediaId, element) {
+        // Remove previous selection
+        document.querySelectorAll('.media-item').forEach(item => {
+            item.style.border = '1px solid #e2e8f0';
+            item.style.backgroundColor = 'transparent';
+        });
+        
+        // Highlight selected item
+        element.style.border = '2px solid #3b82f6';
+        element.style.backgroundColor = '#eff6ff';
+        
+        // Find the selected media data
+        const mediaItems = document.querySelectorAll('.media-item');
+        let selectedIndex = -1;
+        mediaItems.forEach((item, index) => {
+            if (item === element) selectedIndex = index;
+        });
+        
+        if (selectedIndex >= 0 && this.mediaSelectCallback) {
+            // Get media data and call callback
+            supabase.from('cms_media')
+                .select('*')
+                .order('created_at', { ascending: false })
+                .then(({ data, error }) => {
+                    if (!error && data && data[selectedIndex]) {
+                        this.mediaSelectCallback(data[selectedIndex]);
+                        element.closest('.modal-overlay').remove();
+                    }
+                });
+        }
+    }
 }
 
 // Initialize CMS Manager
@@ -723,6 +863,8 @@ window.showAddBlogModal = () => cmsManager.showAddBlogModal();
 window.showAddTestimonialModal = () => cmsManager.showAddTestimonialModal();
 window.savePageContent = () => cmsManager.savePageContent();
 window.saveSiteSettings = () => cmsManager.saveSiteSettings();
+window.selectHeroImage = () => cmsManager.selectHeroImage();
+window.clearHeroImage = () => cmsManager.clearHeroImage();
 
 // Logout function
 window.logout = () => {

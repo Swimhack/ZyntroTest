@@ -323,9 +323,19 @@ class CMSLoader {
             heroDescription.textContent = hero.description;
         }
 
+        // Update hero image - handle both direct URLs and media IDs (thumbnails)
         const heroImage = document.querySelector('.hero-image img');
         if (heroImage && hero.image_url) {
-            heroImage.src = hero.image_url;
+            // Check if it's a media ID (UUID format) or direct URL
+            const isMediaId = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/.test(hero.image_url);
+            
+            if (isMediaId) {
+                // Load from media table
+                this.loadMediaImage(hero.image_url, heroImage);
+            } else {
+                // Direct URL
+                heroImage.src = hero.image_url;
+            }
         }
 
         // Update CTA buttons
@@ -365,6 +375,32 @@ class CMSLoader {
             } else {
                 console.warn('CMS Loader: Stats container not found');
             }
+        }
+    }
+    
+    async loadMediaImage(mediaId, imageElement) {
+        try {
+            console.log('CMS Loader: Loading media image:', mediaId);
+            const { data: media, error } = await supabase
+                .from('cms_media')
+                .select('*')
+                .eq('id', mediaId)
+                .single();
+                
+            if (error) {
+                console.warn('CMS Loader: Failed to load media:', error);
+                return;
+            }
+            
+            if (media && media.file_url) {
+                imageElement.src = media.file_url;
+                if (media.alt_text) {
+                    imageElement.alt = media.alt_text;
+                }
+                console.log('CMS Loader: Media image loaded:', media.file_url);
+            }
+        } catch (error) {
+            console.warn('CMS Loader: Error loading media image:', error);
         }
     }
 

@@ -671,8 +671,16 @@
                             <input type="text" class="form-input" id="heroSubtitle" placeholder="Enter hero subtitle">
                         </div>
                         <div class="form-group">
-                            <label class="form-label">Hero Image URL</label>
-                            <input type="text" class="form-input" id="heroImageUrl" placeholder="Enter image URL">
+                            <label class="form-label">Hero Image</label>
+                            <div style="margin-bottom: 0.5rem;">
+                                <button type="button" class="btn-secondary btn-small" onclick="selectHeroImage()">📷 Select from Media</button>
+                                <button type="button" class="btn-secondary btn-small" onclick="clearHeroImage()">🗑️ Clear</button>
+                            </div>
+                            <div id="heroImagePreview" style="display: none; margin-top: 0.5rem;">
+                                <img id="heroImageThumbnail" src="" alt="Hero Image" style="max-width: 200px; max-height: 150px; border-radius: 6px; border: 1px solid #d1d5db;">
+                                <p id="heroImageName" style="font-size: 0.875rem; color: #64748b; margin: 0.5rem 0 0 0;"></p>
+                            </div>
+                            <input type="hidden" id="heroImageUrl" placeholder="Image ID or URL">
                         </div>
                         <div class="form-group full-width">
                             <label class="form-label">Hero Description</label>
