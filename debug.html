@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug COA Loading</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        .debug-section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        .debug-output { background: #f5f5f5; padding: 15px; margin: 10px 0; }
+        #pdf-iframe { width: 100%; height: 600px; border: 2px solid #ccc; }
+    </style>
+</head>
+<body>
+    <h1>Debug COA Loading</h1>
+    
+    <div class="debug-section">
+        <h2>1. Supabase Connection Test</h2>
+        <button onclick="testSupabase()">Test Supabase Connection</button>
+        <div id="supabase-result" class="debug-output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>2. COA Data Test</h2>
+        <button onclick="testCOAData()">Load COA Data</button>
+        <div id="coa-result" class="debug-output"></div>
+    </div>
+    
+    <div class="debug-section">
+        <h2>3. PDF Test</h2>
+        <button onclick="testPDF()">Test PDF Loading</button>
+        <div id="pdf-result" class="debug-output"></div>
+        <iframe id="pdf-iframe" style="display: none;"></iframe>
+    </div>
+    
+    <div class="debug-section">
+        <h2>4. Manual PDF Test</h2>
+        <input type="text" id="manual-pdf-url" placeholder="Enter PDF URL" style="width: 70%; margin-right: 10px;">
+        <button onclick="testManualPDF()">Load PDF</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="admin/js/supabase-config.js"></script>
+    
+    <script>
+        let supabaseClient = null;
+        
+        // Wait for Supabase to initialize
+        setTimeout(() => {
+            supabaseClient = window.supabaseClient;
+        }, 1000);
+        
+        async function testSupabase() {
+            const result = document.getElementById('supabase-result');
+            result.innerHTML = 'Testing...';
+            
+            try {
+                console.log('Supabase client:', supabaseClient);
+                
+                if (!supabaseClient) {
+                    result.innerHTML = '❌ Supabase client not available';
+                    return;
+                }
+                
+                const { data, error } = await supabaseClient.from('coas').select('count');
+                
+                if (error) {
+                    result.innerHTML = `❌ Error: ${error.message}`;
+                } else {
+                    result.innerHTML = `✅ Connection successful. Response: ${JSON.stringify(data)}`;
+                }
+            } catch (err) {
+                result.innerHTML = `❌ Exception: ${err.message}`;
+            }
+        }
+        
+        async function testCOAData() {
+            const result = document.getElementById('coa-result');
+            result.innerHTML = 'Loading COA data...';
+            
+            try {
+                if (!supabaseClient) {
+                    result.innerHTML = '❌ Supabase client not available';
+                    return;
+                }
+                
+                const { data: coas, error } = await supabaseClient
+                    .from('coas')
+                    .select('*')
+                    .not('file_url', 'is', null)
+                    .neq('file_url', '')
+                    .order('created_at', { ascending: false })
+                    .limit(1);
+                
+                if (error) {
+                    result.innerHTML = `❌ Error: ${error.message}`;
+                } else if (coas.length === 0) {
+                    result.innerHTML = '⚠️ No COAs found with file URLs';
+                } else {
+                    const coa = coas[0];
+                    result.innerHTML = `✅ COA loaded:<br>
+                        ID: ${coa.id}<br>
+                        Client: ${coa.client}<br>
+                        Compound: ${coa.compound}<br>
+                        File URL: ${coa.file_url}`;
+                }
+            } catch (err) {
+                result.innerHTML = `❌ Exception: ${err.message}`;
+            }
+        }
+        
+        async function testPDF() {
+            const result = document.getElementById('pdf-result');
+            const iframe = document.getElementById('pdf-iframe');
+            result.innerHTML = 'Testing PDF loading...';
+            
+            try {
+                if (!supabaseClient) {
+                    result.innerHTML = '❌ Supabase client not available';
+                    return;
+                }
+                
+                const { data: coas, error } = await supabaseClient
+                    .from('coas')
+                    .select('*')
+                    .not('file_url', 'is', null)
+                    .neq('file_url', '')
+                    .limit(1);
+                
+                if (error || coas.length === 0) {
+                    result.innerHTML = '❌ No COA with file URL found';
+                    return;
+                }
+                
+                const pdfUrl = coas[0].file_url;
+                result.innerHTML = `Testing PDF: ${pdfUrl}`;
+                
+                iframe.style.display = 'block';
+                iframe.src = pdfUrl;
+                
+                iframe.onload = () => {
+                    result.innerHTML += '<br>✅ PDF loaded successfully';
+                };
+                
+                iframe.onerror = () => {
+                    result.innerHTML += '<br>❌ PDF failed to load';
+                };
+                
+            } catch (err) {
+                result.innerHTML = `❌ Exception: ${err.message}`;
+            }
+        }
+        
+        function testManualPDF() {
+            const url = document.getElementById('manual-pdf-url').value;
+            const iframe = document.getElementById('pdf-iframe');
+            
+            if (!url) {
+                alert('Please enter a PDF URL');
+                return;
+            }
+            
+            iframe.style.display = 'block';
+            iframe.src = url;
+            
+            console.log('Loading manual PDF:', url);
+        }
+    </script>
+</body>
+</html>

@@ -19,13 +19,17 @@ class CMSLoader {
 
     init() {
         console.log('CMS Loader: Initializing...');
+        console.log('CMS Loader: Current URL:', window.location.href);
+        console.log('CMS Loader: Document ready state:', document.readyState);
         
         // Wait for Supabase to be available
         const checkSupabase = () => {
+            console.log('CMS Loader: Checking Supabase availability...');
             if (initSupabase()) {
                 console.log('CMS Loader: Supabase client found, loading content...');
                 this.loadPageContent();
             } else {
+                console.log('CMS Loader: Supabase not ready, retrying in 100ms...');
                 setTimeout(checkSupabase, 100);
             }
         };
@@ -61,7 +65,10 @@ class CMSLoader {
 
             // Load sample COA on homepage
             if (currentPage === 'index') {
+                console.log('CMS Loader: Homepage detected, adding sample COA loading to promises');
                 loadPromises.push(this.loadSampleCOA());
+            } else {
+                console.log('CMS Loader: Not homepage, skipping sample COA loading. Current page:', currentPage);
             }
 
             await Promise.all(loadPromises);
@@ -76,6 +83,8 @@ class CMSLoader {
         const filename = path.split('/').pop() || 'index.html';
         const pageName = filename.replace('.html', '');
         
+        console.log('CMS Loader: Path analysis - pathname:', path, 'filename:', filename, 'pageName:', pageName);
+        
         // Map filenames to page names
         const pageMap = {
             'index': 'index',
@@ -86,7 +95,9 @@ class CMSLoader {
             'search': 'search'
         };
 
-        return pageMap[pageName] || 'index';
+        const finalPageName = pageMap[pageName] || 'index';
+        console.log('CMS Loader: Final page name:', finalPageName);
+        return finalPageName;
     }
 
     async loadSiteSettings() {
