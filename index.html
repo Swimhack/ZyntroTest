@@ -215,11 +215,16 @@
                     <p>Cutting-edge diode array detection for superior accuracy</p>
                 </div>
             </div>
-            <div class="coa-preview">
+                <div class="coa-preview">
                 <h3>Sample Certificate of Analysis</h3>
+                <!-- Debug button for manual testing -->
+                <button onclick="window.debugSampleCOA ? window.debugSampleCOA() : alert('Debug function not available')" style="margin-bottom: 1rem; padding: 0.5rem 1rem; background: #2563eb; color: white; border: none; border-radius: 0.375rem; cursor: pointer;">🔍 Load Sample COA (Debug)</button>
                 <!-- COA Data Display (Search Results Style) -->
                 <div id="coa-content" class="coa-data-display">
-                    <!-- COA data will be loaded here by CMS loader -->
+                <!-- COA data will be loaded here by CMS loader -->
+                <div id="cms-status" style="padding: 1rem; margin: 1rem 0; background: #fef3c7; border-radius: 0.5rem; font-size: 0.9rem; color: #92400e;">
+                    🔄 Loading COA data...
+                </div>
                 </div>
                 
                 <!-- PDF Preview Section -->

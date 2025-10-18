@@ -28,11 +28,21 @@ class CMSLoader {
         this.cacheTimeout = 5 * 60 * 1000; // 5 minutes
         this.init();
     }
+    
+    updateStatus(message) {
+        const statusEl = document.getElementById('cms-status');
+        if (statusEl) {
+            statusEl.innerHTML = message;
+            console.log('CMS Status:', message);
+        }
+    }
 
     init() {
         console.log('CMS Loader: Initializing...');
         console.log('CMS Loader: Current URL:', window.location.href);
         console.log('CMS Loader: Document ready state:', document.readyState);
+        
+        this.updateStatus('🔄 CMS Loader initializing...');
         
         // Wait for Supabase to be available
         let retryCount = 0;
@@ -45,6 +55,7 @@ class CMSLoader {
             
             if (initSupabase()) {
                 console.log('CMS Loader: Supabase client found, loading content...');
+                this.updateStatus('✅ Supabase connected, loading content...');
                 this.loadPageContent();
             } else {
                 retryCount++;
@@ -120,6 +131,7 @@ class CMSLoader {
             // Load sample COA on homepage
             if (currentPage === 'index') {
                 console.log('CMS Loader: Homepage detected, adding sample COA loading to promises');
+                this.updateStatus('📝 Loading sample COA from database...');
                 loadPromises.push(this.loadSampleCOA());
             } else {
                 console.log('CMS Loader: Not homepage, skipping sample COA loading. Current page:', currentPage);
@@ -672,6 +684,7 @@ class CMSLoader {
     
     showSampleCOAError(message) {
         console.warn('CMS Loader: Showing sample COA error:', message);
+        this.updateStatus(`❌ Error: ${message}`);
         const coaContent = document.getElementById('coa-content');
         const pdfError = document.getElementById('pdf-error-message');
         const pdfIframe = document.getElementById('pdf-viewer');
@@ -711,6 +724,11 @@ class CMSLoader {
 
         // Setup PDF preview
         this.setupPDFPreview(coa);
+        
+        // Hide status indicator on success
+        this.updateStatus('');
+        const statusEl = document.getElementById('cms-status');
+        if (statusEl) statusEl.style.display = 'none';
 
         console.log('CMS Loader: Sample COA updated with real data');
     }
