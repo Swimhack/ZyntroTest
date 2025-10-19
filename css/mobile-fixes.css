@@ -285,6 +285,13 @@ h2 {
     .featured-image {
         height: auto;
         min-height: 300px;
+        max-width: 500px !important;
+        justify-content: center !important;
+    }
+    
+    .post-image {
+        max-width: 100% !important;
+        justify-content: center !important;
     }
     
     .cta-actions {
@@ -337,6 +344,18 @@ h2 {
     
         .featured-image {
             min-height: 350px;
+            max-width: 600px !important;
+            justify-content: center !important;
+        }
+        
+        .post-image {
+            max-width: 100% !important;
+            justify-content: center !important;
+        }
+        
+        .blog-image {
+            max-width: 100% !important;
+            justify-content: center !important;
         }
         
         /* Image containers at desktop - Reduced Size */
@@ -386,10 +405,66 @@ h2 {
     min-height: 200px !important;
 }
 
-.featured-image,
-.blog-image {
+/* Blog Image Centering - Best Practices */
+.featured-image {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
     overflow: hidden !important;
     border-radius: var(--radius-xl);
+    width: 100% !important;
+    max-width: 600px !important;
+    margin: 0 auto !important;
+}
+
+.featured-image img {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: cover !important;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-lg);
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+.post-image {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    border-radius: var(--radius-xl);
+    width: 100% !important;
+    margin: 0 auto !important;
+}
+
+.post-image img {
+    width: 100% !important;
+    height: 300px !important;
+    object-fit: cover !important;
+    border-radius: var(--radius-xl);
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+.blog-image {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    overflow: hidden !important;
+    border-radius: var(--radius-xl);
+    width: 100% !important;
+    margin: 0 auto !important;
+}
+
+.blog-image img {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100% !important;
+    object-fit: cover !important;
+    border-radius: var(--radius-xl);
+    display: block !important;
+    margin: 0 auto !important;
 }
 
 /* High DPI Displays */
