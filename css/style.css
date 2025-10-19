@@ -458,6 +458,7 @@ p {
     position: relative;
     width: 100%;
     max-width: 600px;
+    max-height: 300px;
     border-radius: var(--radius-2xl);
     overflow: hidden;
     box-shadow: var(--shadow-2xl);
@@ -471,7 +472,9 @@ p {
 
 .hero-main-image {
     width: 100%;
-    height: auto;
+    height: 100%;
+    max-height: 300px;
+    object-fit: cover;
     display: block;
     border-radius: var(--radius-2xl);
 }
@@ -580,6 +583,7 @@ p {
     .image-container {
         transform: none;
         max-width: 100%;
+        max-height: 300px;
         width: 100%;
         margin: 0;
         border-radius: var(--radius-lg);
@@ -592,7 +596,8 @@ p {
     
     .hero-main-image {
         width: 100%;
-        height: auto;
+        height: 100%;
+        max-height: 300px;
         object-fit: cover;
         border-radius: var(--radius-lg);
     }
