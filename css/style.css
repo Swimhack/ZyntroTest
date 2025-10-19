@@ -1682,22 +1682,24 @@ p {
 
 .featured-article .container {
     max-width: none !important;
-    margin: 0 !important;
+    margin: 0 auto !important;
     padding: 0 2rem;
     width: 100% !important;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 .featured-article .featured-content {
     width: 100%;
     max-width: 100%;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 .featured-article .featured-image {
@@ -2094,6 +2096,21 @@ p {
     gap: 0.25rem;
 }
 
+/* Desktop and Tablet Centering Fix */
+@media (min-width: 769px) {
+    .featured-article .container {
+        margin: 0 auto !important;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .featured-article .featured-content {
+        margin: 0 auto;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
 /* Responsive Blog Styles */
 @media (max-width: 1024px) {
     .articles-grid {
@@ -2102,6 +2119,18 @@ p {
     
     .featured-content h2 {
         font-size: 2rem;
+    }
+    
+    .featured-article .container {
+        margin: 0 auto !important;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .featured-article .featured-content {
+        margin: 0 auto;
+        justify-content: center;
+        align-items: center;
     }
 }
 
