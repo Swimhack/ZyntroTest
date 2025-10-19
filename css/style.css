@@ -1678,6 +1678,7 @@ p {
     width: 100%;
     margin: 0;
     max-width: none;
+    display: block;
 }
 
 .featured-article .container {
@@ -1685,6 +1686,7 @@ p {
     margin: 0 auto;
     padding: 0 2rem;
     width: 100%;
+    display: block;
 }
 
 .featured-article .featured-content {
@@ -1693,6 +1695,7 @@ p {
     margin: 0;
     padding: 0;
     text-align: center;
+    display: block;
 }
 
 .featured-article .featured-image {
@@ -2079,19 +2082,19 @@ p {
     gap: 0.25rem;
 }
 
-/* Desktop and Tablet Centering Fix */
+/* Desktop and Tablet - Maintain Single Column */
 @media (min-width: 769px) {
     .featured-article .container {
-        margin: 0 auto !important;
-        width: 100% !important;
-        justify-content: center;
-        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+        display: block;
     }
     
     .featured-article .featured-content {
-        margin: 0 auto;
-        justify-content: center;
-        align-items: center;
+        width: 100%;
+        text-align: center;
+        display: block;
     }
 }
 
@@ -2106,16 +2109,16 @@ p {
     }
     
     .featured-article .container {
-        margin: 0 auto !important;
-        width: 100% !important;
-        justify-content: center;
-        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        width: 100%;
+        display: block;
     }
     
     .featured-article .featured-content {
-        margin: 0 auto;
-        justify-content: center;
-        align-items: center;
+        width: 100%;
+        text-align: center;
+        display: block;
     }
 }
 
