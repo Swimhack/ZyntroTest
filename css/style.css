@@ -1671,18 +1671,20 @@ p {
     border-color: var(--primary-blue);
 }
 
-/* Featured Article - Proper Centering and Layout */
+/* Featured Article - Full Width Layout */
 .featured-article {
     padding: 4rem 0;
     background: var(--white);
-    width: 100%;
+    width: 100% !important;
+    margin: 0 !important;
+    max-width: none !important;
 }
 
 .featured-article .container {
-    max-width: 1200px;
-    margin: 0 auto;
+    max-width: none !important;
+    margin: 0 !important;
     padding: 0 2rem;
-    width: 100%;
+    width: 100% !important;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -2374,6 +2376,8 @@ p {
     
     .featured-article .container {
         padding: 0 1rem;
+        max-width: none;
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
