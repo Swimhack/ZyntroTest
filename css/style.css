@@ -2401,6 +2401,7 @@ p {
     /* Featured Article Mobile Improvements */
     .featured-article {
         padding: 2rem 0;
+        width: 100% !important;
     }
     
     .featured-article .container {
