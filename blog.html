@@ -86,10 +86,10 @@
     <!-- Featured Article -->
     <section class="featured-article">
         <div class="container">
-            <div class="featured-image">
-                <img src="https://images.unsplash.com/photo-1576671081837-49000212a370?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" alt="LCMS instrumentation for peptide analysis">
-            </div>
             <div class="featured-content">
+                <div class="featured-image">
+                    <img src="https://images.unsplash.com/photo-1576671081837-49000212a370?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" alt="LCMS instrumentation for peptide analysis">
+                </div>
                 <div class="featured-badge">Featured Article</div>
                 <h2>Why LCMS with DAD Technology Outperforms Traditional Methods for Peptide Testing</h2>
                 <div class="article-meta">
@@ -466,72 +466,7 @@
             background: var(--white);
         }
 
-        .featured-content {
-            text-align: center;
-            max-width: 700px;
-            margin: 0 auto;
-        }
-
-        .featured-badge {
-            background: var(--secondary-green);
-            color: var(--white);
-            padding: 0.5rem 1rem;
-            border-radius: var(--radius-full);
-            font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            display: inline-block;
-            margin-bottom: 1rem;
-        }
-
-        .featured-content h2 {
-            font-size: 2.5rem;
-            color: var(--gray-900);
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .article-meta {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-            color: var(--gray-600);
-        }
-
-        .article-meta .category {
-            background: var(--primary-blue);
-            color: var(--white);
-            padding: 0.25rem 0.75rem;
-            border-radius: var(--radius-full);
-            font-weight: 600;
-        }
-
-        .featured-excerpt {
-            font-size: 1.125rem;
-            color: var(--gray-600);
-            line-height: 1.7;
-            margin-bottom: 2rem;
-        }
-
-        .featured-image {
-            position: relative;
-            border-radius: 1rem;
-            overflow: hidden;
-            box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
-            margin: 0 auto 2rem auto;
-            width: 100%;
-            max-width: 100%;
-        }
-
-        .featured-image img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            aspect-ratio: 16/9;
-            display: block;
-            border-radius: 1rem;
-        }
+        /* Featured Article styles are now in main CSS file */
 
         .blog-articles {
             padding: var(--space-3xl) 0;
