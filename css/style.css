@@ -2100,6 +2100,7 @@ p {
 @media (min-width: 769px) {
     .featured-article .container {
         margin: 0 auto !important;
+        width: 100% !important;
         justify-content: center;
         align-items: center;
     }
@@ -2123,6 +2124,7 @@ p {
     
     .featured-article .container {
         margin: 0 auto !important;
+        width: 100% !important;
         justify-content: center;
         align-items: center;
     }
@@ -2406,8 +2408,8 @@ p {
     
     .featured-article .container {
         padding: 0 1rem;
-        max-width: none;
-        width: 100%;
+        max-width: none !important;
+        width: 100% !important;
         display: flex;
         flex-direction: column;
         align-items: center;
