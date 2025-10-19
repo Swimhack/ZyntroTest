@@ -1703,8 +1703,8 @@ p {
 }
 
 .featured-article .featured-image {
-    width: 100%;
-    max-width: 100%;
+    width: 100% !important;
+    max-width: 100% !important;
     margin: 0 0 2rem 0;
     border-radius: 1rem;
     overflow: hidden;
@@ -1715,7 +1715,7 @@ p {
 }
 
 .featured-article .featured-image img {
-    width: 100%;
+    width: 100% !important;
     height: auto;
     object-fit: cover;
     aspect-ratio: 16/9;
@@ -2420,8 +2420,8 @@ p {
     }
     
     .featured-article .featured-image {
-        width: 100%;
-        max-width: 100%;
+        width: 100% !important;
+        max-width: 100% !important;
         margin: 0 0 1.5rem 0;
         display: flex;
         justify-content: center;
@@ -2429,7 +2429,7 @@ p {
     }
     
     .featured-article .featured-image img {
-        width: 100%;
+        width: 100% !important;
         aspect-ratio: 16/9;
         border-radius: 0.75rem;
     }
