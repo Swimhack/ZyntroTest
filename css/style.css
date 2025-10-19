@@ -1676,9 +1676,9 @@ p {
     border-color: var(--primary-blue);
 }
 
-/* Featured Article - Single Column Layout */
+/* Featured Article - Mobile-First Single Column Layout */
 .featured-article {
-    padding: 4rem 0;
+    padding: 2rem 0;
     background: var(--white);
     width: 100%;
     margin: 0;
@@ -1687,9 +1687,9 @@ p {
 }
 
 .featured-article .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
+    max-width: 100%;
+    margin: 0;
+    padding: 0 1rem;
     width: 100%;
     display: block;
 }
@@ -1705,10 +1705,10 @@ p {
 
 .featured-article .featured-image {
     width: 100%;
-    margin: 0 0 2rem 0;
-    border-radius: 1rem;
+    margin: 0 0 1.5rem 0;
+    border-radius: 0.75rem;
     overflow: hidden;
-    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
 }
 
 .featured-article .featured-image img {
@@ -1717,34 +1717,34 @@ p {
     object-fit: cover;
     aspect-ratio: 16/9;
     display: block;
-    border-radius: 1rem;
+    border-radius: 0.75rem;
 }
 
 .featured-article .featured-badge {
     display: inline-block;
-    padding: 0.5rem 1.25rem;
+    padding: 0.4rem 1rem;
     background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
     color: var(--white);
     border-radius: 50px;
-    font-size: 0.875rem;
+    font-size: 0.75rem;
     font-weight: 600;
-    margin: 0 0 1.5rem 0;
+    margin: 0 0 1rem 0;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
 .featured-article .featured-content h2 {
-    font-size: 2.25rem;
+    font-size: 1.5rem;
     color: var(--gray-900);
-    margin: 0 0 1.5rem 0;
-    line-height: 1.2;
+    margin: 0 0 1rem 0;
+    line-height: 1.3;
     font-family: var(--font-display);
 }
 
 .featured-article .article-meta {
     display: flex;
-    gap: 1rem;
-    margin: 0 0 1.5rem 0;
+    gap: 0.75rem;
+    margin: 0 0 1rem 0;
     flex-wrap: wrap;
     align-items: center;
     justify-content: center;
@@ -1755,7 +1755,7 @@ p {
     align-items: center;
     gap: 0.25rem;
     color: var(--gray-600);
-    font-size: 0.875rem;
+    font-size: 0.8rem;
 }
 
 .article-meta .date::before {
@@ -1769,20 +1769,18 @@ p {
 .article-meta .category {
     background: var(--primary-blue);
     color: var(--white);
-    padding: 0.35rem 1rem;
+    padding: 0.25rem 0.75rem;
     border-radius: var(--radius-full);
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
 }
 
 .featured-article .featured-excerpt {
-    font-size: 1.125rem;
+    font-size: 1rem;
     color: var(--gray-600);
-    line-height: 1.7;
-    margin: 0 0 2rem 0;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
+    line-height: 1.6;
+    margin: 0 0 1.5rem 0;
+    max-width: 100%;
 }
 
 .featured-article .featured-content .btn {
@@ -2087,11 +2085,16 @@ p {
     gap: 0.25rem;
 }
 
-/* Desktop and Tablet - Maintain Single Column */
+/* Tablet - Maintain Single Column with Better Spacing */
 @media (min-width: 769px) {
+    .featured-article {
+        padding: 3rem 0;
+    }
+    
     .featured-article .container {
-        max-width: 1200px;
+        max-width: 800px;
         margin: 0 auto;
+        padding: 0 2rem;
         width: 100%;
         display: block;
     }
@@ -2100,6 +2103,43 @@ p {
         width: 100%;
         text-align: center;
         display: block;
+    }
+    
+    .featured-article .featured-content h2 {
+        font-size: 2rem;
+    }
+    
+    .featured-article .featured-excerpt {
+        font-size: 1.125rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+/* Desktop - Maintain Single Column with Optimal Spacing */
+@media (min-width: 1025px) {
+    .featured-article {
+        padding: 4rem 0;
+    }
+    
+    .featured-article .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 2rem;
+        width: 100%;
+        display: block;
+    }
+    
+    .featured-article .featured-content h2 {
+        font-size: 2.5rem;
+    }
+    
+    .featured-article .featured-excerpt {
+        font-size: 1.25rem;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
     }
 }
 
@@ -2107,23 +2147,6 @@ p {
 @media (max-width: 1024px) {
     .articles-grid {
         grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .featured-content h2 {
-        font-size: 2rem;
-    }
-    
-    .featured-article .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        width: 100%;
-        display: block;
-    }
-    
-    .featured-article .featured-content {
-        width: 100%;
-        text-align: center;
-        display: block;
     }
 }
 
@@ -2392,61 +2415,7 @@ p {
     }
     
     /* Featured Article Mobile Improvements */
-    .featured-article {
-        padding: 2rem 0;
-        width: 100% !important;
-    }
-    
-    .featured-article .container {
-        padding: 0 1rem;
-        max-width: 100%;
-    }
-    
-    .featured-article .featured-content {
-        width: 100%;
-        text-align: center;
-    }
-    
-    .featured-article .featured-image {
-        width: 100%;
-        margin: 0 0 1.5rem 0;
-    }
-    
-    .featured-article .featured-image img {
-        width: 100%;
-        aspect-ratio: 16/9;
-        border-radius: 0.75rem;
-    }
-    
-    .featured-article .featured-content h2 {
-        font-size: 1.5rem;
-        line-height: 1.3;
-        text-align: center;
-        width: 100%;
-    }
-    
-    .featured-article .featured-badge {
-        font-size: 0.8rem;
-        padding: 0.4rem 1rem;
-        margin: 0 0 1rem 0;
-        text-align: center;
-    }
-    
-    .featured-article .article-meta {
-        gap: 0.75rem;
-        flex-direction: row;
-        align-items: center;
-        justify-content: center;
-        flex-wrap: wrap;
-        width: 100%;
-    }
-    
-    .featured-article .featured-excerpt {
-        text-align: center;
-        font-size: 1rem;
-        width: 100%;
-        max-width: 100%;
-    }
+    /* Mobile styles are already defined in the base styles above */
 }
 
 /* Print Styles */
