@@ -196,9 +196,12 @@ document.addEventListener('DOMContentLoaded', function() {
                             message: form.querySelector('[name="message"]')?.value || ''
                         };
                         
-                        // Send contact email
+                        // Save to database first
+                        await saveContactSubmission(formData);
+                        
+                        // Then send email
                         await sendContactEmail(formData);
-                        showNotification('Thank you! Your inquiry has been sent. We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
+                        showNotification('Thank you! Your inquiry has been saved and sent. We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
                     } else {
                         // Generic form submission
                         showNotification('Thank you! Your information has been received. A team member will reach out to you shortly.', 'success');
@@ -240,18 +243,78 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.disabled = true;
             
             try {
-                // Send email using EmailJS
+                // Save to database first
+                const result = await saveNewsletterSubscription(email);
+                
+                if (result.already_subscribed) {
+                    showNotification('You are already subscribed!', 'info');
+                    return;
+                }
+                
+                // Then send email
                 await sendNewsletterEmail(email);
                 showNotification('Thank you for subscribing! You\'ll receive LCMS insights and technical updates.', 'success');
                 form.reset();
             } catch (error) {
                 console.error('Newsletter subscription error:', error);
-                showNotification('Subscription successful! We\'ll send you updates soon.', 'success');
-                form.reset();
+                showNotification('Error saving subscription. Please try again.', 'error');
             } finally {
                 // Reset button state
                 submitBtn.textContent = originalText;
                 submitBtn.disabled = false;
+            }
+        });
+    });
+    
+    // Sample submission form handler
+    const sampleForms = document.querySelectorAll('#sample-submission-form');
+    sampleForms.forEach(form => {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            
+            try {
+                // Collect form data
+                const formData = {
+                    client_name: form.querySelector('[name="client-name"]')?.value || '',
+                    email: form.querySelector('[name="email"]')?.value || '',
+                    phone: form.querySelector('[name="phone"]')?.value || '',
+                    company: form.querySelector('[name="company"]')?.value || '',
+                    sample_type: form.querySelector('[name="sample-type"]')?.value || '',
+                    sample_count: parseInt(form.querySelector('[name="sample-count"]')?.value) || 0,
+                    analysis_requested: form.querySelector('[name="analysis-requested"]')?.value || '',
+                    rush_service: form.querySelector('[name="rush-service"]')?.checked || false,
+                    shipping_method: form.querySelector('[name="shipping-method"]')?.value || '',
+                    message: form.querySelector('[name="message"]')?.value || ''
+                };
+                
+                // Save to database first
+                await saveSampleSubmission(formData);
+                
+                // Then send email (reuse contact email function)
+                await sendContactEmail({
+                    name: formData.client_name,
+                    email: formData.email,
+                    phone: formData.phone,
+                    company: formData.company,
+                    serviceType: 'Sample Submission',
+                    sampleType: formData.sample_type,
+                    message: `Sample Submission Details:\n\nSample Type: ${formData.sample_type}\nSample Count: ${formData.sample_count}\nAnalysis Requested: ${formData.analysis_requested}\nRush Service: ${formData.rush_service ? 'Yes' : 'No'}\nShipping Method: ${formData.shipping_method}\n\nAdditional Message: ${formData.message}`
+                });
+                
+                showNotification('Sample submission received! We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
+                form.reset();
+            } catch (error) {
+                console.error('Sample submission error:', error);
+                showNotification('Error submitting form. Please try again.', 'error');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
             }
         });
     });

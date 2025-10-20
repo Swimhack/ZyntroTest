@@ -105,9 +105,79 @@ Message: ${formData.message || 'No additional message'}
     }
 }
 
+// Database save functions
+async function saveContactSubmission(formData) {
+    if (!window.supabaseClient) {
+        throw new Error('Supabase client not initialized');
+    }
+    
+    const { data, error } = await window.supabaseClient
+        .from('contact_submissions')
+        .insert([{
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            company: formData.company,
+            service_type: formData.serviceType,
+            sample_type: formData.sampleType,
+            message: formData.message,
+            status: 'unread'
+        }]);
+    
+    if (error) throw error;
+    return data;
+}
+
+async function saveSampleSubmission(formData) {
+    if (!window.supabaseClient) {
+        throw new Error('Supabase client not initialized');
+    }
+    
+    const { data, error } = await window.supabaseClient
+        .from('sample_submissions')
+        .insert([{
+            client_name: formData.client_name,
+            email: formData.email,
+            phone: formData.phone,
+            company: formData.company,
+            sample_type: formData.sample_type,
+            sample_count: formData.sample_count,
+            analysis_requested: formData.analysis_requested,
+            rush_service: formData.rush_service,
+            shipping_method: formData.shipping_method,
+            message: formData.message,
+            status: 'unread'
+        }]);
+    
+    if (error) throw error;
+    return data;
+}
+
+async function saveNewsletterSubscription(email) {
+    if (!window.supabaseClient) {
+        throw new Error('Supabase client not initialized');
+    }
+    
+    const { data, error } = await window.supabaseClient
+        .from('newsletter_subscriptions')
+        .insert([{ email, status: 'active', source: 'website' }])
+        .select();
+    
+    if (error) {
+        if (error.code === '23505') { // Duplicate email
+            return { already_subscribed: true };
+        }
+        throw error;
+    }
+    return data;
+}
+
 // Make functions globally available
 window.EMAIL_CONFIG = EMAIL_CONFIG;
 window.initEmailJS = initEmailJS;
 window.isValidEmail = isValidEmail;
 window.sendNewsletterEmail = sendNewsletterEmail;
 window.sendContactEmail = sendContactEmail;
+window.saveContactSubmission = saveContactSubmission;
+window.saveSampleSubmission = saveSampleSubmission;
+window.saveNewsletterSubscription = saveNewsletterSubscription;
