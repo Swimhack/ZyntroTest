@@ -1354,7 +1354,8 @@ p {
 .cta-content p {
     font-size: 1.25rem;
     margin-bottom: var(--space-xl);
-    opacity: 0.9;
+    color: var(--white);
+    opacity: 1;
     max-width: 600px;
     margin-left: auto;
     margin-right: auto;
