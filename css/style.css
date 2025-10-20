@@ -930,6 +930,13 @@ p {
     background: linear-gradient(135deg, var(--accent-teal), var(--accent-cyan));
 }
 
+.service-card:nth-child(3) .service-icon .icon {
+    stroke: var(--white);
+    stroke-width: 2;
+    fill: none;
+    opacity: 1;
+}
+
 /* Heroicons SVG Icons */
 .icon {
     width: 32px;
