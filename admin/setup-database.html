@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Setup - ZyntroTest Admin</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .status-box {
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+        }
+
+        .status-box.checking {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+
+        .status-box.success {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+
+        .status-box.error {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+
+        .status-box.info {
+            background: #d1ecf1;
+            border-color: #17a2b8;
+            color: #0c5460;
+        }
+
+        .status-box h3 {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .status-box p {
+            margin: 8px 0;
+            line-height: 1.6;
+        }
+
+        .sql-box {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .steps {
+            counter-reset: step;
+            list-style: none;
+            padding: 0;
+        }
+
+        .steps li {
+            counter-increment: step;
+            margin-bottom: 20px;
+            padding-left: 40px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .steps li::before {
+            content: counter(step);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #667eea;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .table-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .table-card {
+            padding: 15px;
+            border-radius: 6px;
+            background: #f8f9fa;
+            border: 2px solid;
+        }
+
+        .table-card.exists {
+            border-color: #28a745;
+            background: #d4edda;
+        }
+
+        .table-card.missing {
+            border-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .table-card h4 {
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗄️ Database Setup</h1>
+            <p>Form Submissions Schema Configuration</p>
+        </div>
+
+        <div class="content">
+            <div id="status-container">
+                <div class="status-box checking">
+                    <h3><span class="loading"></span> Checking Database Status...</h3>
+                    <p>Connecting to Supabase and verifying table structure...</p>
+                </div>
+            </div>
+
+            <div id="table-status-container"></div>
+
+            <div id="instructions-container"></div>
+
+            <div id="sql-container"></div>
+
+            <div style="margin-top: 30px; text-align: center;">
+                <button class="btn" onclick="location.reload()">🔄 Refresh Status</button>
+                <a href="dashboard.html" class="btn btn-secondary" style="margin-left: 10px;">← Back to Dashboard</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script>
+        const SQL_SCHEMA = `-- Form Submissions Database Schema
+-- Tables for contact, sample, and newsletter submissions
+
+CREATE TABLE IF NOT EXISTS contact_submissions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    company TEXT,
+    service_type TEXT,
+    sample_type TEXT,
+    message TEXT,
+    status TEXT DEFAULT 'unread' CHECK (status IN ('unread', 'read', 'responded', 'completed')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    notes TEXT
+);
+
+CREATE TABLE IF NOT EXISTS sample_submissions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    client_name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    company TEXT,
+    sample_type TEXT,
+    sample_count INTEGER,
+    analysis_requested TEXT,
+    rush_service BOOLEAN DEFAULT false,
+    shipping_method TEXT,
+    message TEXT,
+    status TEXT DEFAULT 'unread' CHECK (status IN ('unread', 'read', 'in_progress', 'completed')),
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    notes TEXT
+);
+
+CREATE TABLE IF NOT EXISTS newsletter_subscriptions (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    email TEXT NOT NULL UNIQUE,
+    status TEXT DEFAULT 'active' CHECK (status IN ('active', 'unsubscribed')),
+    subscribed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    unsubscribed_at TIMESTAMP WITH TIME ZONE,
+    source TEXT DEFAULT 'website'
+);
+
+-- Enable Row Level Security
+ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE sample_submissions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE newsletter_subscriptions ENABLE ROW LEVEL SECURITY;
+
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_contact_submissions_email ON contact_submissions(email);
+CREATE INDEX IF NOT EXISTS idx_contact_submissions_status ON contact_submissions(status);
+CREATE INDEX IF NOT EXISTS idx_contact_submissions_created_at ON contact_submissions(created_at);
+
+CREATE INDEX IF NOT EXISTS idx_sample_submissions_email ON sample_submissions(email);
+CREATE INDEX IF NOT EXISTS idx_sample_submissions_status ON sample_submissions(status);
+CREATE INDEX IF NOT EXISTS idx_sample_submissions_created_at ON sample_submissions(created_at);
+
+CREATE INDEX IF NOT EXISTS idx_newsletter_email ON newsletter_subscriptions(email);
+CREATE INDEX IF NOT EXISTS idx_newsletter_status ON newsletter_subscriptions(status);
+CREATE INDEX IF NOT EXISTS idx_newsletter_subscribed_at ON newsletter_subscriptions(subscribed_at);
+
+-- Create updated_at trigger function
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Create triggers for updated_at
+DROP TRIGGER IF EXISTS update_contact_submissions_updated_at ON contact_submissions;
+CREATE TRIGGER update_contact_submissions_updated_at
+    BEFORE UPDATE ON contact_submissions
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+DROP TRIGGER IF EXISTS update_sample_submissions_updated_at ON sample_submissions;
+CREATE TRIGGER update_sample_submissions_updated_at
+    BEFORE UPDATE ON sample_submissions
+    FOR EACH ROW
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Create RLS policies for service role access
+CREATE POLICY "Allow service role to manage contact submissions" ON contact_submissions
+    FOR ALL USING (true);
+
+CREATE POLICY "Allow service role to manage sample submissions" ON sample_submissions
+    FOR ALL USING (true);
+
+CREATE POLICY "Allow service role to manage newsletter subscriptions" ON newsletter_subscriptions
+    FOR ALL USING (true);
+
+-- Allow public read access for newsletter subscriptions
+CREATE POLICY "Allow public read newsletter subscriptions" ON newsletter_subscriptions
+    FOR SELECT USING (true);
+
+-- Grant permissions
+GRANT ALL ON contact_submissions TO service_role;
+GRANT ALL ON sample_submissions TO service_role;
+GRANT ALL ON newsletter_subscriptions TO service_role;
+GRANT SELECT ON newsletter_subscriptions TO anon;`;
+
+        async function checkDatabaseStatus() {
+            try {
+                await initSupabase();
+                const admin = SupabaseUtils.getAdminClient();
+
+                const tables = ['contact_submissions', 'sample_submissions', 'newsletter_subscriptions'];
+                const tableStatus = {};
+
+                // Check each table
+                for (const table of tables) {
+                    try {
+                        const { data, error } = await admin.from(table).select('id').limit(1);
+                        tableStatus[table] = { exists: !error || error.code !== '42P01', error };
+                    } catch (err) {
+                        tableStatus[table] = { exists: false, error: err };
+                    }
+                }
+
+                displayStatus(tableStatus);
+            } catch (error) {
+                displayError(error);
+            }
+        }
+
+        function displayStatus(tableStatus) {
+            const allExist = Object.values(tableStatus).every(t => t.exists);
+
+            if (allExist) {
+                document.getElementById('status-container').innerHTML = `
+                    <div class="status-box success">
+                        <h3>✅ Database Setup Complete</h3>
+                        <p>All required tables are properly configured and ready to use.</p>
+                    </div>
+                `;
+
+                document.getElementById('table-status-container').innerHTML = `
+                    <div class="table-status">
+                        <div class="table-card exists">
+                            <h4>✓ contact_submissions</h4>
+                            <p>Ready for contact form data</p>
+                        </div>
+                        <div class="table-card exists">
+                            <h4>✓ sample_submissions</h4>
+                            <p>Ready for sample requests</p>
+                        </div>
+                        <div class="table-card exists">
+                            <h4>✓ newsletter_subscriptions</h4>
+                            <p>Ready for newsletter signups</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                document.getElementById('status-container').innerHTML = `
+                    <div class="status-box error">
+                        <h3>⚠️ Database Setup Required</h3>
+                        <p>Some required tables are missing. Please run the SQL schema below.</p>
+                    </div>
+                `;
+
+                const tableCards = Object.entries(tableStatus).map(([table, status]) => `
+                    <div class="table-card ${status.exists ? 'exists' : 'missing'}">
+                        <h4>${status.exists ? '✓' : '✗'} ${table}</h4>
+                        <p>${status.exists ? 'Table exists' : 'Table missing'}</p>
+                    </div>
+                `).join('');
+
+                document.getElementById('table-status-container').innerHTML = `
+                    <div class="table-status">
+                        ${tableCards}
+                    </div>
+                `;
+
+                document.getElementById('instructions-container').innerHTML = `
+                    <div class="status-box info">
+                        <h3>📋 Setup Instructions</h3>
+                        <ol class="steps">
+                            <li>Copy the SQL schema below</li>
+                            <li>Go to your <a href="https://supabase.com/dashboard/project/hctdzwmlkgnuxcuhjooe/sql/new" target="_blank">Supabase SQL Editor</a></li>
+                            <li>Paste the SQL schema into the editor</li>
+                            <li>Click "Run" to execute the schema</li>
+                            <li>Refresh this page to verify the setup</li>
+                        </ol>
+                    </div>
+                `;
+
+                document.getElementById('sql-container').innerHTML = `
+                    <h3 style="margin-bottom: 15px;">SQL Schema to Execute:</h3>
+                    <div class="sql-box">${SQL_SCHEMA}</div>
+                    <button class="btn" onclick="copySQL()">📋 Copy SQL to Clipboard</button>
+                `;
+            }
+        }
+
+        function displayError(error) {
+            document.getElementById('status-container').innerHTML = `
+                <div class="status-box error">
+                    <h3>❌ Connection Error</h3>
+                    <p>Failed to connect to Supabase database.</p>
+                    <p style="margin-top: 10px; font-family: monospace; font-size: 12px;">${error.message}</p>
+                </div>
+            `;
+
+            document.getElementById('instructions-container').innerHTML = `
+                <div class="status-box info">
+                    <h3>🔧 Troubleshooting</h3>
+                    <p>Please check the following:</p>
+                    <ul style="margin: 15px 0 0 20px;">
+                        <li>Verify your Supabase project is active</li>
+                        <li>Check that the service role key is correct</li>
+                        <li>Ensure you have internet connectivity</li>
+                        <li>Check browser console for detailed errors</li>
+                    </ul>
+                </div>
+            `;
+        }
+
+        function copySQL() {
+            navigator.clipboard.writeText(SQL_SCHEMA).then(() => {
+                alert('✅ SQL schema copied to clipboard!\n\nNow paste it into the Supabase SQL Editor.');
+            });
+        }
+
+        // Run check on page load
+        checkDatabaseStatus();
+    </script>
+</body>
+</html>

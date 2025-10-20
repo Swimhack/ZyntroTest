@@ -529,6 +529,94 @@ h2 {
     outline-offset: 2px;
 }
 
+/* PDF Viewer Mobile Responsive Styles */
+/* Base mobile styles for PDF viewer */
+.pdf-iframe {
+    width: 100%;
+    height: 60vh; /* Mobile: 60% of viewport height */
+    min-height: 400px;
+    max-height: 500px;
+    border: 2px solid var(--gray-200);
+    border-radius: var(--radius-lg);
+    background: var(--gray-50);
+    display: block;
+}
+
+.pdf-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.pdf-header h3 {
+    margin: 0;
+    flex: 1;
+}
+
+.mobile-download-btn {
+    display: inline-block !important;
+    font-size: 0.875rem;
+    padding: 0.75rem 1.25rem;
+    white-space: nowrap;
+}
+
+.pdf-preview-container {
+    background: var(--gray-50);
+    padding: 1rem;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+}
+
+/* Tablet PDF viewer styles */
+@media (min-width: 768px) {
+    .pdf-iframe {
+        height: 70vh;
+        min-height: 600px;
+        max-height: 700px;
+    }
+
+    .mobile-download-btn {
+        font-size: 1rem;
+        padding: 0.875rem 1.5rem;
+    }
+}
+
+/* Desktop PDF viewer styles */
+@media (min-width: 1024px) {
+    .pdf-iframe {
+        height: 800px;
+        max-height: 900px;
+    }
+
+    .mobile-download-btn {
+        display: inline-block !important; /* Keep visible on desktop too */
+    }
+
+    .pdf-preview-container {
+        padding: 1.5rem;
+    }
+}
+
+/* Large desktop optimization */
+@media (min-width: 1200px) {
+    .pdf-iframe {
+        height: 850px;
+        max-height: 1000px;
+    }
+}
+
+/* Landscape mobile optimization */
+@media (max-width: 767px) and (orientation: landscape) {
+    .pdf-iframe {
+        height: 80vh;
+        min-height: 300px;
+        max-height: 400px;
+    }
+}
+
 /* Print Styles */
 @media print {
     .header,
@@ -538,7 +626,7 @@ h2 {
     .footer {
         display: none !important;
     }
-    
+
     * {
         background: white !important;
         color: black !important;
