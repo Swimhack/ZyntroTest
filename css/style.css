@@ -1734,6 +1734,46 @@ p {
         flex-direction: column;
         text-align: center;
     }
+    
+    /* Trust badge mobile optimization */
+    .trust-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .trust-badge {
+        padding: 1.5rem;
+    }
+    
+    .badge-icon {
+        width: 64px;
+        height: 64px;
+    }
+    
+    .badge-icon .icon {
+        width: 100%;
+        height: 100%;
+        stroke-width: 1.5;
+    }
+    
+    .iso-badge .badge-text {
+        font-size: 1rem;
+    }
+    
+    .iso-badge .badge-subtext {
+        font-size: 0.7rem;
+    }
+    
+    /* Ensure SVG stroke colors are visible on mobile */
+    .shipping-badge .icon {
+        stroke: #2563eb;
+        stroke-width: 2;
+    }
+    
+    .tech-badge .icon {
+        stroke: #06b6d4;
+        stroke-width: 2;
+    }
 }
 
 @media (max-width: 480px) {
