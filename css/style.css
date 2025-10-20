@@ -919,22 +919,15 @@ p {
 }
 
 .service-card:nth-child(1) .service-icon {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
 }
 
 .service-card:nth-child(2) .service-icon {
-    background: linear-gradient(135deg, var(--secondary-blue), var(--secondary-light));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
 }
 
 .service-card:nth-child(3) .service-icon {
-    background: linear-gradient(135deg, var(--accent-teal), var(--accent-cyan));
-}
-
-.service-card:nth-child(3) .service-icon .icon {
-    stroke: var(--white);
-    stroke-width: 2;
-    fill: none;
-    opacity: 1;
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
 }
 
 /* Heroicons SVG Icons */
@@ -944,6 +937,31 @@ p {
     stroke: var(--white);
     fill: none;
     stroke-width: 2;
+    opacity: 1;
+}
+
+/* Comprehensive Icon Visibility Fix */
+svg.icon {
+    stroke: var(--white) !important;
+    fill: none !important;
+    stroke-width: 2 !important;
+    opacity: 1 !important;
+}
+
+/* Ensure all service icons are visible */
+.service-icon svg {
+    stroke: var(--white) !important;
+    fill: none !important;
+    stroke-width: 2 !important;
+    opacity: 1 !important;
+}
+
+/* Ensure all trust badge icons are visible */
+.badge-icon svg {
+    stroke: var(--white) !important;
+    fill: none !important;
+    stroke-width: 2 !important;
+    opacity: 1 !important;
 }
 
 /* Animation Performance Optimizations */
@@ -1090,9 +1108,10 @@ p {
 .shipping-badge .icon {
     width: 32px;
     height: 32px;
-    stroke: var(--white);
-    fill: none;
-    stroke-width: 2;
+    stroke: var(--white) !important;
+    fill: none !important;
+    stroke-width: 2 !important;
+    opacity: 1 !important;
 }
 
 .tech-badge {
@@ -1103,9 +1122,10 @@ p {
 .tech-badge .icon {
     width: 32px;
     height: 32px;
-    stroke: var(--white);
-    fill: none;
-    stroke-width: 2;
+    stroke: var(--white) !important;
+    fill: none !important;
+    stroke-width: 2 !important;
+    opacity: 1 !important;
 }
 
 .trust-badge h3 {
