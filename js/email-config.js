@@ -17,7 +17,7 @@ const EMAIL_CONFIG = {
     
     // Email addresses
     emails: {
-        primary: 'info@zyntrotest.com',
+        primary: 'professorpeptide@gmail.com',
         bcc: 'james@ekaty.com'
     }
 };
