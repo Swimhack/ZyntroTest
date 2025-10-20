@@ -2688,28 +2688,63 @@ p {
     margin: 0 !important;
 }
 
-/* Ensure no additional padding from parent elements */
+/* Ensure proper centering with minimal padding */
 .coa-cta .container {
     padding: 0 !important;
+    text-align: center !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
 }
 
 .coa-cta .cta-content {
     padding: 0.5rem 0 !important; /* Minimal padding */
-    margin: 0 !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    max-width: 800px !important;
+    width: 100% !important;
 }
 
 .coa-cta .cta-actions {
     margin: 0 !important;
     padding: 0 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    justify-content: center !important;
 }
 
 /* Override any existing cta-content styles for coa-cta specifically */
 .coa-cta .cta-content h2 {
     margin-bottom: 0.5rem !important;
+    text-align: center !important;
 }
 
 .coa-cta .cta-content p {
     margin-bottom: 1rem !important;
+    text-align: center !important;
+    max-width: 600px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* Responsive centering for different screen sizes */
+@media (min-width: 768px) {
+    .coa-cta .cta-actions {
+        flex-direction: row !important;
+        gap: 1.5rem !important;
+    }
+}
+
+@media (min-width: 1024px) {
+    .coa-cta .cta-content {
+        max-width: 900px !important;
+    }
+    
+    .coa-cta .cta-content p {
+        max-width: 700px !important;
+    }
 }
 
 /* Print Styles */
