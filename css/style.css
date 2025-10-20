@@ -1083,7 +1083,7 @@ p {
 }
 
 .shipping-badge {
-    background: linear-gradient(135deg, var(--secondary-blue), var(--secondary-dark));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
 }
 
 .shipping-badge .icon {
@@ -1095,7 +1095,7 @@ p {
 }
 
 .tech-badge {
-    background: linear-gradient(135deg, var(--accent-teal), var(--accent-cyan));
+    background: linear-gradient(135deg, var(--secondary-blue), var(--secondary-dark));
 }
 
 .tech-badge .icon {
@@ -1774,12 +1774,12 @@ p {
     
     /* Ensure SVG stroke colors are visible on mobile */
     .shipping-badge .icon {
-        stroke: #2563eb;
+        stroke: var(--white);
         stroke-width: 2;
     }
     
     .tech-badge .icon {
-        stroke: #06b6d4;
+        stroke: var(--white);
         stroke-width: 2;
     }
 }
