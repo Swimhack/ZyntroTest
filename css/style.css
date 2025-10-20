@@ -1676,7 +1676,7 @@ p {
     border-color: var(--primary-blue);
 }
 
-/* Featured Article - True Single Column Layout */
+/* Featured Article - Centered Container Layout */
 .featured-article {
     display: block;
     width: 100%;
@@ -1689,7 +1689,7 @@ p {
 .featured-article .container {
     display: block;
     width: 100%;
-    max-width: 900px;
+    max-width: 1200px;
     margin: 0 auto;
     padding: 0 1rem;
 }
@@ -2086,14 +2086,14 @@ p {
     gap: 0.25rem;
 }
 
-/* Tablet - Maintain Single Column with Better Spacing */
+/* Tablet - Maintain Centered Layout */
 @media (min-width: 769px) {
     .featured-article {
         padding: 3rem 0;
     }
     
     .featured-article .container {
-        max-width: 800px;
+        max-width: 1000px;
         margin: 0 auto;
         padding: 0 2rem;
         width: 100%;
@@ -2120,14 +2120,14 @@ p {
     }
 }
 
-/* Desktop - Maintain Single Column with Optimal Spacing */
+/* Desktop - Optimal Centered Layout */
 @media (min-width: 1025px) {
     .featured-article {
         padding: 4rem 0;
     }
     
     .featured-article .container {
-        max-width: 900px;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 0 2rem;
         width: 100%;
@@ -2425,8 +2425,10 @@ p {
         padding: 1rem;
     }
     
-    /* Featured Article Mobile Improvements */
-    /* Mobile styles are already defined in the base styles above */
+    /* Featured Article Mobile - Enhanced Padding */
+    .featured-article .container {
+        padding: 0 1.5rem;
+    }
 }
 
 /* Print Styles */
