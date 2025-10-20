@@ -2458,6 +2458,17 @@ p {
     }
 }
 
+/* Search Page Section Spacing */
+.sample-coas-section {
+    padding: 2rem 0 0.5rem 0; /* Reduced bottom padding */
+    margin: 0;
+}
+
+.coa-cta {
+    padding: 0.5rem 0 2rem 0; /* Reduced top padding */
+    margin: 0;
+}
+
 /* Print Styles */
 @media print {
     .header,

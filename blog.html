@@ -8,9 +8,11 @@
     <meta name="keywords" content="LCMS testing blog, peptide analysis insights, supplement safety testing, biotech LCMS applications, analytical chemistry expertise">
     
     <!-- Cache Control - Prevent Caching -->
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
+    <meta http-equiv="Last-Modified" content="0">
+    <meta http-equiv="ETag" content="0">
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:type" content="website">
@@ -851,15 +853,68 @@
     <!-- No-Cache Headers and Cache-Busting -->
     <script src="js/no-cache.js" data-no-cache-bust></script>
     <script>
+        // Force fresh load - prevent all caching
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+        
+        // Clear all caches
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) {
+                    caches.delete(name);
+                }
+            });
+        }
+        
         // Add cache-busting parameters to CSS files
         document.addEventListener('DOMContentLoaded', function() {
             const timestamp = new Date().getTime();
+            const random = Math.random().toString(36).substring(7);
+            
+            // Force reload CSS files
             const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
             cssLinks.forEach(link => {
                 if (link.href.includes('css/')) {
-                    link.href = link.href + '?v=' + timestamp;
+                    const url = new URL(link.href);
+                    url.searchParams.set('v', timestamp);
+                    url.searchParams.set('r', random);
+                    link.href = url.toString();
                 }
             });
+            
+            // Force reload JS files
+            const jsScripts = document.querySelectorAll('script[src]');
+            jsScripts.forEach(script => {
+                if (script.src.includes('js/') && !script.hasAttribute('data-no-cache-bust')) {
+                    const url = new URL(script.src);
+                    url.searchParams.set('v', timestamp);
+                    url.searchParams.set('r', random);
+                    script.src = url.toString();
+                }
+            });
+        });
+        
+        // Force page reload if back button is used
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted) {
+                window.location.reload();
+            }
+        });
+        
+        // Prevent browser back/forward cache
+        window.addEventListener('beforeunload', function() {
+            // Clear any cached data
+            if (window.localStorage) {
+                localStorage.clear();
+            }
+            if (window.sessionStorage) {
+                sessionStorage.clear();
+            }
         });
     </script>
     
