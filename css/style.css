@@ -1678,7 +1678,9 @@ p {
 
 /* Featured Article - Full Width with Centered Content */
 .featured-article {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 100%;
     padding: 60px 0;
     background: var(--white);
@@ -1691,7 +1693,7 @@ p {
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
-    padding: 0 20px;
+    padding: 60px 20px;
 }
 
 .featured-article .featured-content {
@@ -1707,7 +1709,7 @@ p {
 .featured-article .featured-image {
     width: 100%;
     max-width: 800px;
-    margin: 0 auto 1.5rem auto;
+    margin: 0 auto 30px auto;
     border-radius: 0.75rem;
     overflow: hidden;
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
@@ -2091,13 +2093,16 @@ p {
 /* Tablet - Maintain Centered Layout */
 @media (min-width: 769px) {
     .featured-article {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         padding: 60px 0;
     }
     
     .featured-article .container {
         max-width: 1000px;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 60px 20px;
         width: 100%;
         display: block;
     }
@@ -2112,6 +2117,7 @@ p {
     
     .featured-article .featured-content h2 {
         font-size: 2rem;
+        text-align: center;
     }
     
     .featured-article .featured-excerpt {
@@ -2119,19 +2125,23 @@ p {
         max-width: 600px;
         margin-left: auto;
         margin-right: auto;
+        text-align: center;
     }
 }
 
 /* Desktop - Optimal Centered Layout */
 @media (min-width: 1025px) {
     .featured-article {
+        display: flex;
+        justify-content: center;
+        align-items: center;
         padding: 60px 0;
     }
     
     .featured-article .container {
         max-width: 1200px;
         margin: 0 auto;
-        padding: 0 20px;
+        padding: 60px 20px;
         width: 100%;
         display: block;
     }
@@ -2146,6 +2156,7 @@ p {
     
     .featured-article .featured-content h2 {
         font-size: 2.5rem;
+        text-align: center;
     }
     
     .featured-article .featured-excerpt {
@@ -2153,6 +2164,15 @@ p {
         max-width: 700px;
         margin-left: auto;
         margin-right: auto;
+        text-align: center;
+    }
+    
+    .featured-article .featured-badge {
+        text-align: center;
+    }
+    
+    .featured-article .article-meta {
+        justify-content: center;
     }
 }
 
@@ -2429,11 +2449,12 @@ p {
     
     /* Featured Article Mobile - Enhanced Padding */
     .featured-article {
+        display: block;
         padding: 40px 0;
     }
     
     .featured-article .container {
-        padding: 0 16px;
+        padding: 40px 16px;
     }
 }
 
