@@ -7,6 +7,11 @@
     <meta name="description" content="Expert insights on LCMS testing, peptide analysis, supplement safety, and biotech applications. Professional guidance from ZyntroTest's analytical chemistry experts.">
     <meta name="keywords" content="LCMS testing blog, peptide analysis insights, supplement safety testing, biotech LCMS applications, analytical chemistry expertise">
     
+    <!-- Cache Control - Prevent Caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:type" content="website">
     <meta property="og:title" content="Insights on LCMS Testing | ZyntroTest Blog">
@@ -84,24 +89,7 @@
     </section>
 
     <!-- Featured Article -->
-    <section class="featured-article">
-        <div class="container">
-            <div class="featured-content">
-                <div class="featured-image">
-                    <img src="https://images.unsplash.com/photo-1576671081837-49000212a370?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2940&q=80" alt="LCMS instrumentation for peptide analysis">
-                </div>
-                <div class="featured-badge">Featured Article</div>
-                <h2>Why LCMS with DAD Technology Outperforms Traditional Methods for Peptide Testing</h2>
-                <div class="article-meta">
-                    <span class="date">October 7, 2024</span>
-                    <span class="category">Peptides</span>
-                    <span class="read-time">5 min read</span>
-                </div>
-                <p class="featured-excerpt">Discover how Liquid Chromatography-Mass Spectrometry with Diode Array Detection revolutionizes peptide purity analysis, offering unmatched precision and comprehensive characterization for research and commercial applications.</p>
-                <a href="#article-1" class="btn btn-primary">Read Full Article</a>
-            </div>
-        </div>
-    </section>
+   
 
     <!-- Blog Articles -->
     <section class="blog-articles">
@@ -862,6 +850,18 @@
     
     <!-- No-Cache Headers and Cache-Busting -->
     <script src="js/no-cache.js" data-no-cache-bust></script>
+    <script>
+        // Add cache-busting parameters to CSS files
+        document.addEventListener('DOMContentLoaded', function() {
+            const timestamp = new Date().getTime();
+            const cssLinks = document.querySelectorAll('link[rel="stylesheet"]');
+            cssLinks.forEach(link => {
+                if (link.href.includes('css/')) {
+                    link.href = link.href + '?v=' + timestamp;
+                }
+            });
+        });
+    </script>
     
     <!-- CMS Content Loader -->
     <script src="js/cms-loader.js"></script>
