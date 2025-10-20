@@ -2684,8 +2684,32 @@ p {
 }
 
 .coa-cta {
-    padding: 0.5rem 0 2rem 0; /* Reduced top padding */
-    margin: 0;
+    padding: 0.5rem 0 2rem 0 !important; /* Reduced top padding - force override */
+    margin: 0 !important;
+}
+
+/* Ensure no additional padding from parent elements */
+.coa-cta .container {
+    padding: 0 !important;
+}
+
+.coa-cta .cta-content {
+    padding: 0.5rem 0 !important; /* Minimal padding */
+    margin: 0 !important;
+}
+
+.coa-cta .cta-actions {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Override any existing cta-content styles for coa-cta specifically */
+.coa-cta .cta-content h2 {
+    margin-bottom: 0.5rem !important;
+}
+
+.coa-cta .cta-content p {
+    margin-bottom: 1rem !important;
 }
 
 /* Print Styles */
