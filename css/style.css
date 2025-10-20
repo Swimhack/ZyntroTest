@@ -1371,6 +1371,13 @@ p {
     color: var(--gray-300);
 }
 
+/* Footer Container Override - Restore original layout */
+.footer .container {
+    max-width: 1200px;
+    padding: 0 2rem;
+    margin: 0 auto;
+}
+
 .footer-content {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
@@ -1676,6 +1683,12 @@ p {
     
     .testimonials-grid {
         grid-template-columns: 1fr;
+    }
+    
+    /* Footer Container Mobile Override */
+    .footer .container {
+        padding: 0 1rem;
+        max-width: 100%;
     }
     
     .footer-content {
@@ -2796,6 +2809,12 @@ p {
         max-width: 768px;
     }
     
+    /* Footer Container Tablet Override */
+    .footer .container {
+        max-width: 768px;
+        padding: 0 2rem;
+    }
+    
     /* Navigation - Show Desktop Menu */
     .nav-menu {
         display: flex;
@@ -2869,6 +2888,12 @@ p {
         max-width: 1200px;
     }
     
+    /* Footer Container Desktop Override */
+    .footer .container {
+        max-width: 1200px;
+        padding: 0 2rem;
+    }
+    
     /* Grid Layouts */
     .articles-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -2919,6 +2944,12 @@ p {
 @media (min-width: 1440px) {
     .container {
         max-width: 1400px;
+    }
+    
+    /* Footer Container Large Desktop Override */
+    .footer .container {
+        max-width: 1400px;
+        padding: 0 2rem;
     }
     
     .articles-grid {
