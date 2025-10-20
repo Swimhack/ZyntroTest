@@ -1,8 +1,22 @@
-/* Reset and Base Styles */
+/* Reset and Base Styles - Mobile First */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+/* Mobile-First Base Styles (320px - 767px) */
+html {
+    font-size: 16px; /* Prevent iOS zoom on input focus */
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--font-primary);
+    line-height: 1.6;
+    color: var(--gray-900);
+    background-color: var(--white);
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 :root {
@@ -29,18 +43,33 @@
     --gray-800: #1e293b;
     --gray-900: #0f172a;
     
-    /* Typography */
+    /* Typography - Mobile First */
     --font-primary: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --font-display: 'Montserrat', Georgia, serif;
     
-    /* Spacing */
-    --space-xs: 0.5rem;
-    --space-sm: 1rem;
-    --space-md: 1.5rem;
-    --space-lg: 2rem;
-    --space-xl: 3rem;
-    --space-2xl: 4rem;
-    --space-3xl: 4rem;
+    /* Mobile Typography Scale */
+    --text-xs: 0.75rem;    /* 12px */
+    --text-sm: 0.875rem;   /* 14px */
+    --text-base: 1rem;     /* 16px */
+    --text-lg: 1.125rem;   /* 18px */
+    --text-xl: 1.25rem;    /* 20px */
+    --text-2xl: 1.5rem;    /* 24px */
+    --text-3xl: 1.875rem;  /* 30px */
+    --text-4xl: 2.25rem;   /* 36px */
+    
+    /* Mobile-First Spacing */
+    --space-xs: 0.5rem;    /* 8px */
+    --space-sm: 1rem;      /* 16px */
+    --space-md: 1.5rem;    /* 24px */
+    --space-lg: 2rem;      /* 32px */
+    --space-xl: 3rem;      /* 48px */
+    --space-2xl: 4rem;     /* 64px */
+    --space-3xl: 6rem;     /* 96px */
+    
+    /* Mobile Container Padding */
+    --container-padding-mobile: 1rem;    /* 16px */
+    --container-padding-tablet: 2rem;    /* 32px */
+    --container-padding-desktop: 2.5rem; /* 40px */
     
     /* Shadows */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -62,20 +91,210 @@
     --transition-slow: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Mobile-First Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: var(--space-sm);
+}
+
+h1 {
+    font-size: var(--text-3xl); /* 30px on mobile */
+    color: var(--gray-900);
+}
+
+h2 {
+    font-size: var(--text-2xl); /* 24px on mobile */
+    color: var(--gray-900);
+}
+
+h3 {
+    font-size: var(--text-xl); /* 20px on mobile */
+    color: var(--gray-800);
+}
+
+h4 {
+    font-size: var(--text-lg); /* 18px on mobile */
+    color: var(--gray-800);
+}
+
+h5, h6 {
+    font-size: var(--text-base); /* 16px on mobile */
+    color: var(--gray-700);
+}
+
+p {
+    font-size: var(--text-base); /* 16px on mobile */
+    line-height: 1.6;
+    margin-bottom: var(--space-sm);
+    color: var(--gray-600);
+}
+
+a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary-dark);
+}
+
+/* Mobile-First Container */
+.container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 0 var(--container-padding-mobile);
+}
+
 /* Base Styles */
 body {
     font-family: var(--font-primary);
     line-height: 1.6;
     color: var(--gray-700);
     background-color: var(--white);
+    overflow-x: hidden; /* Prevent horizontal scroll */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
+/* Override container for mobile-first - already defined above */
+
+/* Mobile-First Navigation */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gray-200);
+    transition: all 0.3s ease;
+}
+
+.nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem var(--container-padding-mobile);
+    max-width: 100%;
+}
+
+.nav-brand {
+    font-size: var(--text-lg);
+    font-weight: 700;
+    color: var(--primary-blue);
+    text-decoration: none;
+}
+
+.nav-menu {
+    display: none; /* Hidden on mobile by default */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--white);
+    border-top: 1px solid var(--gray-200);
+    box-shadow: var(--shadow-lg);
+    padding: var(--space-sm) var(--container-padding-mobile);
+    flex-direction: column;
+    gap: var(--space-sm);
+}
+
+.nav-menu.active {
+    display: flex;
+}
+
+.nav-menu a {
+    color: var(--gray-700);
+    font-weight: 500;
+    padding: var(--space-sm) 0;
+    border-bottom: 1px solid var(--gray-100);
+    transition: color 0.2s ease;
+}
+
+.nav-menu a:hover {
+    color: var(--primary-blue);
+}
+
+.nav-toggle {
+    display: block; /* Show on mobile */
+    background: none;
+    border: none;
+    font-size: var(--text-xl);
+    color: var(--gray-700);
+    cursor: pointer;
+    padding: var(--space-xs);
+}
+
+/* Mobile-First Buttons */
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    font-size: var(--text-base);
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-base);
+    min-height: 44px; /* Touch-friendly minimum */
+    min-width: 44px;
+}
+
+.btn-primary {
+    background: var(--primary-blue);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+    color: var(--white);
+}
+
+.btn-outline {
+    background: transparent;
+    color: var(--primary-blue);
+    border: 2px solid var(--primary-blue);
+}
+
+.btn-outline:hover {
+    background: var(--primary-blue);
+    color: var(--white);
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: var(--text-lg);
+}
+
+/* Mobile-First Forms */
+input, textarea, select {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: var(--text-base); /* Prevent iOS zoom */
+    border: 1px solid var(--gray-300);
+    border-radius: var(--radius-md);
+    background: var(--white);
+    transition: border-color 0.2s ease;
+}
+
+input:focus, textarea:focus, select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+/* Mobile-First Images */
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
 }
 
 /* Typography */
@@ -2486,5 +2705,168 @@ p {
     body {
         font-size: 12pt;
         line-height: 1.4;
+    }
+}
+
+/* ========================================
+   RESPONSIVE BREAKPOINTS - MOBILE FIRST
+   ======================================== */
+
+/* Tablet Styles (768px and up) */
+@media (min-width: 768px) {
+    /* Typography Scale Up */
+    h1 {
+        font-size: var(--text-4xl); /* 36px */
+    }
+    
+    h2 {
+        font-size: var(--text-3xl); /* 30px */
+    }
+    
+    h3 {
+        font-size: var(--text-2xl); /* 24px */
+    }
+    
+    h4 {
+        font-size: var(--text-xl); /* 20px */
+    }
+    
+    /* Container Updates */
+    .container {
+        padding: 0 var(--container-padding-tablet);
+        max-width: 768px;
+    }
+    
+    /* Navigation - Show Desktop Menu */
+    .nav-menu {
+        display: flex;
+        position: static;
+        background: none;
+        border: none;
+        box-shadow: none;
+        padding: 0;
+        flex-direction: row;
+        gap: var(--space-lg);
+    }
+    
+    .nav-menu a {
+        padding: 0;
+        border: none;
+    }
+    
+    .nav-toggle {
+        display: none; /* Hide on tablet+ */
+    }
+    
+    /* Grid Layouts */
+    .articles-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-lg);
+    }
+    
+    .service-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--space-lg);
+    }
+    
+    /* Featured Article */
+    .featured-article .container {
+        max-width: 800px;
+        padding: 0 var(--container-padding-tablet);
+    }
+    
+    .featured-article .featured-content h2 {
+        font-size: var(--text-3xl);
+    }
+    
+    .featured-article .featured-excerpt {
+        font-size: var(--text-lg);
+        max-width: 600px;
+    }
+}
+
+/* Desktop Styles (1024px and up) */
+@media (min-width: 1024px) {
+    /* Typography Scale Up */
+    h1 {
+        font-size: 3rem; /* 48px */
+    }
+    
+    h2 {
+        font-size: 2.5rem; /* 40px */
+    }
+    
+    h3 {
+        font-size: 2rem; /* 32px */
+    }
+    
+    h4 {
+        font-size: 1.5rem; /* 24px */
+    }
+    
+    /* Container Updates */
+    .container {
+        padding: 0 var(--container-padding-desktop);
+        max-width: 1200px;
+    }
+    
+    /* Grid Layouts */
+    .articles-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-xl);
+    }
+    
+    .service-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--space-xl);
+    }
+    
+    /* Featured Article */
+    .featured-article .container {
+        max-width: 1200px;
+        padding: 0 var(--container-padding-desktop);
+    }
+    
+    .featured-article .featured-content h2 {
+        font-size: 2.5rem;
+    }
+    
+    .featured-article .featured-excerpt {
+        font-size: var(--text-xl);
+        max-width: 700px;
+    }
+    
+    /* Hero Section */
+    .hero {
+        padding: 8rem 0 6rem;
+    }
+    
+    .hero-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+    }
+    
+    .hero-title {
+        font-size: 3.5rem;
+    }
+    
+    .hero-subtitle {
+        font-size: 1.5rem;
+    }
+}
+
+/* Large Desktop Styles (1440px and up) */
+@media (min-width: 1440px) {
+    .container {
+        max-width: 1400px;
+    }
+    
+    .articles-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .service-grid {
+        grid-template-columns: repeat(4, 1fr);
     }
 }
