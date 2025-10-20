@@ -1083,7 +1083,8 @@ p {
 }
 
 .shipping-badge {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+    color: var(--white);
 }
 
 .shipping-badge .icon {
@@ -1095,7 +1096,8 @@ p {
 }
 
 .tech-badge {
-    background: linear-gradient(135deg, var(--secondary-blue), var(--secondary-dark));
+    background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+    color: var(--white);
 }
 
 .tech-badge .icon {
