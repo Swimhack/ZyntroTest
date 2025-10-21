@@ -1,20 +1,20 @@
 # ZyntroTest Cache Control and Security Headers
-# Updated: 2025-01-21
+# Updated: 2025-10-21 18:10 UTC - EMERGENCY CACHE BUST
 
 # Disable server-side caching for HTML files
 <FilesMatch "\.(html|htm)$">
-    Header always set Cache-Control "no-cache, no-store, must-revalidate"
+    Header always set Cache-Control "no-cache, no-store, must-revalidate, max-age=0, post-check=0, pre-check=0"
     Header always set Pragma "no-cache"
     Header always set Expires "0"
-    Header always set Last-Modified "Mon, 21 Jan 2025 02:52:53 GMT"
-    Header always set ETag "\"2025.01.21.02\""
+    Header always set Last-Modified "Tue, 21 Oct 2025 18:10:55 GMT"
+    Header always set ETag "\"2025.10.21.1810\""
 </FilesMatch>
 
 # Cache static assets but with versioning
 <FilesMatch "\.(css|js|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$">
     # Allow caching but force revalidation
-    Header always set Cache-Control "public, max-age=3600, must-revalidate"
-    Header always set ETag "\"2025.01.21.02\""
+    Header always set Cache-Control "public, max-age=0, must-revalidate"
+    Header always set ETag "\"2025.10.21.1810\""
 </FilesMatch>
 
 # Force browsers to check for updates
@@ -24,8 +24,8 @@ Header always set X-XSS-Protection "1; mode=block"
 Header always set Referrer-Policy "strict-origin-when-cross-origin"
 
 # Custom header to track deployments
-Header always set X-ZyntroTest-Version "2025.01.21.02"
-Header always set X-ZyntroTest-Updated "2025-01-21T02:52:53Z"
+Header always set X-ZyntroTest-Version "2025.10.21.1810"
+Header always set X-ZyntroTest-Updated "2025-10-21T18:10:55Z"
 
 # Prevent caching of API responses
 <FilesMatch "\.(json|xml)$">
@@ -56,4 +56,4 @@ RewriteRule ^(.+)/$ /$1 [R=301,L]
 
 # Add cache-busting for specific resources on the fly
 RewriteCond %{REQUEST_FILENAME} -f
-RewriteRule ^(.+)\.(css|js)$ /$1.$2?v=2025.01.21.02 [QSA,L]
+RewriteRule ^(.+)\.(css|js)$ /$1.$2?v=2025.10.21.1810 [QSA,L]
