@@ -1083,7 +1083,7 @@ svg.icon {
 }
 
 .iso-badge {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
     color: var(--white);
     flex-direction: column;
 }
@@ -1101,31 +1101,33 @@ svg.icon {
 }
 
 .shipping-badge {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
     color: var(--white);
 }
 
 .shipping-badge .icon {
     width: 32px;
     height: 32px;
-    stroke: var(--white) !important;
+    stroke: #ffffff !important;
     fill: none !important;
-    stroke-width: 2 !important;
+    stroke-width: 3 !important;
     opacity: 1 !important;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)) !important;
 }
 
 .tech-badge {
-    background: linear-gradient(135deg, var(--primary-blue), var(--primary-dark));
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
     color: var(--white);
 }
 
 .tech-badge .icon {
     width: 32px;
     height: 32px;
-    stroke: var(--white) !important;
+    stroke: #ffffff !important;
     fill: none !important;
-    stroke-width: 2 !important;
+    stroke-width: 3 !important;
     opacity: 1 !important;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)) !important;
 }
 
 .trust-badge h3 {
