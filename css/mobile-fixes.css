@@ -675,7 +675,20 @@ h2 {
     stroke-width: 3 !important; /* Thicker stroke for visibility */
     display: block !important;
     opacity: 1 !important;
-    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2)) !important;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)) !important;
+}
+
+/* Force all service and tech icon backgrounds to high-contrast brand blue */
+.service-icon-large,
+.tech-icon {
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+}
+
+#peptide .service-icon-large,
+#supplement .service-icon-large,
+#hemp .service-icon-large,
+#biotech .service-icon-large {
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
 }
 
 /* Homepage service cards icons - ISSUE #3 FIX */
@@ -686,10 +699,11 @@ h2 {
 .service-card .service-icon .icon {
     stroke: #ffffff !important;
     fill: none !important;
-    stroke-width: 2.5 !important;
+    stroke-width: 3 !important;
     display: block !important;
     width: 40px !important;
     height: 40px !important;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)) !important;
 }
 
 /* Badge icons - ISSUE #4 FIX */
@@ -708,8 +722,17 @@ h2 {
 .shipping-badge svg,
 .tech-badge svg {
     stroke: #ffffff !important;
-    stroke-width: 2.5 !important;
+    stroke-width: 3 !important;
     fill: none !important;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)) !important;
+}
+
+/* Ensure all badge icon containers use high-contrast backgrounds */
+.badge-icon,
+.shipping-badge,
+.tech-badge,
+.iso-badge {
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
 }
 
 /* Ensure service icons are visible on mobile */
