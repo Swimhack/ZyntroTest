@@ -93,11 +93,26 @@ h2 {
 .nav-toggle span {
     display: block;
     width: 100%;
-    height: 3px;
-    background: #1f2937 !important; /* Dark gray/black for visibility */
-    margin: 6px 0;
+    height: 4px !important; /* ISSUE #2 FIX - Thicker for visibility */
+    background: #000000 !important; /* Pure black for maximum visibility */
+    margin: 5px 0;
     transition: 0.3s;
     border-radius: 2px;
+    opacity: 1 !important;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3) !important; /* Shadow for contrast */
+}
+
+/* Hamburger container - ISSUE #2 FIX - Always visible */
+.nav-toggle {
+    padding: 10px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    border-radius: 6px !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+.nav-toggle:hover span {
+    background: #2563eb !important;
 }
 
 /* Sample Requirements Icons Fix - All Blue Theme */
@@ -531,9 +546,10 @@ h2 {
     outline-offset: 2px;
 }
 
-/* PDF Viewer Mobile Responsive Styles */
-/* Base mobile styles for PDF viewer */
-.pdf-iframe {
+/* PDF Viewer Mobile Responsive Styles - ISSUE #1 FIX */
+/* Base mobile styles for PDF viewer - properly scaled for mobile */
+.pdf-iframe,
+#pdf-viewer {
     width: 100%;
     height: 60vh; /* Mobile: 60% of viewport height */
     min-height: 400px;
@@ -542,6 +558,34 @@ h2 {
     border-radius: var(--radius-lg);
     background: var(--gray-50);
     display: block;
+}
+
+/* Homepage PDF preview - mobile responsive best practices */
+.coa-preview .pdf-preview-container,
+#pdf-preview-section .pdf-preview-container {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    padding: 0.5rem !important;
+}
+
+.coa-preview #pdf-viewer,
+.trust-signals #pdf-viewer {
+    width: 100% !important;
+    height: 500px !important;
+    min-height: 400px !important;
+    max-height: 600px !important;
+    border: 2px solid var(--gray-200) !important;
+    border-radius: var(--radius-lg) !important;
+}
+
+/* Mobile PDF fixes */
+@media (max-width: 768px) {
+    .coa-preview #pdf-viewer,
+    .trust-signals #pdf-viewer {
+        height: 400px !important;
+        min-height: 350px !important;
+    }
 }
 
 .pdf-header {
@@ -619,13 +663,53 @@ h2 {
     }
 }
 
-/* Services Page - Icon Visibility Fix */
+/* Services Page - Icon Visibility Fix - ISSUES #3, #4, #5, #10 FIX */
 .service-icon-large .icon,
-.tech-icon .icon {
-    stroke: var(--white) !important;
+.tech-icon .icon,
+.service-icon .icon,
+.badge-icon svg,
+.contact-icon .icon,
+.trust-icon {
+    stroke: #ffffff !important;
+    fill: none !important;
+    stroke-width: 3 !important; /* Thicker stroke for visibility */
+    display: block !important;
+    opacity: 1 !important;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2)) !important;
+}
+
+/* Homepage service cards icons - ISSUE #3 FIX */
+.service-card .service-icon {
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+}
+
+.service-card .service-icon .icon {
+    stroke: #ffffff !important;
     fill: none !important;
     stroke-width: 2.5 !important;
     display: block !important;
+    width: 40px !important;
+    height: 40px !important;
+}
+
+/* Badge icons - ISSUE #4 FIX */
+.badge-icon {
+    width: 32px !important;
+    height: 32px !important;
+}
+
+.badge-icon svg {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Trust signals icons - ISSUE #10 FIX */
+.trust-badge .badge-icon svg,
+.shipping-badge svg,
+.tech-badge svg {
+    stroke: #ffffff !important;
+    stroke-width: 2.5 !important;
+    fill: none !important;
 }
 
 /* Ensure service icons are visible on mobile */
@@ -746,6 +830,104 @@ h2 {
     .mobile-download-btn {
         width: 100% !important;
         text-align: center !important;
+    }
+}
+
+/* ISSUE #6 FIX - Remove spacing between search section and CTA */
+.sample-coas-section {
+    padding: 3rem 0 2rem 0 !important; /* Reduced bottom padding */
+}
+
+.coa-cta {
+    padding: 2rem 0 4rem 0 !important; /* Reduced top padding */
+    margin-top: 0 !important;
+}
+
+/* ISSUE #7 FIX - Blog Page Description & Subscribe Button */
+.blog-header-content p {
+    color: #334155 !important; /* Darker gray for better readability */
+    font-size: 1.125rem !important;
+    line-height: 1.7 !important;
+    font-weight: 500 !important;
+}
+
+.blog-subscribe,
+.newsletter-section {
+    text-align: center !important;
+    padding: 2rem 0 !important;
+}
+
+.blog-subscribe .btn,
+.newsletter-section .btn,
+.newsletter-form .btn {
+    display: inline-block !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+}
+
+.newsletter-form {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 1rem !important;
+    max-width: 500px !important;
+    margin: 0 auto !important;
+}
+
+.newsletter-form .btn {
+    width: 100% !important;
+    max-width: 300px !important;
+}
+
+/* ISSUE #8 FIX - Contact Page White Space Reduction */
+.contact-header {
+    padding: 6rem 0 2.5rem !important; /* Reduced from 4rem to 2.5rem */
+}
+
+.contact-content {
+    padding: 2.5rem 0 !important; /* Reduced from 4rem */
+}
+
+.faq-section {
+    padding: 2.5rem 0 !important; /* Reduced padding */
+}
+
+.contact-grid {
+    gap: 2rem !important; /* Reduced gap */
+}
+
+/* ISSUE #9 FIX - Center Submit Button on Contact Form */
+.contact-form {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+.contact-form .btn[type="submit"],
+.inquiry-form .btn-primary {
+    display: block !important;
+    margin: 1.5rem auto 0 auto !important;
+    width: 100% !important;
+    max-width: 400px !important;
+    text-align: center !important;
+}
+
+@media (max-width: 768px) {
+    /* Mobile specific fixes for contact form */
+    .contact-form .btn[type="submit"],
+    .inquiry-form .btn-primary {
+        max-width: 100% !important;
+    }
+    
+    .contact-header {
+        padding: 6rem 0 2rem !important;
+    }
+    
+    .contact-content {
+        padding: 2rem 0 !important;
+    }
+    
+    .faq-section {
+        padding: 2rem 0 !important;
     }
 }
 
