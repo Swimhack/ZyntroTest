@@ -1,0 +1,59 @@
+# ZyntroTest Cache Control and Security Headers
+# Updated: 2025-01-21
+
+# Disable server-side caching for HTML files
+<FilesMatch "\.(html|htm)$">
+    Header always set Cache-Control "no-cache, no-store, must-revalidate"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+    Header always set Last-Modified "Mon, 21 Jan 2025 02:52:53 GMT"
+    Header always set ETag "\"2025.01.21.02\""
+</FilesMatch>
+
+# Cache static assets but with versioning
+<FilesMatch "\.(css|js|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$">
+    # Allow caching but force revalidation
+    Header always set Cache-Control "public, max-age=3600, must-revalidate"
+    Header always set ETag "\"2025.01.21.02\""
+</FilesMatch>
+
+# Force browsers to check for updates
+Header always set X-Content-Type-Options "nosniff"
+Header always set X-Frame-Options "SAMEORIGIN"
+Header always set X-XSS-Protection "1; mode=block"
+Header always set Referrer-Policy "strict-origin-when-cross-origin"
+
+# Custom header to track deployments
+Header always set X-ZyntroTest-Version "2025.01.21.02"
+Header always set X-ZyntroTest-Updated "2025-01-21T02:52:53Z"
+
+# Prevent caching of API responses
+<FilesMatch "\.(json|xml)$">
+    Header always set Cache-Control "no-cache, no-store, must-revalidate"
+    Header always set Pragma "no-cache"
+    Header always set Expires "0"
+</FilesMatch>
+
+# Enable compression for better performance
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+</IfModule>
+
+# URL Rewriting for clean URLs
+RewriteEngine On
+
+# Redirect trailing slashes
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+# Add cache-busting for specific resources on the fly
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^(.+)\.(css|js)$ /$1.$2?v=2025.01.21.02 [QSA,L]

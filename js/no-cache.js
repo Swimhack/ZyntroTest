@@ -44,6 +44,7 @@
     // Add cache-busting query parameters to dynamic resources
     function addCacheBusting() {
         const timestamp = Date.now();
+        const version = '2025.01.21.02'; // Update this for major changes
         const resources = [
             'link[rel="stylesheet"]',
             'script[src]:not([data-no-cache-bust])'
@@ -55,13 +56,15 @@
                 const attr = element.tagName === 'LINK' ? 'href' : 'src';
                 const url = element.getAttribute(attr);
                 
-                if (url && !url.includes('?') && !url.startsWith('http') && !url.includes('googleapis') && !url.includes('cdnjs')) {
-                    element.setAttribute(attr, `${url}?v=${timestamp}`);
+                if (url && !url.startsWith('http') && !url.includes('googleapis') && !url.includes('cdnjs')) {
+                    // Remove existing query parameters and add new ones
+                    const baseUrl = url.split('?')[0];
+                    element.setAttribute(attr, `${baseUrl}?v=${version}&t=${timestamp}&cb=${Math.random().toString(36).substr(2, 9)}`);
                 }
             });
         });
         
-        console.log('✅ Cache-busting parameters added to local resources');
+        console.log('✅ Enhanced cache-busting parameters added to local resources');
     }
 
     // Set no-cache headers for fetch requests
@@ -100,15 +103,64 @@
         console.log('✅ XMLHttpRequest intercepted for no-cache headers');
     }
 
+    // Force page reload if cached version detected
+    function forceReloadIfCached() {
+        const cacheKey = 'zyntro_page_version';
+        const currentVersion = '2025.01.21.02';
+        const storedVersion = sessionStorage.getItem(cacheKey);
+        
+        if (storedVersion && storedVersion !== currentVersion) {
+            sessionStorage.setItem(cacheKey, currentVersion);
+            console.log('🔄 Version mismatch detected, forcing refresh');
+            window.location.reload(true);
+            return;
+        }
+        
+        sessionStorage.setItem(cacheKey, currentVersion);
+    }
+
+    // Clear all browser caches aggressively
+    function clearAllCaches() {
+        try {
+            // Clear session storage
+            sessionStorage.clear();
+            
+            // Clear local storage (be careful with this)
+            const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.includes('cache') || key.includes('zyntro'))) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            
+            // Clear service worker caches if available
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => {
+                        caches.delete(name);
+                    });
+                });
+            }
+            
+            console.log('🗑️ Browser caches cleared');
+        } catch (error) {
+            console.warn('⚠️ Cache clearing warning:', error.message);
+        }
+    }
+
     // Initialize no-cache functionality
     function initializeNoCache() {
         try {
+            forceReloadIfCached();
+            clearAllCaches();
             addNoCacheMetas();
             addCacheBusting();
             interceptFetchRequests();
             interceptXHRRequests();
             
-            console.log('🚫 No-cache system initialized successfully');
+            console.log('🚫 Enhanced no-cache system initialized successfully');
         } catch (error) {
             console.warn('⚠️ No-cache initialization warning:', error.message);
         }
