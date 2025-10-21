@@ -75,7 +75,7 @@
             <h2 class="section-title">How It Works</h2>
             <div class="process-steps">
                 <div class="process-step">
-                    <div class="step-icon step-quote">
+                    <div class="step-icon step-quote" role="img" aria-label="Request Quote - Document icon">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="currentColor" fill-opacity="0.1"/>
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -93,7 +93,7 @@
                 </div>
                 
                 <div class="process-step">
-                    <div class="step-icon step-invoice">
+                    <div class="step-icon step-invoice" role="img" aria-label="Receive Invoice - Payment card icon">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="2" y="3" width="20" height="14" rx="2" ry="2" fill="currentColor" fill-opacity="0.1"/>
                             <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
@@ -129,7 +129,7 @@
                 </div>
                 
                 <div class="process-step">
-                    <div class="step-icon step-shipping">
+                    <div class="step-icon step-shipping" role="img" aria-label="Ship Samples - Delivery truck icon">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M16 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-4" fill="currentColor" fill-opacity="0.1"/>
                             <rect x="1" y="3" width="15" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
@@ -154,7 +154,7 @@
                 </div>
                 
                 <div class="process-step">
-                    <div class="step-icon step-results">
+                    <div class="step-icon step-results" role="img" aria-label="Receive Results - Completed document icon">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="currentColor" fill-opacity="0.1"/>
                             <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
@@ -593,18 +593,27 @@
 
         .step-quote {
             background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .step-invoice {
             background: linear-gradient(135deg, #059669, #0d9488);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .step-shipping {
             background: linear-gradient(135deg, #dc2626, #ea580c);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .step-results {
             background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .step-icon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
         .step-content h3 {
@@ -1080,10 +1089,25 @@
             .process-step {
                 grid-template-columns: 1fr;
                 text-align: center;
+                gap: 1.5rem;
+                margin-bottom: 2rem;
             }
 
             .process-step::after {
                 display: none;
+            }
+
+            .step-icon {
+                margin: 0 auto;
+            }
+
+            .step-features {
+                align-items: flex-start;
+            }
+
+            .feature-item {
+                justify-content: flex-start;
+                text-align: left;
             }
         }
     </style>
