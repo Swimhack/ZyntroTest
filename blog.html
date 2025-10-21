@@ -824,15 +824,39 @@
             });
         }
 
-        function subscribeNewsletter(event) {
+        async function subscribeNewsletter(event) {
             event.preventDefault();
-            const email = event.target.querySelector('input[type="email"]').value;
-            
-            // Simulate newsletter subscription
-            showNotification(`Thank you for subscribing! We'll send LCMS insights to ${email}`, 'success');
-            event.target.reset();
-            
-            // Track subscription event
+            const form = event.target;
+            const emailInput = form.querySelector('input[type="email"]');
+            const email = emailInput.value.trim();
+
+            if (!email || !isValidEmail(email)) {
+                showNotification('Please enter a valid email address.', 'error');
+                return;
+            }
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Subscribing...';
+
+            try {
+                const result = await saveNewsletterSubscription(email);
+                if (result.already_subscribed) {
+                    showNotification('You are already subscribed!', 'info');
+                } else {
+                    await sendNewsletterEmail(email);
+                    showNotification("Thank you for subscribing! You'll receive LCMS insights and technical updates.", 'success');
+                    form.reset();
+                }
+            } catch (error) {
+                console.error('Newsletter subscription error:', error);
+                showNotification('Error saving subscription. Please try again.', 'error');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+
             if (typeof trackEvent === 'function') {
                 trackEvent('Newsletter Subscription', 'Blog', email);
             }

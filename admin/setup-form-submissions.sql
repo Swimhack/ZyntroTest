@@ -107,3 +107,17 @@ GRANT ALL ON newsletter_subscriptions TO service_role;
 
 -- Grant select permissions to anon for newsletter (unsubscribe)
 GRANT SELECT ON newsletter_subscriptions TO anon;
+
+-- RLS policies to allow public (anon) INSERTs from website forms
+-- NOTE: These allow unauthenticated inserts only; reads remain restricted.
+CREATE POLICY IF NOT EXISTS "Allow public insert contact submissions" ON contact_submissions
+    FOR INSERT
+    WITH CHECK (true);
+
+CREATE POLICY IF NOT EXISTS "Allow public insert sample submissions" ON sample_submissions
+    FOR INSERT
+    WITH CHECK (true);
+
+CREATE POLICY IF NOT EXISTS "Allow public insert newsletter subscriptions" ON newsletter_subscriptions
+    FOR INSERT
+    WITH CHECK (true);

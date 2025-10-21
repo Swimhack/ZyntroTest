@@ -75,7 +75,13 @@
             <h2 class="section-title">How It Works</h2>
             <div class="process-steps">
                 <div class="process-step">
-                    <div class="step-number">1</div>
+                    <div class="step-icon step-quote">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="currentColor" fill-opacity="0.1"/>
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
                     <div class="step-content">
                         <h3>Request Quote</h3>
                         <p>Submit your testing inquiry using our online form or download our submission form. We'll review your requirements and send a detailed quote within 24 hours.</p>
@@ -87,7 +93,15 @@
                 </div>
                 
                 <div class="process-step">
-                    <div class="step-number">2</div>
+                    <div class="step-icon step-invoice">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" fill="currentColor" fill-opacity="0.1"/>
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                            <line x1="2" y1="7" x2="22" y2="7" stroke="currentColor" stroke-width="2"/>
+                            <line x1="7" y1="12" x2="13" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <line x1="7" y1="14" x2="10" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
                     <div class="step-content">
                         <h3>Receive Invoice</h3>
                         <p>Once we confirm your testing requirements, we'll send an invoice with detailed pricing, payment instructions, and shipping guidelines for your samples.</p>
@@ -115,7 +129,15 @@
                 </div>
                 
                 <div class="process-step">
-                    <div class="step-number">3</div>
+                    <div class="step-icon step-shipping">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-4" fill="currentColor" fill-opacity="0.1"/>
+                            <rect x="1" y="3" width="15" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M16 8h4a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="5.5" cy="18.5" r="2.5" stroke="currentColor" stroke-width="2"/>
+                            <circle cx="18.5" cy="18.5" r="2.5" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
                     <div class="step-content">
                         <h3>Ship Samples</h3>
                         <p>After payment, ship your samples to our Texas laboratory using our detailed packaging and shipping instructions. We'll confirm receipt within 24 hours.</p>
@@ -132,7 +154,15 @@
                 </div>
                 
                 <div class="process-step">
-                    <div class="step-number">4</div>
+                    <div class="step-icon step-results">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="currentColor" fill-opacity="0.1"/>
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
+                            <polyline points="9,11 12,14 22,4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <line x1="7" y1="7" x2="7" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <line x1="7" y1="17" x2="11" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                    </div>
                     <div class="step-content">
                         <h3>Receive Results</h3>
                         <p>Get your detailed Certificate of Analysis (COA) delivered electronically. Results include comprehensive data, chromatograms, and professional interpretation.</p>
@@ -540,23 +570,41 @@
             top: 5rem;
             width: 2px;
             height: calc(100% - 2rem);
-            background: linear-gradient(180deg, var(--primary-blue), transparent);
+            background: linear-gradient(180deg, #6b7280, transparent);
         }
 
-        .step-number {
+        .step-icon {
             width: 5rem;
             height: 5rem;
-            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-green));
-            color: var(--white);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
-            font-weight: 700;
             box-shadow: var(--shadow-lg);
             position: relative;
             z-index: 10;
+            color: var(--white);
+        }
+
+        .step-icon svg {
+            width: 2.5rem;
+            height: 2.5rem;
+        }
+
+        .step-quote {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        }
+
+        .step-invoice {
+            background: linear-gradient(135deg, #059669, #0d9488);
+        }
+
+        .step-shipping {
+            background: linear-gradient(135deg, #dc2626, #ea580c);
+        }
+
+        .step-results {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
         }
 
         .step-content h3 {

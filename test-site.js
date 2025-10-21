@@ -9,8 +9,10 @@
 
 const { chromium } = require('playwright');
 
+const BASE = process.env.TEST_BASE_URL || 'http://127.0.0.1:8080';
+
 async function testZyntroTestSite() {
-    const browser = await chromium.launch({ headless: false }); // Set to true for CI/CD
+    const browser = await chromium.launch({ headless: true }); // Headless for CI/CD
     const context = await browser.newContext();
     const page = await context.newPage();
     
@@ -25,7 +27,7 @@ async function testZyntroTestSite() {
 
         // Test 1: Homepage Loads
         console.log('Test 1: Homepage loads...');
-        await page.goto('https://zyntrotest.com');
+        await page.goto(`${BASE}/`);
         await page.waitForLoadState('networkidle');
         const title = await page.title();
         if (title.includes('ZyntroTest')) {
@@ -45,7 +47,7 @@ async function testZyntroTestSite() {
 
         // Test 3: Blog Page Layout
         console.log('Test 3: Blog page layout...');
-        await page.goto('https://zyntrotest.com/blog.html');
+        await page.goto(`${BASE}/blog.html`);
         await page.waitForLoadState('networkidle');
         
         const featuredArticle = await page.$('.featured-article');
@@ -70,7 +72,7 @@ async function testZyntroTestSite() {
 
         // Test 4: Sample Submission Dropdown
         console.log('Test 4: Sample submission dropdown...');
-        await page.goto('https://zyntrotest.com/sample-submission.html');
+        await page.goto(`${BASE}/sample-submission.html`);
         await page.waitForLoadState('networkidle');
         
         const sampleTypeSelect = await page.$('#sample-type');
@@ -97,7 +99,7 @@ async function testZyntroTestSite() {
 
         // Test 5: COA Search Page
         console.log('Test 5: COA search page...');
-        await page.goto('https://zyntrotest.com/search.html');
+        await page.goto(`${BASE}/search.html`);
         await page.waitForLoadState('networkidle');
         
         const searchInput = await page.$('#coa-number');
@@ -159,6 +161,74 @@ async function testZyntroTestSite() {
             results.passed.push('✅ Footer has correct email');
         } else {
             results.warnings.push('⚠️  Footer may be missing email');
+        }
+
+        // Test 7: Contact form submission (UI)
+        console.log('Test 7: Contact form submission...');
+        await page.goto(`${BASE}/contact.html#form`);
+        await page.waitForLoadState('networkidle');
+        try {
+            await page.fill('#name', 'Test User');
+            await page.fill('#email', 'test.user+e2e@example.com');
+            await page.fill('#company', 'E2E Testing Inc');
+            await page.fill('#phone', '1234567890');
+            await page.selectOption('#sample-type', 'peptide');
+            await page.click('button[type="submit"]');
+            const notification = await page.waitForSelector('.notification', { timeout: 5000 });
+            const noteText = await notification.textContent();
+            if (noteText && noteText.includes('Thank you')) {
+                results.passed.push('✅ Contact form submits and shows confirmation');
+            } else {
+                results.failed.push('❌ Contact form did not show confirmation');
+            }
+        } catch (e) {
+            results.failed.push('❌ Contact form submission test errored');
+        }
+
+        // Test 8: Sample submission form (UI)
+        console.log('Test 8: Sample submission form...');
+        await page.goto(`${BASE}/sample-submission.html`);
+        await page.waitForLoadState('networkidle');
+        try {
+            await page.fill('#client-name', 'Test Client');
+            await page.fill('#client-email', 'test.client+e2e@example.com');
+            await page.fill('#sample-description', 'Automated test submission');
+            await page.selectOption('#sample-type', 'peptide');
+            await page.fill('#num-samples', '1');
+            await page.click('#sample-submission-form button[type="submit"]');
+            const notification = await page.waitForSelector('.notification', { timeout: 5000 });
+            const noteText = await notification.textContent();
+            if (noteText && (noteText.includes('received') || noteText.includes('Thank you'))) {
+                results.passed.push('✅ Sample submission form shows confirmation');
+            } else {
+                results.failed.push('❌ Sample submission form did not show confirmation');
+            }
+        } catch (e) {
+            results.failed.push('❌ Sample submission form test errored');
+        }
+
+        // Test 9: Newsletter subscribe (UI)
+        console.log('Test 9: Newsletter subscribe...');
+        await page.goto(`${BASE}/blog.html`);
+        await page.waitForLoadState('networkidle');
+        try {
+            const emailInput = await page.$('.newsletter-form input[type="email"]');
+            const subscribeBtn = await page.$('.newsletter-form button[type="submit"]');
+            if (emailInput && subscribeBtn) {
+                await emailInput.fill('test.subscribe+e2e@example.com');
+                await subscribeBtn.click();
+                const notification = await page.waitForSelector('.notification', { timeout: 5000 });
+                const noteText = await notification.textContent();
+                if (noteText && (noteText.includes('subscrib') || noteText.includes('Error'))) {
+                    results.passed.push('✅ Newsletter form triggers feedback');
+                } else {
+                    results.failed.push('❌ Newsletter form did not trigger feedback');
+                }
+            } else {
+                results.failed.push('❌ Newsletter form elements not found');
+            }
+        } catch (e) {
+            results.failed.push('❌ Newsletter subscription test errored');
         }
 
     } catch (error) {
