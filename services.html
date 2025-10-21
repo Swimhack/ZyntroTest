@@ -357,7 +357,7 @@
                         </tr>
                         <tr>
                             <td data-label="Test Type">
-                                <strong>Supplement Adulterant Screening</strong>
+                                <strong>Supplement&nbsp;Adulterant&nbsp;Screening</strong>
                             </td>
                             <td data-label="Base Price">
                                 <span class="price-highlight">$175 (single)</span><br>
@@ -392,7 +392,7 @@
             <div class="pricing-badges">
                 <div class="badge-item">
                     <svg class="badge-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="#10b981" stroke-width="2" fill="none" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="#2563eb" stroke-width="2" fill="none" />
                     </svg>
                     <span>ISO 17025 in Progress</span>
                 </div>
@@ -404,7 +404,7 @@
                 </div>
                 <div class="badge-item">
                     <svg class="badge-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.169.659 1.591L19.8 14.5M14.25 3.104c.251.023.501.05.75.082M19.8 14.5l-2.6 2.6a2.25 2.25 0 0 1-1.591.659h-8.218a2.25 2.25 0 0 1-1.591-.659l-2.6-2.6a1.125 1.125 0 0 1-.329-.79V9.75A2.25 2.25 0 0 1 5.25 7.5h13.5A2.25 2.25 0 0 1 21 9.75v3.96c0 .296-.118.58-.329.79Z" stroke="#06b6d4" stroke-width="2" fill="none" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.169.659 1.591L19.8 14.5M14.25 3.104c.251.023.501.05.75.082M19.8 14.5l-2.6 2.6a2.25 2.25 0 0 1-1.591.659h-8.218a2.25 2.25 0 0 1-1.591-.659l-2.6-2.6a1.125 1.125 0 0 1-.329-.79V9.75A2.25 2.25 0 0 1 5.25 7.5h13.5A2.25 2.25 0 0 1 21 9.75v3.96c0 .296-.118.58-.329.79Z" stroke="#2563eb" stroke-width="2" fill="none" />
                     </svg>
                     <span>DAD-Enhanced Precision</span>
                 </div>
@@ -619,12 +619,17 @@
 
         .service-title-section h2 {
             margin-bottom: 0.5rem;
+            word-break: keep-all;
+            hyphens: none;
+            line-height: 1.3;
         }
 
         .service-subtitle {
             color: var(--gray-600);
             margin-bottom: 1rem;
             font-size: 1.125rem;
+            word-break: keep-all;
+            hyphens: none;
         }
 
         .price-range-large {
@@ -1062,6 +1067,9 @@
                 margin-bottom: 0.5rem;
                 font-size: 0.875rem;
                 text-transform: uppercase;
+                word-break: keep-all;
+                hyphens: none;
+                line-height: 1.3;
             }
             
             .pricing-badges {
@@ -1085,6 +1093,18 @@
                 min-height: 48px;
                 min-width: 48px;
             }
+        }
+
+        /* General text wrapping improvements for service names */
+        h1, h2, h3, .service-title, .section-title, strong {
+            word-break: keep-all;
+            hyphens: none;
+            overflow-wrap: normal;
+        }
+
+        /* Prevent awkward wrapping on service names */
+        .pricing-table strong {
+            white-space: nowrap;
         }
     </style>
     
