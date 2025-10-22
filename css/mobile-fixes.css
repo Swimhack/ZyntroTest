@@ -664,23 +664,59 @@ h2 {
 }
 
 /* Services Page - Icon Visibility Fix - ISSUES #3, #4, #5, #10 FIX */
+/* COMPREHENSIVE ICON FIX - All SVG icons */
 .service-icon-large .icon,
 .tech-icon .icon,
 .service-icon .icon,
 .badge-icon svg,
 .contact-icon .icon,
-.trust-icon {
+.trust-icon,
+.icon,
+svg.icon {
     stroke: #ffffff !important;
     fill: none !important;
-    stroke-width: 3 !important; /* Thicker stroke for visibility */
+    stroke-width: 3 !important;
     display: block !important;
     opacity: 1 !important;
-    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.2)) !important;
+    visibility: visible !important;
+    filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)) !important;
+}
+
+/* Service icon containers - FORCE BACKGROUNDS */
+.service-icon-large {
+    width: 80px !important;
+    height: 80px !important;
+    border-radius: 1rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+}
+
+/* Specific service page icon backgrounds */
+#peptide .service-icon-large {
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+}
+
+#supplement .service-icon-large {
+    background: linear-gradient(135deg, #10b981, #34d399) !important;
+}
+
+#hemp .service-icon-large {
+    background: linear-gradient(135deg, #06b6d4, #10b981) !important;
 }
 
 /* Homepage service cards icons - ISSUE #3 FIX */
 .service-card .service-icon {
     background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+    width: 80px !important;
+    height: 80px !important;
+    margin: 0 auto 1.5rem !important;
+    border-radius: 1rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .service-card .service-icon .icon {
@@ -690,12 +726,16 @@ h2 {
     display: block !important;
     width: 40px !important;
     height: 40px !important;
+    opacity: 1 !important;
 }
 
 /* Badge icons - ISSUE #4 FIX */
 .badge-icon {
     width: 32px !important;
     height: 32px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
 }
 
 .badge-icon svg {
@@ -710,6 +750,26 @@ h2 {
     stroke: #ffffff !important;
     stroke-width: 2.5 !important;
     fill: none !important;
+}
+
+/* Tech section icons with backgrounds */
+.tech-icon {
+    width: 80px !important;
+    height: 80px !important;
+    background: linear-gradient(135deg, #2563eb, #10b981) !important;
+    border-radius: 0.75rem !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 0 auto 1.5rem !important;
+}
+
+.tech-icon .icon {
+    width: 40px !important;
+    height: 40px !important;
+    stroke: #ffffff !important;
+    fill: none !important;
+    stroke-width: 2.5 !important;
 }
 
 /* Ensure service icons are visible on mobile */
