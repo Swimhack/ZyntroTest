@@ -201,24 +201,72 @@
                     🔄 Loading COA data...
                 </div>
                 
-                <!-- PDF Preview Section - Enhanced for all devices -->
+                <!-- PDF Preview Section - Enhanced for all devices with fallbacks -->
                 <div id="pdf-preview-section" style="margin-top: 2rem; display: none;">
                     <div class="pdf-preview-container">
-                        <div id="full-pdf-viewer" style="display: block;">
+                        <!-- Primary PDF Viewer (iframe) -->
+                        <div id="iframe-pdf-viewer" style="display: block;">
                             <iframe id="pdf-viewer" class="pdf-iframe" 
                                     style="width: 100%; height: 600px; border: 2px solid #e5e7eb; border-radius: 0.5rem; background: #f8fafc;"
                                     sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
                                     loading="lazy">
                             </iframe>
                         </div>
-                        <div id="pdf-error-message" style="display: none; text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem; margin-top: 1rem;">
-                            <p style="color: #92400e; font-size: 1rem; margin: 0;">
-                                ⚠️ Unable to load PDF. Please contact <a href="mailto:info@zyntrotest.com" style="color: #2563eb; text-decoration: underline;">info@zyntrotest.com</a> for assistance.
+                        
+                        <!-- Alternative PDF Viewer (object/embed) -->
+                        <div id="object-pdf-viewer" style="display: none;">
+                            <object id="pdf-object" class="pdf-iframe" 
+                                    style="width: 100%; height: 600px; border: 2px solid #e5e7eb; border-radius: 0.5rem; background: #f8fafc;"
+                                    type="application/pdf">
+                            </object>
+                        </div>
+                        
+                        <!-- PDF.js Viewer Fallback -->
+                        <div id="pdfjs-viewer" style="display: none;">
+                            <iframe id="pdfjs-iframe" class="pdf-iframe" 
+                                    style="width: 100%; height: 600px; border: 2px solid #e5e7eb; border-radius: 0.5rem; background: #f8fafc;"
+                                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms">
+                            </iframe>
+                        </div>
+                        
+                        <!-- Browser Blocked Message -->
+                        <div id="pdf-blocked-message" style="display: none; text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem; margin-top: 1rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">🚫</div>
+                            <h3 style="color: #92400e; margin-bottom: 1rem;">PDF Preview Blocked by Browser</h3>
+                            <p style="color: #92400e; font-size: 1rem; margin: 0 0 1.5rem 0;">
+                                Your browser is blocking the PDF preview for security reasons. This is common in Microsoft Edge and other browsers.
+                            </p>
+                            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                                <a href="#" id="pdf-direct-link" class="btn btn-primary" style="display: inline-block;">
+                                    📄 Open PDF in New Tab
+                                </a>
+                                <a href="#" id="pdf-download-link" class="btn btn-outline" style="display: inline-block;">
+                                    💾 Download PDF
+                                </a>
+                            </div>
+                            <p style="color: #92400e; font-size: 0.875rem; margin: 1.5rem 0 0 0;">
+                                Or contact <a href="mailto:info@zyntrotest.com" style="color: #2563eb; text-decoration: underline;">info@zyntrotest.com</a> for assistance.
                             </p>
                         </div>
+                        
+                        <!-- General Error Message -->
+                        <div id="pdf-error-message" style="display: none; text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem; margin-top: 1rem;">
+                            <p style="color: #92400e; font-size: 1rem; margin: 0 0 1rem 0;">
+                                ⚠️ Unable to load PDF preview. 
+                            </p>
+                            <a href="#" id="pdf-direct-link-2" class="btn btn-primary" style="display: inline-block; margin: 0.5rem;">
+                                📄 Open PDF in New Tab
+                            </a>
+                            <p style="color: #92400e; font-size: 0.875rem; margin: 1rem 0 0 0;">
+                                Or contact <a href="mailto:info@zyntrotest.com" style="color: #2563eb; text-decoration: underline;">info@zyntrotest.com</a> for assistance.
+                            </p>
+                        </div>
+                        
+                        <!-- Loading Message -->
                         <div id="pdf-loading-message" style="display: none; text-align: center; padding: 2rem; background: #f0f9ff; border-radius: 0.5rem; margin-top: 1rem;">
+                            <div style="font-size: 2rem; margin-bottom: 1rem;">📄</div>
                             <p style="color: #0369a1; font-size: 1rem; margin: 0;">
-                                📄 Loading PDF preview...
+                                Loading PDF preview...
                             </p>
                         </div>
                     </div>
@@ -269,85 +317,194 @@
                     return null;
                 }
 
-                // Enhanced PDF loading with multiple fallback strategies
+                // Advanced PDF loading with multiple fallback strategies
                 async function loadPDFWithFallbacks(pdfViewer, fileUrl, maxRetries = 3) {
                     const pdfError = document.getElementById('pdf-error-message');
                     const pdfLoading = document.getElementById('pdf-loading-message');
+                    const pdfBlocked = document.getElementById('pdf-blocked-message');
+                    const iframeViewer = document.getElementById('iframe-pdf-viewer');
+                    const objectViewer = document.getElementById('object-pdf-viewer');
+                    const pdfjsViewer = document.getElementById('pdfjs-viewer');
+                    const pdfObject = document.getElementById('pdf-object');
+                    const pdfjsIframe = document.getElementById('pdfjs-iframe');
                     
                     // Show loading message
                     if (pdfLoading) pdfLoading.style.display = 'block';
                     if (pdfError) pdfError.style.display = 'none';
+                    if (pdfBlocked) pdfBlocked.style.display = 'none';
                     
-                    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-                        try {
-                            console.log(`PDF loading attempt ${attempt}/${maxRetries}:`, fileUrl);
-                            
-                            // Set up error handlers before loading
-                            pdfViewer.onerror = function() {
-                                console.error(`PDF load attempt ${attempt} failed for:`, fileUrl);
-                                if (attempt === maxRetries) {
-                                    if (pdfLoading) pdfLoading.style.display = 'none';
-                                    if (pdfError) pdfError.style.display = 'block';
-                                }
-                            };
-                            
-                            pdfViewer.onload = function() {
-                                console.log(`PDF loaded successfully on attempt ${attempt}`);
-                                if (pdfLoading) pdfLoading.style.display = 'none';
-                                if (pdfError) pdfError.style.display = 'none';
-                                
-                                // Additional validation for iframe content
-                                try {
-                                    const iframeContent = pdfViewer.contentDocument || pdfViewer.contentWindow.document;
-                                    const text = iframeContent.body.innerText || '';
-                                    
-                                    // Check if iframe contains JSON error response
-                                    if (text.includes('statusCode') || text.includes('Bucket not found') || text.includes('Access Denied')) {
-                                        console.error('PDF iframe contains error response:', text);
-                                        throw new Error('PDF contains error response');
-                                    }
-                                } catch (e) {
-                                    console.warn('Could not validate iframe content:', e);
-                                }
-                            };
-                            
-                            // Load the PDF
-                            pdfViewer.src = fileUrl;
-                            
-                            // Wait for load or timeout
-                            await new Promise((resolve, reject) => {
-                                const timeout = setTimeout(() => {
-                                    reject(new Error('PDF load timeout'));
-                                }, 10000); // 10 second timeout
-                                
-                                pdfViewer.onload = function() {
-                                    clearTimeout(timeout);
-                                    resolve();
-                                };
-                                
-                                pdfViewer.onerror = function() {
-                                    clearTimeout(timeout);
-                                    reject(new Error('PDF load failed'));
-                                };
-                            });
-                            
-                            // If we get here, PDF loaded successfully
+                    console.log('Starting advanced PDF load with URL:', fileUrl);
+                    
+                    // Set up direct links for fallback
+                    const directLink = document.getElementById('pdf-direct-link');
+                    const directLink2 = document.getElementById('pdf-direct-link-2');
+                    const downloadLink = document.getElementById('pdf-download-link');
+                    
+                    if (directLink) directLink.href = fileUrl;
+                    if (directLink2) directLink2.href = fileUrl;
+                    if (downloadLink) downloadLink.href = fileUrl;
+                    
+                    // Approach 1: Standard iframe (works in most browsers)
+                    try {
+                        console.log('Trying standard iframe approach...');
+                        pdfViewer.src = fileUrl;
+                        
+                        // Set up event handlers
+                        pdfViewer.onload = function() {
+                            console.log('PDF iframe onload triggered');
+                            if (pdfLoading) pdfLoading.style.display = 'none';
+                            if (pdfError) pdfError.style.display = 'none';
+                            if (pdfBlocked) pdfBlocked.style.display = 'none';
+                        };
+                        
+                        pdfViewer.onerror = function() {
+                            console.error('PDF iframe onerror triggered');
+                            tryNextApproach();
+                        };
+                        
+                        // Wait and check if it loads
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        
+                        // Check if PDF loaded successfully
+                        if (await checkIframeContent(pdfViewer)) {
+                            console.log('Standard iframe approach successful');
                             return;
+                        }
+                        
+                    } catch (error) {
+                        console.error('Standard iframe approach failed:', error);
+                    }
+                    
+                    // Approach 2: Object/embed element (better for some browsers)
+                    try {
+                        console.log('Trying object/embed approach...');
+                        if (iframeViewer) iframeViewer.style.display = 'none';
+                        if (objectViewer) objectViewer.style.display = 'block';
+                        
+                        pdfObject.data = fileUrl;
+                        pdfObject.type = 'application/pdf';
+                        
+                        // Wait and check
+                        await new Promise(resolve => setTimeout(resolve, 3000));
+                        
+                        // Check if object loaded
+                        if (await checkObjectContent(pdfObject)) {
+                            console.log('Object/embed approach successful');
+                            return;
+                        }
+                        
+                    } catch (error) {
+                        console.error('Object/embed approach failed:', error);
+                    }
+                    
+                    // Approach 3: PDF.js viewer (most compatible)
+                    try {
+                        console.log('Trying PDF.js viewer approach...');
+                        if (objectViewer) objectViewer.style.display = 'none';
+                        if (pdfjsViewer) pdfjsViewer.style.display = 'block';
+                        
+                        // Use PDF.js viewer
+                        const pdfjsUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
+                        pdfjsIframe.src = pdfjsUrl;
+                        
+                        // Wait and check
+                        await new Promise(resolve => setTimeout(resolve, 4000));
+                        
+                        if (await checkIframeContent(pdfjsIframe)) {
+                            console.log('PDF.js viewer approach successful');
+                            return;
+                        }
+                        
+                    } catch (error) {
+                        console.error('PDF.js viewer approach failed:', error);
+                    }
+                    
+                    // Approach 4: Google Docs viewer (fallback)
+                    try {
+                        console.log('Trying Google Docs viewer approach...');
+                        const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+                        pdfViewer.src = googleViewerUrl;
+                        
+                        if (iframeViewer) iframeViewer.style.display = 'block';
+                        if (objectViewer) objectViewer.style.display = 'none';
+                        if (pdfjsViewer) pdfjsViewer.style.display = 'none';
+                        
+                        // Wait and check
+                        await new Promise(resolve => setTimeout(resolve, 5000));
+                        
+                        if (await checkIframeContent(pdfViewer)) {
+                            console.log('Google Docs viewer approach successful');
+                            return;
+                        }
+                        
+                    } catch (error) {
+                        console.error('Google Docs viewer approach failed:', error);
+                    }
+                    
+                    // All approaches failed - show appropriate error message
+                    console.error('All PDF loading approaches failed');
+                    if (pdfLoading) pdfLoading.style.display = 'none';
+                    
+                    // Check if it's a browser blocking issue
+                    if (await isBrowserBlocking()) {
+                        if (pdfBlocked) pdfBlocked.style.display = 'block';
+                    } else {
+                        if (pdfError) pdfError.style.display = 'block';
+                    }
+                }
+                
+                // Helper function to check iframe content
+                async function checkIframeContent(iframe) {
+                    try {
+                        const iframeContent = iframe.contentDocument || iframe.contentWindow.document;
+                        if (iframeContent && iframeContent.body) {
+                            const text = iframeContent.body.innerText || '';
+                            console.log('Iframe content preview:', text.substring(0, 200));
                             
-                        } catch (error) {
-                            console.error(`PDF load attempt ${attempt} failed:`, error);
+                            // Check for error responses
+                            if (text.includes('statusCode') || text.includes('Bucket not found') || text.includes('Access Denied') || text.includes('blocked')) {
+                                console.error('Iframe contains error response:', text);
+                                return false;
+                            }
                             
-                            if (attempt < maxRetries) {
-                                // Wait before retry
-                                await new Promise(resolve => setTimeout(resolve, 1000 * attempt));
-                            } else {
-                                // All attempts failed
-                                if (pdfLoading) pdfLoading.style.display = 'none';
-                                if (pdfError) pdfError.style.display = 'block';
-                                throw error;
+                            // Check for PDF content indicators
+                            if (text.includes('PDF') || text.includes('Page') || text.includes('Document') || text.length > 50) {
+                                console.log('PDF content detected in iframe');
+                                return true;
                             }
                         }
+                    } catch (e) {
+                        console.warn('Could not validate iframe content:', e);
                     }
+                    return false;
+                }
+                
+                // Helper function to check object content
+                async function checkObjectContent(object) {
+                    try {
+                        // Object elements are harder to check, so we'll assume success if no error
+                        return object.offsetHeight > 0;
+                    } catch (e) {
+                        console.warn('Could not validate object content:', e);
+                        return false;
+                    }
+                }
+                
+                // Helper function to detect browser blocking
+                async function isBrowserBlocking() {
+                    // Check for common browser blocking indicators
+                    const userAgent = navigator.userAgent.toLowerCase();
+                    const isEdge = userAgent.includes('edg/');
+                    const isChrome = userAgent.includes('chrome/');
+                    const isFirefox = userAgent.includes('firefox/');
+                    
+                    // These browsers commonly block PDF iframes
+                    return isEdge || isChrome || isFirefox;
+                }
+                
+                // Function to try next approach
+                function tryNextApproach() {
+                    console.log('Trying next PDF loading approach...');
                 }
 
                 async function loadCOANow() {
@@ -396,12 +553,16 @@
                         
                         // Get proper file URL using robust resolution
                         const fileUrl = getProperFileUrl(coa);
+                        console.log('Resolved file URL:', fileUrl);
+                        console.log('PDF viewer element:', pdfViewer);
                         
                         if (fileUrl && pdfViewer) {
+                            console.log('Starting PDF load process...');
                             // Load PDF with fallback strategies
                             await loadPDFWithFallbacks(pdfViewer, fileUrl);
                             statusEl.innerHTML = '✅ PDF preview loaded successfully!';
                         } else {
+                            console.error('Missing fileUrl or pdfViewer:', { fileUrl, pdfViewer });
                             throw new Error('No valid PDF URL found');
                         }
                         
