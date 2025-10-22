@@ -197,7 +197,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         };
                         
                         // Save to database first
-                        await saveContactSubmission(formData);
+                        console.log('Saving contact submission to database:', formData);
+                        try {
+                            await saveContactSubmission(formData);
+                            console.log('Contact submission saved successfully');
+                        } catch (dbError) {
+                            console.error('Database save failed, continuing with email:', dbError);
+                        }
                         
                         // Then send email
                         await sendContactEmail(formData);
@@ -244,7 +250,15 @@ document.addEventListener('DOMContentLoaded', function() {
             
             try {
                 // Save to database first
-                const result = await saveNewsletterSubscription(email);
+                console.log('Saving newsletter subscription to database:', email);
+                let result;
+                try {
+                    result = await saveNewsletterSubscription(email);
+                    console.log('Newsletter subscription saved successfully');
+                } catch (dbError) {
+                    console.error('Database save failed, continuing with email:', dbError);
+                    result = { already_subscribed: false };
+                }
                 
                 if (result.already_subscribed) {
                     showNotification('You are already subscribed!', 'info');
@@ -293,7 +307,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 
                 // Save to database first
-                await saveSampleSubmission(formData);
+                console.log('Saving sample submission to database:', formData);
+                try {
+                    await saveSampleSubmission(formData);
+                    console.log('Sample submission saved successfully');
+                } catch (dbError) {
+                    console.error('Database save failed, continuing with email:', dbError);
+                }
                 
                 // Then send email (reuse contact email function)
                 await sendContactEmail({
