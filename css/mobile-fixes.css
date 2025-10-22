@@ -91,38 +91,47 @@ h2 {
 }
 
 .nav-toggle span {
+    content: '' !important;
     display: block !important;
-    width: 28px !important; /* Fixed width for consistent lines */
+    width: 26px !important;
     height: 3px !important;
-    background: #000000 !important; /* Pure black - maximum visibility */
+    background: #000000 !important;
     background-color: #000000 !important;
-    margin: 4px 0 !important; /* Tighter spacing */
+    margin: 4px auto !important;
     transition: all 0.3s ease !important;
     border-radius: 2px !important;
     opacity: 1 !important;
     visibility: visible !important;
-    box-shadow: none !important; /* Remove shadow that might wash it out */
-    position: relative !important;
-    z-index: 1001 !important;
-    pointer-events: none !important; /* Let clicks pass through to button */
+    box-shadow: none !important;
+    position: static !important;
+    pointer-events: none !important;
+}
+
+/* Force first load visibility */
+.nav-toggle span:nth-child(1),
+.nav-toggle span:nth-child(2),
+.nav-toggle span:nth-child(3) {
+    background: #000000 !important;
+    display: block !important;
+    opacity: 1 !important;
 }
 
 /* Hamburger container - ALWAYS VISIBLE */
 .nav-toggle {
     display: flex !important;
     flex-direction: column !important;
-    justify-content: center !important;
+    justify-content: space-around !important;
     align-items: center !important;
-    gap: 4px !important; /* Space between lines */
-    width: 44px !important;
-    height: 44px !important;
-    padding: 8px !important;
-    background: transparent !important; /* No background to avoid washing out */
+    width: 40px !important;
+    height: 40px !important;
+    padding: 6px !important;
+    background: transparent !important;
     border: none !important;
     box-shadow: none !important;
     cursor: pointer !important;
     position: relative !important;
     z-index: 1000 !important;
+    outline: none !important;
 }
 
 .nav-toggle:hover span {
