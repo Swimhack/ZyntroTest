@@ -304,12 +304,8 @@
                                 showStatusIndicator: false,
                                 onLoadSuccess: function(pdfUrl, filename) {
                                     console.log('INDEX: PDF loaded successfully:', filename);
-                                    statusEl.innerHTML = '✅ PDF preview loaded successfully!';
-                                    statusEl.style.background = '#d4edda';
-                                    statusEl.style.color = '#155724';
-                                    setTimeout(() => {
-                                        statusEl.style.display = 'none';
-                                    }, 3000);
+                                    // Hide status immediately when PDF loads
+                                    statusEl.style.display = 'none';
                                 },
                                 onLoadError: function(pdfUrl) {
                                     console.error('INDEX: PDF failed to load:', pdfUrl);
