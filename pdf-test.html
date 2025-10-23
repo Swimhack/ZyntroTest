@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Test - ZyntroTest</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; }
+        .pdf-container { width: 100%; height: 600px; border: 2px solid #e5e7eb; border-radius: 0.5rem; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+    </style>
+</head>
+<body>
+    <h1>PDF Loading Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Direct iframe</h2>
+        <div id="status1" class="status info">Testing...</div>
+        <iframe id="test1" class="pdf-container" src=""></iframe>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 2: Object element</h2>
+        <div id="status2" class="status info">Testing...</div>
+        <object id="test2" class="pdf-container" type="application/pdf" data=""></object>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 3: PDF.js viewer</h2>
+        <div id="status3" class="status info">Testing...</div>
+        <iframe id="test3" class="pdf-container" src=""></iframe>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test 4: Google Docs viewer</h2>
+        <div id="status4" class="status info">Testing...</div>
+        <iframe id="test4" class="pdf-container" src=""></iframe>
+    </div>
+    
+    <div class="test-section">
+        <h2>Test Results</h2>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Test PDF URL
+        const testUrl = 'https://hctdzwmlkgnuxcuhjooe.supabase.co/storage/v1/object/public/coa-files/coa-files/QC-2025250405_PT-141_COA.pdf';
+        
+        console.log('🔍 PDF TEST: Starting tests with URL:', testUrl);
+        
+        // Test 1: Direct iframe
+        async function test1() {
+            const status = document.getElementById('status1');
+            const iframe = document.getElementById('test1');
+            
+            try {
+                status.textContent = 'Loading direct iframe...';
+                iframe.src = testUrl;
+                
+                iframe.onload = () => {
+                    status.textContent = 'Direct iframe loaded';
+                    status.className = 'status success';
+                    console.log('✅ Test 1: Direct iframe loaded');
+                };
+                
+                iframe.onerror = () => {
+                    status.textContent = 'Direct iframe failed';
+                    status.className = 'status error';
+                    console.log('❌ Test 1: Direct iframe failed');
+                };
+                
+                // Check content after 3 seconds
+                setTimeout(async () => {
+                    try {
+                        const content = iframe.contentDocument || iframe.contentWindow.document;
+                        if (content && content.body) {
+                            const text = content.body.innerText || '';
+                            console.log('Test 1 content preview:', text.substring(0, 100));
+                            
+                            if (text.includes('blocked') || text.includes('Microsoft Edge')) {
+                                status.textContent = 'Direct iframe blocked by browser';
+                                status.className = 'status error';
+                            } else if (text.length > 0) {
+                                status.textContent = 'Direct iframe content loaded';
+                                status.className = 'status success';
+                            }
+                        }
+                    } catch (e) {
+                        console.log('Test 1 content check failed:', e);
+                    }
+                }, 3000);
+                
+            } catch (error) {
+                status.textContent = 'Direct iframe error: ' + error.message;
+                status.className = 'status error';
+                console.log('❌ Test 1 error:', error);
+            }
+        }
+        
+        // Test 2: Object element
+        async function test2() {
+            const status = document.getElementById('status2');
+            const object = document.getElementById('test2');
+            
+            try {
+                status.textContent = 'Loading object element...';
+                object.data = testUrl;
+                object.type = 'application/pdf';
+                
+                // Check if object loaded
+                setTimeout(() => {
+                    if (object.offsetHeight > 0) {
+                        status.textContent = 'Object element loaded';
+                        status.className = 'status success';
+                        console.log('✅ Test 2: Object element loaded');
+                    } else {
+                        status.textContent = 'Object element failed';
+                        status.className = 'status error';
+                        console.log('❌ Test 2: Object element failed');
+                    }
+                }, 3000);
+                
+            } catch (error) {
+                status.textContent = 'Object element error: ' + error.message;
+                status.className = 'status error';
+                console.log('❌ Test 2 error:', error);
+            }
+        }
+        
+        // Test 3: PDF.js viewer
+        async function test3() {
+            const status = document.getElementById('status3');
+            const iframe = document.getElementById('test3');
+            
+            try {
+                status.textContent = 'Loading PDF.js viewer...';
+                const pdfjsUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(testUrl)}`;
+                iframe.src = pdfjsUrl;
+                
+                iframe.onload = () => {
+                    status.textContent = 'PDF.js viewer loaded';
+                    status.className = 'status success';
+                    console.log('✅ Test 3: PDF.js viewer loaded');
+                };
+                
+                iframe.onerror = () => {
+                    status.textContent = 'PDF.js viewer failed';
+                    status.className = 'status error';
+                    console.log('❌ Test 3: PDF.js viewer failed');
+                };
+                
+            } catch (error) {
+                status.textContent = 'PDF.js viewer error: ' + error.message;
+                status.className = 'status error';
+                console.log('❌ Test 3 error:', error);
+            }
+        }
+        
+        // Test 4: Google Docs viewer
+        async function test4() {
+            const status = document.getElementById('status4');
+            const iframe = document.getElementById('test4');
+            
+            try {
+                status.textContent = 'Loading Google Docs viewer...';
+                const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(testUrl)}&embedded=true`;
+                iframe.src = googleUrl;
+                
+                iframe.onload = () => {
+                    status.textContent = 'Google Docs viewer loaded';
+                    status.className = 'status success';
+                    console.log('✅ Test 4: Google Docs viewer loaded');
+                };
+                
+                iframe.onerror = () => {
+                    status.textContent = 'Google Docs viewer failed';
+                    status.className = 'status error';
+                    console.log('❌ Test 4: Google Docs viewer failed');
+                };
+                
+            } catch (error) {
+                status.textContent = 'Google Docs viewer error: ' + error.message;
+                status.className = 'status error';
+                console.log('❌ Test 4 error:', error);
+            }
+        }
+        
+        // Run all tests
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🔍 PDF TEST: Starting all tests...');
+            test1();
+            test2();
+            test3();
+            test4();
+            
+            // Show results after 10 seconds
+            setTimeout(() => {
+                const results = document.getElementById('results');
+                const statuses = document.querySelectorAll('.status');
+                let successCount = 0;
+                let errorCount = 0;
+                
+                statuses.forEach(status => {
+                    if (status.classList.contains('success')) successCount++;
+                    if (status.classList.contains('error')) errorCount++;
+                });
+                
+                results.innerHTML = `
+                    <h3>Test Summary</h3>
+                    <p>✅ Successful: ${successCount}</p>
+                    <p>❌ Failed: ${errorCount}</p>
+                    <p>Total: ${statuses.length}</p>
+                `;
+            }, 10000);
+        });
+    </script>
+</body>
+</html>
