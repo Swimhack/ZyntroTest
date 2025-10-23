@@ -222,13 +222,33 @@
                             </div>
                         </div>
                         
-                        <!-- PDF Viewer Container -->
-                        <div class="pdf-viewer-container">
-                            <iframe id="pdf-viewer" class="pdf-iframe" 
-                                    sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                                    loading="lazy">
-                            </iframe>
-                        </div>
+                 <!-- PDF Viewer Container -->
+                 <div class="pdf-viewer-container">
+                     <iframe id="pdf-viewer" class="pdf-iframe" 
+                             sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                             loading="lazy">
+                     </iframe>
+                     
+                     <!-- Alternative PDF Display for blocked browsers -->
+                     <div id="pdf-alternative-display" style="display: none; text-align: center; padding: 2rem;">
+                         <div style="font-size: 4rem; margin-bottom: 1rem;">📄</div>
+                         <h3 style="color: #1f2937; margin-bottom: 1rem;">Certificate of Analysis</h3>
+                         <p style="color: #6b7280; margin-bottom: 2rem;">
+                             Your browser is blocking the PDF preview for security reasons.
+                         </p>
+                         <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+                             <a href="#" id="pdf-direct-link" class="btn btn-primary" style="display: inline-block;">
+                                 📄 Open PDF in New Tab
+                             </a>
+                             <button onclick="downloadCurrentPDF()" class="btn btn-outline" style="display: inline-block;">
+                                 💾 Download PDF
+                             </button>
+                         </div>
+                         <p style="color: #6b7280; font-size: 0.875rem; margin: 1.5rem 0 0 0;">
+                             Or contact <a href="mailto:info@zyntrotest.com" style="color: #2563eb; text-decoration: underline;">info@zyntrotest.com</a> for assistance.
+                         </p>
+                     </div>
+                 </div>
                         
                         <!-- Browser Blocked Message -->
                         <div id="pdf-blocked-message" style="display: none; text-align: center; padding: 2rem; background: #fef3c7; border-radius: 0.5rem; margin-top: 1rem;">
@@ -342,77 +362,99 @@
                             statusEl.innerHTML = '📄 Loading sample COA...';
                         }
 
-                        // Load PDF with multiple fallback methods
+                        // Load PDF with browser-compatible approach
                         if (pdfViewer) {
                             console.log('INDEX: Loading PDF:', pdfUrl);
                             
-                            let loadAttempts = 0;
-                            const maxAttempts = 3;
+                            // First, try to detect if browser blocks PDFs
+                            const testIframe = document.createElement('iframe');
+                            testIframe.style.display = 'none';
+                            testIframe.src = pdfUrl;
+                            document.body.appendChild(testIframe);
                             
-                            function tryLoadPDF() {
-                                loadAttempts++;
-                                console.log(`INDEX: PDF load attempt ${loadAttempts}/${maxAttempts}`);
+                            let isBlocked = false;
+                            const blockTimeout = setTimeout(() => {
+                                isBlocked = true;
+                                console.log('INDEX: PDF appears to be blocked by browser');
+                                document.body.removeChild(testIframe);
                                 
-                                // Set up event handlers
+                                // Show browser blocked message and alternative display
+                                statusEl.innerHTML = '🚫 PDF preview blocked by browser. Showing alternative options...';
+                                statusEl.style.background = '#fef3c7';
+                                statusEl.style.color = '#92400e';
+                                
+                                // Hide iframe and show alternative display
+                                pdfViewer.style.display = 'none';
+                                const altDisplay = document.getElementById('pdf-alternative-display');
+                                if (altDisplay) {
+                                    altDisplay.style.display = 'block';
+                                }
+                                
+                                // Set up direct link
+                                const directLink = document.getElementById('pdf-direct-link');
+                                if (directLink) {
+                                    directLink.href = pdfUrl;
+                                    directLink.target = '_blank';
+                                }
+                            }, 3000);
+                            
+                            testIframe.onload = function() {
+                                clearTimeout(blockTimeout);
+                                document.body.removeChild(testIframe);
+                                
+                                if (!isBlocked) {
+                                    console.log('INDEX: PDF is accessible, loading in viewer...');
+                                    
+                                    // Set up the actual PDF viewer
+                                    pdfViewer.onload = function() {
+                                        console.log('INDEX: PDF iframe loaded successfully');
+                                        statusEl.innerHTML = '✅ PDF preview loaded successfully!';
+                                        statusEl.style.background = '#d4edda';
+                                        statusEl.style.color = '#155724';
+                                        
+                                        // Hide status after success
+                                        setTimeout(() => {
+                                            statusEl.style.display = 'none';
+                                        }, 3000);
+                                    };
+                                    
+                                    pdfViewer.onerror = function() {
+                                        console.error('INDEX: PDF iframe failed to load');
+                                        statusEl.innerHTML = '❌ PDF preview failed to load. <a href="' + pdfUrl + '" target="_blank" style="color: #2563eb;">Click here to view PDF</a>';
+                                        statusEl.style.background = '#f8d7da';
+                                        statusEl.style.color = '#721c24';
+                                    };
+                                    
+                                    // Load the PDF
+                                    pdfViewer.src = pdfUrl;
+                                }
+                            };
+                            
+                            testIframe.onerror = function() {
+                                clearTimeout(blockTimeout);
+                                document.body.removeChild(testIframe);
+                                console.log('INDEX: PDF is not accessible, trying alternative methods...');
+                                
+                                // Try PDF.js viewer as fallback
+                                pdfViewer.src = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
+                                
                                 pdfViewer.onload = function() {
-                                    console.log('INDEX: PDF iframe loaded successfully');
+                                    console.log('INDEX: PDF.js viewer loaded successfully');
                                     statusEl.innerHTML = '✅ PDF preview loaded successfully!';
                                     statusEl.style.background = '#d4edda';
                                     statusEl.style.color = '#155724';
                                     
-                                    // Hide status after success
                                     setTimeout(() => {
                                         statusEl.style.display = 'none';
                                     }, 3000);
                                 };
                                 
                                 pdfViewer.onerror = function() {
-                                    console.error(`INDEX: PDF iframe failed to load (attempt ${loadAttempts})`);
-                                    
-                                    if (loadAttempts < maxAttempts) {
-                                        // Try different loading methods
-                                        if (loadAttempts === 1) {
-                                            // Try PDF.js viewer
-                                            console.log('INDEX: Trying PDF.js viewer...');
-                                            pdfViewer.src = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
-                                        } else if (loadAttempts === 2) {
-                                            // Try Google Docs viewer
-                                            console.log('INDEX: Trying Google Docs viewer...');
-                                            pdfViewer.src = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
-                                        }
-                                        
-                                        // Try again after a short delay
-                                        setTimeout(tryLoadPDF, 1000);
-                                    } else {
-                                        // All attempts failed
-                                        statusEl.innerHTML = '❌ PDF preview failed to load. <a href="' + pdfUrl + '" target="_blank" style="color: #2563eb;">Click here to view PDF</a>';
-                                        statusEl.style.background = '#f8d7da';
-                                        statusEl.style.color = '#721c24';
-                                    }
+                                    console.error('INDEX: PDF.js viewer also failed');
+                                    statusEl.innerHTML = '❌ PDF preview unavailable. <a href="' + pdfUrl + '" target="_blank" style="color: #2563eb;">Click here to view PDF</a>';
+                                    statusEl.style.background = '#f8d7da';
+                                    statusEl.style.color = '#721c24';
                                 };
-
-                                // Set the PDF source
-                                if (loadAttempts === 1) {
-                                    pdfViewer.src = pdfUrl;
-                                }
-                            }
-                            
-                            // Start loading
-                            tryLoadPDF();
-                            
-                            // Set a timeout to show error if PDF doesn't load within 10 seconds
-                            const loadTimeout = setTimeout(() => {
-                                if (loadAttempts < maxAttempts) {
-                                    console.log('INDEX: PDF load timeout, trying next method...');
-                                    tryLoadPDF();
-                                }
-                            }, 10000);
-                            
-                            // Clear timeout if PDF loads successfully
-                            const originalOnload = pdfViewer.onload;
-                            pdfViewer.onload = function() {
-                                clearTimeout(loadTimeout);
-                                if (originalOnload) originalOnload();
                             };
                             
                             // Update download button
