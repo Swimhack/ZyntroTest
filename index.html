@@ -291,26 +291,29 @@
                      filename = currentIndexCOA.id ? `${currentIndexCOA.id}_COA.pdf` : 'COA.pdf';
                  }
 
-                 // Load PDF
+                 // Load PDF using PDF.js viewer (most reliable method)
                  if (pdfViewer) {
                      pdfViewer.onload = function() {
-                         console.log('PDF loaded successfully');
+                         console.log('PDF.js viewer loaded successfully');
                          if (errorDisplay) errorDisplay.style.display = 'none';
                      };
                      
                      pdfViewer.onerror = function() {
-                         console.log('PDF failed to load, showing error display');
+                         console.log('PDF.js viewer failed, showing error display');
                          if (errorDisplay) errorDisplay.style.display = 'block';
                      };
 
-                     pdfViewer.src = pdfUrl;
+                     // Use PDF.js viewer for maximum compatibility
+                     const pdfjsUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
+                     pdfViewer.src = pdfjsUrl;
                  }
 
              } catch (error) {
                  console.error('Error loading COA:', error);
-                 // Load default PDF as fallback
+                 // Load default PDF as fallback using PDF.js
                  if (pdfViewer) {
-                     pdfViewer.src = './COAs/Zyntro BPC-157.pdf';
+                     const fallbackUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent('./COAs/Zyntro BPC-157.pdf')}`;
+                     pdfViewer.src = fallbackUrl;
                  }
              }
          }
