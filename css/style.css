@@ -3032,13 +3032,29 @@ svg.icon {
     }
     
     .pdf-viewer-container {
-        aspect-ratio: 1 / 1.5; /* Taller aspect ratio for mobile */
+        aspect-ratio: 1 / 1.414; /* Keep A4 ratio for better PDF display */
+        min-height: 500px; /* Ensure minimum height */
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     
     .pdf-preview-container {
         margin: 1rem auto !important;
         padding: 0 0.5rem !important;
         max-width: 100% !important;
+    }
+    
+    .pdf-iframe {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0.5rem !important;
+        display: block !important;
+        object-fit: contain !important;
     }
     
     .pdf-download-btn {
@@ -3051,11 +3067,27 @@ svg.icon {
 /* Small mobile adjustments */
 @media (max-width: 480px) {
     .pdf-viewer-container {
-        aspect-ratio: 1 / 1.6; /* Even taller for small screens */
+        aspect-ratio: 1 / 1.414; /* Keep A4 ratio for consistency */
+        min-height: 400px; /* Smaller minimum height for small screens */
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
     
     .pdf-preview-container {
         padding: 0 0.25rem !important;
+    }
+    
+    .pdf-iframe {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 0.5rem !important;
+        display: block !important;
+        object-fit: contain !important;
     }
     
     .pdf-download-btn {
