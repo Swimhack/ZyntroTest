@@ -1,0 +1,13 @@
+node_modules
+.git
+.github
+test-*.js
+playwright-report
+test-results
+test-screenshots
+*.md
+!README.md
+package.json
+package-lock.json
+playwright.config.js
+.claude
