@@ -2919,23 +2919,22 @@ svg.icon {
 .pdf-viewer-container {
     position: relative;
     width: 100%;
+    aspect-ratio: 1 / 1.414; /* A4 aspect ratio */
     background: #f8fafc;
-    min-height: 600px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    overflow: hidden;
 }
 
-/* PDF Preview Styles - Optimized for responsive display */
+/* PDF Preview Styles - Mobile-responsive container with aspect ratio */
 .pdf-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100% !important;
-    max-width: 100% !important;
-    height: 600px !important;
+    height: 100% !important;
     border: none !important;
     background: #f8fafc !important;
     transition: all 0.3s ease !important;
     display: block !important;
-    margin: 0 auto !important;
     object-fit: contain !important;
 }
 
@@ -2949,10 +2948,6 @@ svg.icon {
     width: 100%;
     max-width: 100%;
     margin: 1.5rem 0 !important;
-    display: flex !important;
-    justify-content: center !important;
-    align-items: center !important;
-    flex-direction: column !important;
     padding: 0 !important;
 }
 
@@ -3033,16 +3028,7 @@ svg.icon {
     }
     
     .pdf-viewer-container {
-        min-height: 400px;
-    }
-    
-    .pdf-iframe {
-        height: 400px !important;
-        border-radius: 0.5rem !important;
-        margin: 0 auto !important;
-        display: block !important;
-        width: 100% !important;
-        max-width: 100% !important;
+        aspect-ratio: 1 / 1.5; /* Taller aspect ratio for mobile */
     }
     
     .pdf-preview-container {
@@ -3056,21 +3042,12 @@ svg.icon {
         font-size: 0.875rem !important;
         margin-bottom: 1rem !important;
     }
-    
-    #iframe-pdf-viewer,
-    #object-pdf-viewer,
-    #pdfjs-viewer {
-        padding: 0 !important;
-        margin: 0 auto !important;
-        width: 100% !important;
-    }
 }
 
 /* Small mobile adjustments */
 @media (max-width: 480px) {
-    .pdf-iframe {
-        height: 350px !important;
-        border-radius: 0.375rem !important;
+    .pdf-viewer-container {
+        aspect-ratio: 1 / 1.6; /* Even taller for small screens */
     }
     
     .pdf-preview-container {
@@ -3094,15 +3071,7 @@ svg.icon {
     }
     
     .pdf-viewer-container {
-        min-height: 700px;
-    }
-    
-    .pdf-iframe {
-        height: 700px !important;
-        margin: 0 auto !important;
-        display: block !important;
-        max-width: 95% !important;
-        width: 95% !important;
+        aspect-ratio: 1 / 1.414; /* Standard A4 aspect ratio */
     }
     
     .pdf-preview-container {
@@ -3129,15 +3098,7 @@ svg.icon {
     }
     
     .pdf-viewer-container {
-        min-height: 800px;
-    }
-    
-    .pdf-iframe {
-        height: 800px !important;
-        margin: 0 auto !important;
-        display: block !important;
-        max-width: 100% !important;
-        width: 100% !important;
+        aspect-ratio: 1 / 1.414; /* Standard A4 aspect ratio */
     }
     
     .pdf-preview-container {
@@ -3159,14 +3120,7 @@ svg.icon {
     }
     
     .pdf-viewer-container {
-        min-height: 900px;
-    }
-    
-    .pdf-iframe {
-        height: 900px !important;
-        max-width: 100% !important;
-        width: 100% !important;
-        margin: 0 auto !important;
+        aspect-ratio: 1 / 1.414; /* Standard A4 aspect ratio */
     }
     
     .pdf-preview-container {
@@ -3188,13 +3142,7 @@ svg.icon {
     }
     
     .pdf-viewer-container {
-        min-height: 1000px;
-    }
-    
-    .pdf-iframe {
-        height: 1000px !important;
-        max-width: 100% !important;
-        width: 100% !important;
+        aspect-ratio: 1 / 1.414; /* Standard A4 aspect ratio */
     }
     
     .pdf-preview-container {

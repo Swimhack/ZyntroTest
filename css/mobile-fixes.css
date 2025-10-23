@@ -578,17 +578,14 @@ h2 {
 }
 
 /* PDF Viewer Mobile Responsive Styles - ISSUE #1 FIX */
-/* Base mobile styles for PDF viewer - properly scaled for mobile */
-.pdf-iframe,
-#pdf-viewer {
+/* Modern responsive container approach - aspect ratio based */
+.coa-preview .pdf-viewer-container,
+.trust-signals .pdf-viewer-container,
+#pdf-preview-section .pdf-viewer-container {
+    position: relative;
     width: 100%;
-    height: 60vh; /* Mobile: 60% of viewport height */
-    min-height: 400px;
-    max-height: 500px;
-    border: 2px solid var(--gray-200);
-    border-radius: var(--radius-lg);
-    background: var(--gray-50);
-    display: block;
+    aspect-ratio: 1 / 1.5; /* Mobile: taller aspect ratio */
+    overflow: hidden;
 }
 
 /* Homepage PDF preview - mobile responsive best practices */
@@ -602,21 +599,13 @@ h2 {
 
 .coa-preview #pdf-viewer,
 .trust-signals #pdf-viewer {
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100% !important;
-    height: 500px !important;
-    min-height: 400px !important;
-    max-height: 600px !important;
+    height: 100% !important;
     border: 2px solid var(--gray-200) !important;
     border-radius: var(--radius-lg) !important;
-}
-
-/* Mobile PDF fixes */
-@media (max-width: 768px) {
-    .coa-preview #pdf-viewer,
-    .trust-signals #pdf-viewer {
-        height: 400px !important;
-        min-height: 350px !important;
-    }
 }
 
 .pdf-header {
@@ -649,10 +638,10 @@ h2 {
 
 /* Tablet PDF viewer styles */
 @media (min-width: 768px) {
-    .pdf-iframe {
-        height: 70vh;
-        min-height: 600px;
-        max-height: 700px;
+    .coa-preview .pdf-viewer-container,
+    .trust-signals .pdf-viewer-container,
+    #pdf-preview-section .pdf-viewer-container {
+        aspect-ratio: 1 / 1.414; /* A4 aspect ratio for tablet */
     }
 
     .mobile-download-btn {
@@ -663,9 +652,10 @@ h2 {
 
 /* Desktop PDF viewer styles */
 @media (min-width: 1024px) {
-    .pdf-iframe {
-        height: 800px;
-        max-height: 900px;
+    .coa-preview .pdf-viewer-container,
+    .trust-signals .pdf-viewer-container,
+    #pdf-preview-section .pdf-viewer-container {
+        aspect-ratio: 1 / 1.414; /* Standard A4 aspect ratio */
     }
 
     .mobile-download-btn {
@@ -679,18 +669,19 @@ h2 {
 
 /* Large desktop optimization */
 @media (min-width: 1200px) {
-    .pdf-iframe {
-        height: 850px;
-        max-height: 1000px;
+    .coa-preview .pdf-viewer-container,
+    .trust-signals .pdf-viewer-container,
+    #pdf-preview-section .pdf-viewer-container {
+        aspect-ratio: 1 / 1.414; /* Standard A4 aspect ratio */
     }
 }
 
 /* Landscape mobile optimization */
 @media (max-width: 767px) and (orientation: landscape) {
-    .pdf-iframe {
-        height: 80vh;
-        min-height: 300px;
-        max-height: 400px;
+    .coa-preview .pdf-viewer-container,
+    .trust-signals .pdf-viewer-container,
+    #pdf-preview-section .pdf-viewer-container {
+        aspect-ratio: 1.414 / 1; /* Landscape orientation */
     }
 }
 
