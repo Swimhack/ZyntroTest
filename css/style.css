@@ -2837,7 +2837,7 @@ svg.icon {
     }
 }
 
-/* PDF Preview Styles - Enhanced for all devices */
+/* PDF Preview Styles - Enhanced for all devices with centering */
 .pdf-iframe {
     width: 100% !important;
     height: 600px !important;
@@ -2846,6 +2846,9 @@ svg.icon {
     background: #f8fafc !important;
     box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
     transition: all 0.3s ease !important;
+    display: block !important;
+    margin: 0 auto !important;
+    object-fit: contain !important;
 }
 
 .pdf-iframe:hover {
@@ -2855,7 +2858,29 @@ svg.icon {
 .pdf-preview-container {
     position: relative;
     width: 100%;
-    margin: 1rem 0;
+    margin: 1rem auto !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-direction: column !important;
+}
+
+/* Ensure all PDF viewer containers are centered */
+#iframe-pdf-viewer,
+#object-pdf-viewer,
+#pdfjs-viewer {
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: 100% !important;
+}
+
+/* Center PDF object elements */
+#pdf-object {
+    display: block !important;
+    margin: 0 auto !important;
+    max-width: 100% !important;
+    height: 600px !important;
 }
 
 /* Mobile PDF iframe adjustments */
@@ -2863,6 +2888,20 @@ svg.icon {
     .pdf-iframe {
         height: 400px !important;
         border-radius: 0.375rem !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+    
+    .pdf-preview-container {
+        margin: 0.5rem auto !important;
+        padding: 0 1rem !important;
+    }
+    
+    #iframe-pdf-viewer,
+    #object-pdf-viewer,
+    #pdfjs-viewer {
+        padding: 0 !important;
+        margin: 0 auto !important;
     }
 }
 
@@ -2870,6 +2909,13 @@ svg.icon {
 @media (min-width: 769px) and (max-width: 1024px) {
     .pdf-iframe {
         height: 500px !important;
+        margin: 0 auto !important;
+        display: block !important;
+    }
+    
+    .pdf-preview-container {
+        margin: 1rem auto !important;
+        max-width: 90% !important;
     }
 }
 
@@ -2877,6 +2923,28 @@ svg.icon {
 @media (min-width: 1025px) {
     .pdf-iframe {
         height: 700px !important;
+        margin: 0 auto !important;
+        display: block !important;
+        max-width: 100% !important;
+    }
+    
+    .pdf-preview-container {
+        margin: 2rem auto !important;
+        max-width: 95% !important;
+    }
+}
+
+/* Large desktop PDF iframe adjustments */
+@media (min-width: 1400px) {
+    .pdf-iframe {
+        height: 800px !important;
+        max-width: 1200px !important;
+        margin: 0 auto !important;
+    }
+    
+    .pdf-preview-container {
+        max-width: 1200px !important;
+        margin: 2rem auto !important;
     }
 }
 
