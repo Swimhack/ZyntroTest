@@ -294,8 +294,14 @@
                     const statusEl = document.getElementById('cms-status');
                     const pdfSection = document.getElementById('pdf-preview-section');
 
+                    // Show PDF section FIRST so iframe is available
+                    if (pdfSection) {
+                        pdfSection.style.display = 'block';
+                        console.log('INDEX: PDF section made visible');
+                    }
+
                     try {
-                        // Initialize PDF viewer ONCE for index page
+                        // Initialize PDF viewer ONCE for index page (AFTER section is visible)
                         if (!window.indexPDFViewer) {
                             console.log('INDEX: Creating PDFViewer instance');
                             window.indexPDFViewer = new window.PDFViewer('pdf-preview-section', {
@@ -350,10 +356,7 @@
                             throw error;
                         }
 
-                        // Show PDF section
-                        if (pdfSection) {
-                            pdfSection.style.display = 'block';
-                        }
+                        // PDF section already shown at start of function
 
                         if (coas && coas.length > 0) {
                             // Load COA from database
@@ -376,10 +379,7 @@
                         statusEl.style.background = '#f8d7da';
                         statusEl.style.color = '#721c24';
 
-                        // Show PDF section and load default PDF as fallback
-                        if (pdfSection) {
-                            pdfSection.style.display = 'block';
-                        }
+                        // Load default PDF as fallback (section already shown)
                         if (window.indexPDFViewer) {
                             window.indexPDFViewer.loadDefaultPDF();
                         }
