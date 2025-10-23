@@ -1170,6 +1170,13 @@ svg.icon {
     justify-content: center;
 }
 
+/* Override container max-width for COA preview to allow full PDF display */
+.coa-preview .container {
+    max-width: 100% !important;
+    width: 100% !important;
+    padding: 0 !important;
+}
+
 .coa-preview h3 {
     margin-bottom: var(--space-lg);
     color: var(--gray-900);
@@ -2884,12 +2891,12 @@ svg.icon {
     position: relative;
     width: 100%;
     max-width: 100%;
-    margin: 1.5rem auto !important;
+    margin: 1.5rem 0 !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     flex-direction: column !important;
-    padding: 0 1rem !important;
+    padding: 0 !important;
 }
 
 /* PDF Download Button Styling */
@@ -3017,14 +3024,14 @@ svg.icon {
         height: 800px !important;
         margin: 0 auto !important;
         display: block !important;
-        max-width: 95% !important;
-        width: 95% !important;
+        max-width: 100% !important;
+        width: 100% !important;
     }
     
     .pdf-preview-container {
-        margin: 2rem auto !important;
-        max-width: 95% !important;
-        padding: 0 1rem !important;
+        margin: 2rem 0 !important;
+        max-width: 100% !important;
+        padding: 0 !important;
     }
     
     .pdf-download-btn {
@@ -3037,15 +3044,15 @@ svg.icon {
 @media (min-width: 1400px) {
     .pdf-iframe {
         height: 900px !important;
-        max-width: 98% !important;
-        width: 98% !important;
+        max-width: 100% !important;
+        width: 100% !important;
         margin: 0 auto !important;
     }
     
     .pdf-preview-container {
-        max-width: 98% !important;
-        margin: 2.5rem auto !important;
-        padding: 0 1rem !important;
+        max-width: 100% !important;
+        margin: 2.5rem 0 !important;
+        padding: 0 !important;
     }
     
     .pdf-download-btn {
@@ -3058,13 +3065,13 @@ svg.icon {
 @media (min-width: 1920px) {
     .pdf-iframe {
         height: 1000px !important;
-        max-width: 98% !important;
-        width: 98% !important;
+        max-width: 100% !important;
+        width: 100% !important;
     }
     
     .pdf-preview-container {
-        max-width: 98% !important;
-        padding: 0 1rem !important;
+        max-width: 100% !important;
+        padding: 0 !important;
     }
 }
 
