@@ -2922,13 +2922,17 @@ svg.icon {
     aspect-ratio: 1 / 1.414; /* A4 aspect ratio */
     background: #f8fafc;
     overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 /* PDF Preview Styles - Mobile-responsive container with aspect ratio */
 .pdf-iframe {
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 100% !important;
     height: 100% !important;
     border: none !important;
@@ -2940,7 +2944,7 @@ svg.icon {
 
 .pdf-iframe:hover {
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05) !important;
-    transform: translateY(-2px) !important;
+    transform: translate(-50%, -50%) translateY(-2px) !important;
 }
 
 .pdf-preview-container {
