@@ -345,27 +345,43 @@
             return fallbackDatabase[coaNumber.toUpperCase()] || null;
         }
         
-        // Display COA results using unified PDF loader
+        // Display COA results with direct PDF loading
         function displayCOAResults(coa) {
             console.log('SEARCH: Displaying COA results with data:', coa);
 
             const resultsSection = document.getElementById('search-results');
             const coaContent = document.getElementById('coa-content');
             const pdfPreview = document.getElementById('pdf-preview-section');
+            const pdfViewer = document.getElementById('pdf-viewer');
+            const errorDisplay = document.getElementById('pdf-error-display');
 
-            // Get the proper file URL using shared function
-            const fileUrl = window.getProperFileUrl ? window.getProperFileUrl(coa) : (coa.file_url || coa.fileUrl);
+            // Get the proper file URL
+            const fileUrl = coa.file_url || coa.fileUrl || './COAs/Zyntro BPC-157.pdf';
 
             coaContent.innerHTML = generateCOAContent(coa, fileUrl);
             resultsSection.style.display = 'block';
             pdfPreview.style.display = 'block';
 
-            // Use the unified PDF loader to load the PDF
-            if (window.unifiedPDFLoader && window.unifiedPDFLoader.viewer) {
-                console.log('SEARCH: Loading PDF using unified loader');
-                window.unifiedPDFLoader.loadCOA(coa);
-            } else {
-                console.error('SEARCH: Unified PDF loader not available');
+            // Load PDF using Google Docs viewer (same as index.html)
+            if (pdfViewer) {
+                console.log('SEARCH: Loading PDF via Google Docs viewer:', fileUrl);
+                
+                pdfViewer.onload = function() {
+                    console.log('SEARCH: PDF loaded successfully');
+                    if (errorDisplay) errorDisplay.style.display = 'none';
+                };
+                
+                pdfViewer.onerror = function() {
+                    console.log('SEARCH: PDF failed to load, showing error display');
+                    if (errorDisplay) errorDisplay.style.display = 'block';
+                };
+
+                // Use Google Docs viewer for maximum compatibility
+                const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+                pdfViewer.src = googleUrl;
+                
+                // Store the original PDF URL for download
+                window.currentSearchCOA = coa;
             }
 
             resultsSection.scrollIntoView({ behavior: 'smooth' });
@@ -460,9 +476,23 @@
 
         // Download function for the current PDF
         function downloadCurrentPDF() {
+            // Use the stored COA data if available
+            if (window.currentSearchCOA && window.currentSearchCOA.file_url) {
+                const coa = window.currentSearchCOA;
+                const link = document.createElement('a');
+                link.href = coa.file_url;
+                link.download = coa.id ? `${coa.id}_COA.pdf` : 'COA.pdf';
+                link.target = '_blank';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                console.log('Downloaded PDF:', coa.file_url);
+                return;
+            }
+            
+            // Fallback to extracting from iframe
             const pdfViewer = document.getElementById('pdf-viewer');
             if (pdfViewer && pdfViewer.src) {
-                // Extract the original PDF URL from Google Docs viewer URL
                 const googleUrl = pdfViewer.src;
                 const urlMatch = googleUrl.match(/url=([^&]+)/);
                 if (urlMatch) {
