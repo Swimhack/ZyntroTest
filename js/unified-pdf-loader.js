@@ -76,10 +76,11 @@ async function initializeIndexPDF() {
             console.log('📋 Using default sample PDF');
         }
         
-        // Load the PDF
+        // Load the PDF using Google Docs viewer
         if (pdfViewer) {
-            pdfViewer.src = pdfUrl;
-            console.log('📄 PDF loaded:', pdfUrl);
+            const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+            pdfViewer.src = googleUrl;
+            console.log('📄 PDF loaded via Google Docs viewer:', googleUrl);
         }
         
         // Setup download button
@@ -102,9 +103,10 @@ async function initializeIndexPDF() {
             statusEl.style.background = '#fecaca';
         }
         
-        // Load default PDF as fallback
+        // Load default PDF as fallback using Google Docs viewer
         if (pdfViewer) {
-            pdfViewer.src = './COAs/Zyntro BPC-157.pdf';
+            const fallbackUrl = `https://docs.google.com/gview?url=${encodeURIComponent('./COAs/Zyntro BPC-157.pdf')}&embedded=true`;
+            pdfViewer.src = fallbackUrl;
         }
     }
 }
@@ -157,8 +159,9 @@ function loadCOA(coa) {
     }
     
     if (pdfViewer && coa.file_url) {
-        pdfViewer.src = coa.file_url;
-        console.log('✅ PDF viewer src set to:', coa.file_url);
+        const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(coa.file_url)}&embedded=true`;
+        pdfViewer.src = googleUrl;
+        console.log('✅ PDF viewer src set to Google Docs viewer:', googleUrl);
         
         // Setup download button
         const downloadBtn = document.getElementById('pdf-download-btn');

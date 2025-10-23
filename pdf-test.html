@@ -27,12 +27,6 @@
     <h1>PDF Loading Test</h1>
     
     <div class="test-section">
-        <h2>Test 1: Direct iframe</h2>
-        <div id="status1" class="status info">Testing...</div>
-        <iframe id="test1" class="pdf-container" src=""></iframe>
-    </div>
-    
-    <div class="test-section">
         <h2>Google Docs viewer</h2>
         <div id="status4" class="status info">Testing...</div>
         <iframe id="test4" class="pdf-container" src=""></iframe>
@@ -48,55 +42,6 @@
         const testUrl = 'https://hctdzwmlkgnuxcuhjooe.supabase.co/storage/v1/object/public/coa-files/coa-files/QC-2025250405_PT-141_COA.pdf';
         
         console.log('🔍 PDF TEST: Starting tests with URL:', testUrl);
-        
-        // Test 1: Direct iframe
-        async function test1() {
-            const status = document.getElementById('status1');
-            const iframe = document.getElementById('test1');
-            
-            try {
-                status.textContent = 'Loading direct iframe...';
-                iframe.src = testUrl;
-                
-                iframe.onload = () => {
-                    status.textContent = 'Direct iframe loaded';
-                    status.className = 'status success';
-                    console.log('✅ Test 1: Direct iframe loaded');
-                };
-                
-                iframe.onerror = () => {
-                    status.textContent = 'Direct iframe failed';
-                    status.className = 'status error';
-                    console.log('❌ Test 1: Direct iframe failed');
-                };
-                
-                // Check content after 3 seconds
-                setTimeout(async () => {
-                    try {
-                        const content = iframe.contentDocument || iframe.contentWindow.document;
-                        if (content && content.body) {
-                            const text = content.body.innerText || '';
-                            console.log('Test 1 content preview:', text.substring(0, 100));
-                            
-                            if (text.includes('blocked') || text.includes('Microsoft Edge')) {
-                                status.textContent = 'Direct iframe blocked by browser';
-                                status.className = 'status error';
-                            } else if (text.length > 0) {
-                                status.textContent = 'Direct iframe content loaded';
-                                status.className = 'status success';
-                            }
-                        }
-                    } catch (e) {
-                        console.log('Test 1 content check failed:', e);
-                    }
-                }, 3000);
-                
-            } catch (error) {
-                status.textContent = 'Direct iframe error: ' + error.message;
-                status.className = 'status error';
-                console.log('❌ Test 1 error:', error);
-            }
-        }
         
         // Google Docs viewer
         async function test4() {
@@ -127,10 +72,9 @@
             }
         }
         
-        // Run tests
+        // Run test
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🔍 PDF TEST: Starting tests...');
-            test1();
+            console.log('🔍 PDF TEST: Starting Google Docs viewer test...');
             test4();
             
             // Show results after 10 seconds
