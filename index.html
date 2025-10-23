@@ -291,28 +291,28 @@
                      filename = currentIndexCOA.id ? `${currentIndexCOA.id}_COA.pdf` : 'COA.pdf';
                  }
 
-                 // Load PDF using PDF.js viewer (most reliable method)
+                 // Load PDF using Google Docs viewer (most reliable method)
                  if (pdfViewer) {
                      pdfViewer.onload = function() {
-                         console.log('PDF.js viewer loaded successfully');
+                         console.log('Google Docs viewer loaded successfully');
                          if (errorDisplay) errorDisplay.style.display = 'none';
                      };
                      
                      pdfViewer.onerror = function() {
-                         console.log('PDF.js viewer failed, showing error display');
+                         console.log('Google Docs viewer failed, showing error display');
                          if (errorDisplay) errorDisplay.style.display = 'block';
                      };
 
-                     // Use PDF.js viewer for maximum compatibility
-                     const pdfjsUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
-                     pdfViewer.src = pdfjsUrl;
+                     // Use Google Docs viewer for maximum compatibility
+                     const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+                     pdfViewer.src = googleUrl;
                  }
 
              } catch (error) {
                  console.error('Error loading COA:', error);
-                 // Load default PDF as fallback using PDF.js
+                 // Load default PDF as fallback using Google Docs viewer
                  if (pdfViewer) {
-                     const fallbackUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent('./COAs/Zyntro BPC-157.pdf')}`;
+                     const fallbackUrl = `https://docs.google.com/gview?url=${encodeURIComponent('./COAs/Zyntro BPC-157.pdf')}&embedded=true`;
                      pdfViewer.src = fallbackUrl;
                  }
              }

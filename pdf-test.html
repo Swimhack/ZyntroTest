@@ -33,19 +33,7 @@
     </div>
     
     <div class="test-section">
-        <h2>Test 2: Object element</h2>
-        <div id="status2" class="status info">Testing...</div>
-        <object id="test2" class="pdf-container" type="application/pdf" data=""></object>
-    </div>
-    
-    <div class="test-section">
-        <h2>Test 3: PDF.js viewer</h2>
-        <div id="status3" class="status info">Testing...</div>
-        <iframe id="test3" class="pdf-container" src=""></iframe>
-    </div>
-    
-    <div class="test-section">
-        <h2>Test 4: Google Docs viewer</h2>
+        <h2>Google Docs viewer</h2>
         <div id="status4" class="status info">Testing...</div>
         <iframe id="test4" class="pdf-container" src=""></iframe>
     </div>
@@ -110,66 +98,7 @@
             }
         }
         
-        // Test 2: Object element
-        async function test2() {
-            const status = document.getElementById('status2');
-            const object = document.getElementById('test2');
-            
-            try {
-                status.textContent = 'Loading object element...';
-                object.data = testUrl;
-                object.type = 'application/pdf';
-                
-                // Check if object loaded
-                setTimeout(() => {
-                    if (object.offsetHeight > 0) {
-                        status.textContent = 'Object element loaded';
-                        status.className = 'status success';
-                        console.log('✅ Test 2: Object element loaded');
-                    } else {
-                        status.textContent = 'Object element failed';
-                        status.className = 'status error';
-                        console.log('❌ Test 2: Object element failed');
-                    }
-                }, 3000);
-                
-            } catch (error) {
-                status.textContent = 'Object element error: ' + error.message;
-                status.className = 'status error';
-                console.log('❌ Test 2 error:', error);
-            }
-        }
-        
-        // Test 3: PDF.js viewer
-        async function test3() {
-            const status = document.getElementById('status3');
-            const iframe = document.getElementById('test3');
-            
-            try {
-                status.textContent = 'Loading PDF.js viewer...';
-                const pdfjsUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(testUrl)}`;
-                iframe.src = pdfjsUrl;
-                
-                iframe.onload = () => {
-                    status.textContent = 'PDF.js viewer loaded';
-                    status.className = 'status success';
-                    console.log('✅ Test 3: PDF.js viewer loaded');
-                };
-                
-                iframe.onerror = () => {
-                    status.textContent = 'PDF.js viewer failed';
-                    status.className = 'status error';
-                    console.log('❌ Test 3: PDF.js viewer failed');
-                };
-                
-            } catch (error) {
-                status.textContent = 'PDF.js viewer error: ' + error.message;
-                status.className = 'status error';
-                console.log('❌ Test 3 error:', error);
-            }
-        }
-        
-        // Test 4: Google Docs viewer
+        // Google Docs viewer
         async function test4() {
             const status = document.getElementById('status4');
             const iframe = document.getElementById('test4');
@@ -198,12 +127,10 @@
             }
         }
         
-        // Run all tests
+        // Run tests
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('🔍 PDF TEST: Starting all tests...');
+            console.log('🔍 PDF TEST: Starting tests...');
             test1();
-            test2();
-            test3();
             test4();
             
             // Show results after 10 seconds
