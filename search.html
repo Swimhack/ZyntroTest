@@ -217,6 +217,7 @@
     </footer>
 
     <script src="js/script.js"></script>
+    <script src="js/pdfViewer.js"></script>
     <script>
         // Initialize Supabase for COA search
         document.addEventListener('DOMContentLoaded', async () => {
@@ -325,17 +326,18 @@
             return fallbackDatabase[coaNumber.toUpperCase()] || null;
         }
         
+        // Initialize PDF viewer instance for search page ONLY
+        let searchPDFViewer = null;
+
         function displayCOAResults(coa) {
-            console.log('Displaying COA results with data:', coa);
+            console.log('SEARCH: Displaying COA results with data:', coa);
 
             const resultsSection = document.getElementById('search-results');
             const coaContent = document.getElementById('coa-content');
             const pdfPreview = document.getElementById('pdf-preview-section');
-            const pdfViewer = document.getElementById('pdf-viewer');
-            const pdfDownloadBtn = document.getElementById('pdf-download-btn');
 
             // Get the proper file URL using shared function
-            const fileUrl = window.getProperFileUrl ? window.getProperFileUrl(coa) : coa.file_url;
+            const fileUrl = window.getProperFileUrl ? window.getProperFileUrl(coa) : (coa.file_url || coa.fileUrl);
 
             coaContent.innerHTML = generateCOAContent(coa, fileUrl);
             resultsSection.style.display = 'block';
@@ -343,47 +345,35 @@
             // Show PDF preview section
             pdfPreview.style.display = 'block';
 
-            // Load PDF directly if URL exists
-            const pdfErrorMessage = document.getElementById('pdf-error-message');
-            if (fileUrl) {
-                console.log('Loading PDF from:', fileUrl);
-                pdfViewer.src = fileUrl;
-                pdfErrorMessage.style.display = 'none';
+            // Clear existing PDF viewer to force reload
+            if (searchPDFViewer) {
+                console.log('SEARCH: Clearing existing PDF viewer');
+                searchPDFViewer.clear();
+            }
 
-                // Setup download button
-                pdfDownloadBtn.href = fileUrl;
-                pdfDownloadBtn.download = `${coa.id}_COA.pdf`;
-                pdfDownloadBtn.style.display = 'inline-block';
-
-                // Add error handler for iframe
-                pdfViewer.onerror = function() {
-                    console.error('Failed to load PDF from:', fileUrl);
-                    pdfViewer.style.display = 'none';
-                    pdfErrorMessage.style.display = 'block';
-                };
-
-                // Detect JSON errors in iframe after loading
-                pdfViewer.onload = function() {
-                    try {
-                        const iframeContent = pdfViewer.contentDocument || pdfViewer.contentWindow.document;
-                        const text = iframeContent.body.innerText || '';
-
-                        // Check if iframe contains JSON error response
-                        if (text.includes('statusCode') || text.includes('Bucket not found')) {
-                            console.error('PDF iframe contains error response:', text);
-                            pdfViewer.style.display = 'none';
-                            pdfErrorMessage.style.display = 'block';
-                        }
-                    } catch (e) {
-                        // Cross-origin error is fine - means PDF loaded
-                        console.log('PDF loaded from different origin');
+            // Initialize PDF viewer if not already done
+            if (!searchPDFViewer) {
+                console.log('SEARCH: Creating new PDFViewer instance');
+                searchPDFViewer = new window.PDFViewer('pdf-preview-section', {
+                    defaultPDF: './COAs/Zyntro BPC-157.pdf',
+                    showDownloadButton: true,
+                    showStatusIndicator: false,
+                    onLoadSuccess: function(pdfUrl, filename) {
+                        console.log('SEARCH: PDF loaded successfully:', filename);
+                    },
+                    onLoadError: function(pdfUrl) {
+                        console.error('SEARCH: PDF failed to load:', pdfUrl);
                     }
-                };
+                });
+            }
+
+            // Load PDF if URL exists - use loadFromCOAData for consistency
+            if (fileUrl || coa) {
+                console.log('SEARCH: Loading PDF from COA data');
+                searchPDFViewer.loadFromCOAData(coa);
             } else {
-                console.warn('No file URL found for COA:', coa.id);
-                pdfViewer.style.display = 'none';
-                pdfErrorMessage.style.display = 'block';
-                pdfDownloadBtn.style.display = 'none';
+                console.warn('SEARCH: No file URL found for COA:', coa.id);
+                searchPDFViewer.showError('No PDF file available for this COA.');
             }
 
             resultsSection.scrollIntoView({ behavior: 'smooth' });

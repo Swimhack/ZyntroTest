@@ -284,21 +284,47 @@
                 <a href="search.html" class="btn btn-outline">Search COAs</a>
                 
                 <script>
-                // COA Loading Script - Enhanced with download functionality
-                let currentCOA = null;
-                
-                async function loadCOANow() {
-                    console.log('🔍 Loading COA with enhanced preview and download...');
+                // COA Loading Script - Using unified PDF viewer
+                // Define globally so cms-loader can access it
+                window.indexPDFViewer = null;
+                let currentIndexCOA = null;
+
+                async function loadIndexCOA() {
+                    console.log('🔍 INDEX: Loading COA with unified PDF viewer...');
                     const statusEl = document.getElementById('cms-status');
-                    const pdfViewer = document.getElementById('pdf-viewer');
                     const pdfSection = document.getElementById('pdf-preview-section');
-                    
+
                     try {
+                        // Initialize PDF viewer ONCE for index page
+                        if (!window.indexPDFViewer) {
+                            console.log('INDEX: Creating PDFViewer instance');
+                            window.indexPDFViewer = new window.PDFViewer('pdf-preview-section', {
+                                defaultPDF: './COAs/Zyntro BPC-157.pdf',
+                                showDownloadButton: false,
+                                showStatusIndicator: false,
+                                onLoadSuccess: function(pdfUrl, filename) {
+                                    console.log('INDEX: PDF loaded successfully:', filename);
+                                    statusEl.innerHTML = '✅ PDF preview loaded successfully!';
+                                    statusEl.style.background = '#d4edda';
+                                    statusEl.style.color = '#155724';
+                                    setTimeout(() => {
+                                        statusEl.style.display = 'none';
+                                    }, 3000);
+                                },
+                                onLoadError: function(pdfUrl) {
+                                    console.error('INDEX: PDF failed to load:', pdfUrl);
+                                    statusEl.innerHTML = '❌ PDF preview failed to load. <a href="' + pdfUrl + '" target="_blank" style="color: #2563eb;">Click here to view PDF</a>';
+                                    statusEl.style.background = '#f8d7da';
+                                    statusEl.style.color = '#721c24';
+                                }
+                            });
+                        }
+
                         statusEl.innerHTML = '🔄 Loading Supabase...';
-                        
+
                         // Load Supabase if not available
                         if (!window.supabase) {
-                            console.log('Loading Supabase library...');
+                            console.log('INDEX: Loading Supabase library...');
                             await new Promise((resolve, reject) => {
                                 const script = document.createElement('script');
                                 script.src = 'https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js';
@@ -307,13 +333,13 @@
                                 document.head.appendChild(script);
                             });
                         }
-                        
-                        statusEl.innerHTML = '📊 Creating Supabase client...';
+
+                        statusEl.innerHTML = '📊 Connecting to database...';
                         const client = supabase.createClient(
                             'https://hctdzwmlkgnuxcuhjooe.supabase.co',
                             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
                         );
-                        
+
                         statusEl.innerHTML = '📄 Loading COA data...';
                         const { data: coas, error } = await client
                             .from('coas')
@@ -322,94 +348,57 @@
                             .neq('file_url', '')
                             .order('created_at', { ascending: false })
                             .limit(1);
-                        
+
                         if (error) {
-                            console.error('Database error:', error);
+                            console.error('INDEX: Database error:', error);
                             throw error;
                         }
-                        if (coas.length === 0) {
-                            console.error('No COAs found in database');
-                            throw new Error('No COAs found');
-                        }
-                        
-                        currentCOA = coas[0];
-                        console.log('COA data loaded:', currentCOA);
-                        statusEl.innerHTML = '✅ COA loaded! Loading PDF preview...';
-                        
+
                         // Show PDF section
                         if (pdfSection) {
                             pdfSection.style.display = 'block';
-                            console.log('PDF section displayed');
                         }
-                        
-                        // Get proper file URL
-                        const fileUrl = currentCOA.file_url;
-                        console.log('File URL:', fileUrl);
-                        
-                        if (fileUrl && pdfViewer) {
-                            console.log('Setting PDF source...');
-                            pdfViewer.src = fileUrl;
-                            
-                            // Set up event handlers
-                            pdfViewer.onload = function() {
-                                console.log('PDF loaded successfully');
-                                statusEl.innerHTML = '✅ PDF preview loaded successfully! <button onclick="downloadCurrentPDF()" style="margin-left: 10px; padding: 5px 10px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;">📄 Download PDF</button>';
-                                statusEl.style.background = '#d4edda';
-                                statusEl.style.color = '#155724';
-                                
-                                // Hide status after success
-                                setTimeout(() => {
-                                    statusEl.style.display = 'none';
-                                }, 5000);
-                            };
-                            
-                            pdfViewer.onerror = function() {
-                                console.error('PDF failed to load');
-                                statusEl.innerHTML = '❌ PDF preview failed to load. <a href="' + fileUrl + '" target="_blank" style="color: #2563eb;">Click here to view PDF</a> | <button onclick="downloadCurrentPDF()" style="margin-left: 10px; padding: 5px 10px; background: #2563eb; color: white; border: none; border-radius: 4px; cursor: pointer;">📄 Download PDF</button>';
-                                statusEl.style.background = '#f8d7da';
-                                statusEl.style.color = '#721c24';
-                            };
-                            
+
+                        if (coas && coas.length > 0) {
+                            // Load COA from database
+                            currentIndexCOA = coas[0];
+                            console.log('INDEX: COA data loaded:', currentIndexCOA.id);
+                            statusEl.innerHTML = '✅ COA loaded! Loading PDF preview...';
+
+                            // Use loadFromCOAData for consistent handling
+                            window.indexPDFViewer.loadFromCOAData(currentIndexCOA);
                         } else {
-                            console.error('Missing fileUrl or pdfViewer:', { fileUrl, pdfViewer });
-                            throw new Error('No valid PDF URL found');
+                            // No COAs in database, load default PDF
+                            console.log('INDEX: No COAs found in database, loading default PDF');
+                            statusEl.innerHTML = '📄 Loading sample COA...';
+                            window.indexPDFViewer.loadDefaultPDF();
                         }
-                        
+
                     } catch (error) {
-                        console.error('Error loading COA:', error);
-                        statusEl.innerHTML = '❌ Error: ' + error.message + ' <a href="search.html" style="color: #2563eb;">Try searching COAs instead</a>';
+                        console.error('INDEX: Error loading COA:', error);
+                        statusEl.innerHTML = '❌ Error: ' + error.message + '. Loading default PDF...';
                         statusEl.style.background = '#f8d7da';
                         statusEl.style.color = '#721c24';
+
+                        // Show PDF section and load default PDF as fallback
+                        if (pdfSection) {
+                            pdfSection.style.display = 'block';
+                        }
+                        if (window.indexPDFViewer) {
+                            window.indexPDFViewer.loadDefaultPDF();
+                        }
                     }
                 }
-                
-                // Download function for the current PDF
-                function downloadCurrentPDF() {
-                    if (!currentCOA || !currentCOA.file_url) {
-                        alert('No PDF available to download');
-                        return;
-                    }
-                    
-                    console.log('Downloading PDF:', currentCOA.file_url);
-                    
-                    // Create a temporary link element to trigger download
-                    const link = document.createElement('a');
-                    link.href = currentCOA.file_url;
-                    link.download = currentCOA.file_name || 'COA.pdf';
-                    link.target = '_blank';
-                    
-                    // Append to body, click, and remove
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    console.log('PDF download initiated');
-                }
-                
+
                 // Auto-load when page is ready
                 document.addEventListener('DOMContentLoaded', () => {
-                    console.log('Page loaded, auto-loading COA...');
-                    setTimeout(loadCOANow, 1000);
+                    // Wait for PDFViewer to be available
+                    if (window.PDFViewer) {
+                        console.log('INDEX: Page loaded, initializing PDF viewer...');
+                        setTimeout(loadIndexCOA, 500);
+                    } else {
+                        console.error('INDEX: PDFViewer not available');
+                    }
                 });
                 </script>
                 
@@ -546,6 +535,9 @@
     <!-- Main script -->
     <script src="js/script.js?v=20251021181055"></script>
     
+    <!-- PDF Viewer Module -->
+    <script src="js/pdfViewer.js?v=20251021181055"></script>
+
     <!-- CMS Content Loader -->
     <script src="js/cms-loader.js?v=20251021181055"></script>
 </body>
