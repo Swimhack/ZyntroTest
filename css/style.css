@@ -2864,7 +2864,7 @@ svg.icon {
 .pdf-iframe {
     width: 100% !important;
     max-width: 100% !important;
-    height: 500px !important;
+    height: 600px !important;
     border: 2px solid #e5e7eb !important;
     border-radius: 0.75rem !important;
     background: #f8fafc !important;
@@ -2992,10 +2992,11 @@ svg.icon {
 /* Tablet PDF iframe adjustments */
 @media (min-width: 769px) and (max-width: 1024px) {
     .pdf-iframe {
-        height: 550px !important;
+        height: 700px !important;
         margin: 0 auto !important;
         display: block !important;
         max-width: 95% !important;
+        width: 95% !important;
     }
     
     .pdf-preview-container {
@@ -3013,16 +3014,17 @@ svg.icon {
 /* Desktop PDF iframe adjustments */
 @media (min-width: 1025px) {
     .pdf-iframe {
-        height: 650px !important;
+        height: 800px !important;
         margin: 0 auto !important;
         display: block !important;
-        max-width: 90% !important;
+        max-width: 95% !important;
+        width: 95% !important;
     }
     
     .pdf-preview-container {
         margin: 2rem auto !important;
-        max-width: 90% !important;
-        padding: 0 2rem !important;
+        max-width: 95% !important;
+        padding: 0 1rem !important;
     }
     
     .pdf-download-btn {
@@ -3034,15 +3036,16 @@ svg.icon {
 /* Large desktop PDF iframe adjustments */
 @media (min-width: 1400px) {
     .pdf-iframe {
-        height: 750px !important;
-        max-width: 1200px !important;
+        height: 900px !important;
+        max-width: 98% !important;
+        width: 98% !important;
         margin: 0 auto !important;
     }
     
     .pdf-preview-container {
-        max-width: 1200px !important;
+        max-width: 98% !important;
         margin: 2.5rem auto !important;
-        padding: 0 3rem !important;
+        padding: 0 1rem !important;
     }
     
     .pdf-download-btn {
@@ -3054,12 +3057,14 @@ svg.icon {
 /* Ultra-wide screens */
 @media (min-width: 1920px) {
     .pdf-iframe {
-        height: 800px !important;
-        max-width: 1400px !important;
+        height: 1000px !important;
+        max-width: 98% !important;
+        width: 98% !important;
     }
     
     .pdf-preview-container {
-        max-width: 1400px !important;
+        max-width: 98% !important;
+        padding: 0 1rem !important;
     }
 }
 
