@@ -858,46 +858,102 @@ class CMSLoader {
         const pdfIframe = document.getElementById('pdf-viewer');
         const pdfError = document.getElementById('pdf-error-message');
         const pdfPreview = document.getElementById('pdf-preview-section');
+        const pdfDownloadBtn = document.getElementById('pdf-download-btn');
 
-        if (!pdfIframe || !coa.file_url) {
-            console.log('CMS Loader: No PDF iframe or file URL available');
+        if (!pdfIframe) {
+            console.error('CMS Loader: PDF iframe element not found');
+            return;
+        }
+
+        if (!coa.file_url) {
+            console.log('CMS Loader: No file URL available for COA');
             if (pdfError) {
                 pdfError.style.display = 'block';
                 pdfError.innerHTML = '<p style="color: #92400e; font-size: 1rem; margin: 0;">⚠️ No PDF file available for this COA.</p>';
             }
+            if (pdfIframe) pdfIframe.style.display = 'none';
             return;
         }
 
-        // Automatically show PDF preview on homepage (like search results)
+        // Automatically show PDF preview on homepage
         if (pdfPreview) {
             pdfPreview.style.display = 'block';
         }
 
+        // Get proper file URL using shared function
+        const pdfUrl = window.getProperFileUrl ? window.getProperFileUrl(coa) : coa.file_url;
+
+        console.log('CMS Loader: Loading PDF from:', pdfUrl);
+
         // Hide error initially
         if (pdfError) pdfError.style.display = 'none';
 
-        // Use simple direct PDF loading like the debug page
-        let pdfUrl = coa.file_url;
-        
-        console.log('CMS Loader: Loading PDF directly:', pdfUrl);
-        
+        // Setup download button if available
+        if (pdfDownloadBtn) {
+            pdfDownloadBtn.href = pdfUrl;
+            pdfDownloadBtn.download = `${coa.id || 'COA'}_Certificate.pdf`;
+            pdfDownloadBtn.style.display = 'inline-block';
+        }
+
         // Set up iframe error handling
         pdfIframe.onerror = () => {
-            console.warn('CMS Loader: PDF failed to load, showing error');
+            console.warn('CMS Loader: PDF iframe onerror triggered');
             pdfIframe.style.display = 'none';
-            if (pdfError) pdfError.style.display = 'block';
+            if (pdfError) {
+                pdfError.style.display = 'block';
+                pdfError.innerHTML = `
+                    <p style="color: #92400e; font-size: 1rem; margin: 0;">⚠️ PDF could not be loaded in browser.</p>
+                    <p style="color: #92400e; font-size: 0.9rem; margin: 0.5rem 0 0 0;">
+                        <a href="${pdfUrl}" target="_blank" style="color: #2563eb; text-decoration: underline;">Click here to view PDF</a> or
+                        <a href="${pdfUrl}" download style="color: #2563eb; text-decoration: underline;">download it</a>.
+                    </p>
+                `;
+            }
         };
 
         pdfIframe.onload = () => {
-            console.log('CMS Loader: PDF loaded successfully');
-            pdfIframe.style.display = 'block';
-            if (pdfError) pdfError.style.display = 'none';
+            console.log('CMS Loader: PDF iframe onload triggered');
+
+            // Try to detect if the iframe loaded successfully
+            try {
+                const iframeDoc = pdfIframe.contentDocument || pdfIframe.contentWindow.document;
+                const text = iframeDoc.body?.innerText || '';
+
+                // Check for error indicators (JSON errors, blocked messages, etc.)
+                const errorIndicators = ['statusCode', 'Bucket not found', 'Access Denied', 'blocked', 'This page has been blocked'];
+                const hasError = errorIndicators.some(indicator => text.includes(indicator));
+
+                if (hasError) {
+                    console.warn('CMS Loader: PDF iframe contains error response');
+                    pdfIframe.style.display = 'none';
+                    if (pdfError) {
+                        pdfError.style.display = 'block';
+                        pdfError.innerHTML = `
+                            <p style="color: #92400e; font-size: 1rem; margin: 0;">⚠️ PDF could not be displayed in browser.</p>
+                            <p style="color: #92400e; font-size: 0.9rem; margin: 0.5rem 0 0 0;">
+                                <a href="${pdfUrl}" target="_blank" style="color: #2563eb; text-decoration: underline;">Click here to view PDF</a> or
+                                <a href="${pdfUrl}" download style="color: #2563eb; text-decoration: underline;">download it</a>.
+                            </p>
+                        `;
+                    }
+                } else {
+                    // PDF loaded successfully
+                    pdfIframe.style.display = 'block';
+                    if (pdfError) pdfError.style.display = 'none';
+                }
+            } catch (e) {
+                // Cross-origin iframe - can't access content, but that's okay
+                // If we got this far, the PDF likely loaded
+                console.log('CMS Loader: Cannot access iframe content (cross-origin), assuming PDF loaded');
+                pdfIframe.style.display = 'block';
+                if (pdfError) pdfError.style.display = 'none';
+            }
         };
 
-        // Load PDF directly - same as debug page approach
+        // Load PDF directly - simple and reliable
         pdfIframe.src = pdfUrl;
-        
-        console.log('CMS Loader: PDF preview setup complete for:', coa.file_url);
+
+        console.log('CMS Loader: PDF preview setup complete');
     }
 
     // Public method to refresh content

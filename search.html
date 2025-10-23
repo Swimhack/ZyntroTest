@@ -334,8 +334,8 @@
             const pdfViewer = document.getElementById('pdf-viewer');
             const pdfDownloadBtn = document.getElementById('pdf-download-btn');
 
-            // Get the proper file URL
-            const fileUrl = getProperFileUrl(coa);
+            // Get the proper file URL using shared function
+            const fileUrl = window.getProperFileUrl ? window.getProperFileUrl(coa) : coa.file_url;
 
             coaContent.innerHTML = generateCOAContent(coa, fileUrl);
             resultsSection.style.display = 'block';
@@ -388,48 +388,9 @@
 
             resultsSection.scrollIntoView({ behavior: 'smooth' });
         }
-        
-        function getProperFileUrl(coa) {
-            // Accept BOTH local file paths AND Supabase storage URLs
-            // Priority order:
-            // 1. fileUrl field (direct URL or local path)
-            // 2. file_url field (legacy format)
-            // 3. fileName field (local path)
-            
-            let fileUrl = coa.fileUrl || coa.file_url || coa.fileName;
-            
-            if (fileUrl) {
-                // Case 1: Supabase storage URL (contains supabase)
-                if (fileUrl.includes('supabase.co') || fileUrl.includes('supabase.in')) {
-                    console.log('Using Supabase storage URL:', fileUrl);
-                    return fileUrl;
-                }
-                
-                // Case 2: Local file path - Fix path if it doesn't start with ./
-                if (fileUrl.startsWith('COAs/')) {
-                    fileUrl = './' + fileUrl;
-                }
-                
-                // Case 3: Validate local path format
-                if (fileUrl.startsWith('./COAs/') || fileUrl.startsWith('COAs/')) {
-                    console.log('Using local file path:', fileUrl);
-                    return fileUrl;
-                }
-                
-                // Case 4: Absolute URL (http/https)
-                if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
-                    console.log('Using absolute URL:', fileUrl);
-                    return fileUrl;
-                }
-                
-                // Unknown format - log warning but try to use it anyway
-                console.warn('Unknown file URL format, attempting to use:', fileUrl);
-                return fileUrl;
-            }
-            
-            return null;
-        }
-        
+
+        // Note: getProperFileUrl() is now defined in js/script.js as a shared function
+
         function generateCOAContent(coa, fileUrl) {
             // Format the test date properly - handle database format (YYYY-MM-DD)
             const formatDate = (dateString) => {

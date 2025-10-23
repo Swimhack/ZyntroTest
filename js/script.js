@@ -831,3 +831,45 @@ style.textContent = `
 document.head.appendChild(style);
 
 // PDF Preview Toggle Function for Homepage (removed - now using search page structure)
+
+// Shared PDF URL Resolution Function
+// Accept BOTH local file paths AND Supabase storage URLs
+window.getProperFileUrl = function(coa) {
+    // Priority order:
+    // 1. fileUrl field (direct URL or local path)
+    // 2. file_url field (legacy format)
+    // 3. fileName field (local path)
+
+    let fileUrl = coa.fileUrl || coa.file_url || coa.fileName;
+
+    if (fileUrl) {
+        // Case 1: Supabase storage URL (contains supabase)
+        if (fileUrl.includes('supabase.co') || fileUrl.includes('supabase.in')) {
+            console.log('Using Supabase storage URL:', fileUrl);
+            return fileUrl;
+        }
+
+        // Case 2: Local file path - Fix path if it doesn't start with ./
+        if (fileUrl.startsWith('COAs/')) {
+            fileUrl = './' + fileUrl;
+        }
+
+        // Case 3: Validate local path format
+        if (fileUrl.startsWith('./COAs/') || fileUrl.startsWith('COAs/')) {
+            console.log('Using local file path:', fileUrl);
+            return fileUrl;
+        }
+
+        // Case 4: Absolute URL (http/https)
+        if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
+            console.log('Using absolute URL:', fileUrl);
+            return fileUrl;
+        }
+
+        // Unknown format - log warning but try to use it anyway
+        console.warn('Unknown file URL format, attempting to use:', fileUrl);
+        return fileUrl;
+    }
+
+    return null;
+};
