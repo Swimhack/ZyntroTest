@@ -2925,14 +2925,14 @@ svg.icon {
     display: flex;
     justify-content: center;
     align-items: center;
+    min-height: 600px; /* Ensure adequate height */
 }
 
 /* PDF Preview Styles - Mobile-responsive container with aspect ratio */
 .pdf-iframe {
     position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    top: 0;
+    left: 0;
     width: 100% !important;
     height: 100% !important;
     border: none !important;
@@ -2940,11 +2940,13 @@ svg.icon {
     transition: all 0.3s ease !important;
     display: block !important;
     object-fit: contain !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 .pdf-iframe:hover {
     box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05) !important;
-    transform: translate(-50%, -50%) translateY(-2px) !important;
+    transform: translateY(-2px) !important;
 }
 
 .pdf-preview-container {
@@ -3047,14 +3049,15 @@ svg.icon {
     
     .pdf-iframe {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        top: 0;
+        left: 0;
         width: 100% !important;
         height: 100% !important;
         border-radius: 0.5rem !important;
         display: block !important;
         object-fit: contain !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     
     .pdf-download-btn {
@@ -3080,14 +3083,15 @@ svg.icon {
     
     .pdf-iframe {
         position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
+        top: 0;
+        left: 0;
         width: 100% !important;
         height: 100% !important;
         border-radius: 0.5rem !important;
         display: block !important;
         object-fit: contain !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     
     .pdf-download-btn {
