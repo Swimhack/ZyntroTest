@@ -276,15 +276,14 @@
                 <a href="search.html" class="btn btn-outline">Search COAs</a>
                 
                 <script>
-                // COA Loading Script - Using unified PDF viewer
-                // Define globally so cms-loader can access it
-                window.indexPDFViewer = null;
+                // Simplified PDF Loading Script - Direct approach
                 let currentIndexCOA = null;
 
                 async function loadIndexCOA() {
-                    console.log('🔍 INDEX: Loading COA with unified PDF viewer...');
+                    console.log('🔍 INDEX: Loading COA with direct PDF approach...');
                     const statusEl = document.getElementById('cms-status');
                     const pdfSection = document.getElementById('pdf-preview-section');
+                    const pdfViewer = document.getElementById('pdf-viewer');
 
                     // Show PDF section FIRST so iframe is available
                     if (pdfSection) {
@@ -293,27 +292,6 @@
                     }
 
                     try {
-                        // Initialize PDF viewer ONCE for index page (AFTER section is visible)
-                        if (!window.indexPDFViewer) {
-                            console.log('INDEX: Creating PDFViewer instance');
-                            window.indexPDFViewer = new window.PDFViewer('pdf-preview-section', {
-                                defaultPDF: './COAs/Zyntro BPC-157.pdf',
-                                showDownloadButton: false,
-                                showStatusIndicator: false,
-                                onLoadSuccess: function(pdfUrl, filename) {
-                                    console.log('INDEX: PDF loaded successfully:', filename);
-                                    // Hide status immediately when PDF loads
-                                    statusEl.style.display = 'none';
-                                },
-                                onLoadError: function(pdfUrl) {
-                                    console.error('INDEX: PDF failed to load:', pdfUrl);
-                                    statusEl.innerHTML = '❌ PDF preview failed to load. <a href="' + pdfUrl + '" target="_blank" style="color: #2563eb;">Click here to view PDF</a>';
-                                    statusEl.style.background = '#f8d7da';
-                                    statusEl.style.color = '#721c24';
-                                }
-                            });
-                        }
-
                         statusEl.innerHTML = '🔄 Loading Supabase...';
 
                         // Load Supabase if not available
@@ -348,21 +326,113 @@
                             throw error;
                         }
 
-                        // PDF section already shown at start of function
+                        let pdfUrl = './COAs/Zyntro BPC-157.pdf'; // Default fallback
+                        let filename = 'Sample COA.pdf';
 
                         if (coas && coas.length > 0) {
                             // Load COA from database
                             currentIndexCOA = coas[0];
                             console.log('INDEX: COA data loaded:', currentIndexCOA.id);
+                            pdfUrl = currentIndexCOA.file_url;
+                            filename = currentIndexCOA.id ? `${currentIndexCOA.id}_COA.pdf` : 'COA.pdf';
                             statusEl.innerHTML = '✅ COA loaded! Loading PDF preview...';
-
-                            // Use loadFromCOAData for consistent handling
-                            window.indexPDFViewer.loadFromCOAData(currentIndexCOA);
                         } else {
                             // No COAs in database, load default PDF
                             console.log('INDEX: No COAs found in database, loading default PDF');
                             statusEl.innerHTML = '📄 Loading sample COA...';
-                            window.indexPDFViewer.loadDefaultPDF();
+                        }
+
+                        // Load PDF with multiple fallback methods
+                        if (pdfViewer) {
+                            console.log('INDEX: Loading PDF:', pdfUrl);
+                            
+                            let loadAttempts = 0;
+                            const maxAttempts = 3;
+                            
+                            function tryLoadPDF() {
+                                loadAttempts++;
+                                console.log(`INDEX: PDF load attempt ${loadAttempts}/${maxAttempts}`);
+                                
+                                // Set up event handlers
+                                pdfViewer.onload = function() {
+                                    console.log('INDEX: PDF iframe loaded successfully');
+                                    statusEl.innerHTML = '✅ PDF preview loaded successfully!';
+                                    statusEl.style.background = '#d4edda';
+                                    statusEl.style.color = '#155724';
+                                    
+                                    // Hide status after success
+                                    setTimeout(() => {
+                                        statusEl.style.display = 'none';
+                                    }, 3000);
+                                };
+                                
+                                pdfViewer.onerror = function() {
+                                    console.error(`INDEX: PDF iframe failed to load (attempt ${loadAttempts})`);
+                                    
+                                    if (loadAttempts < maxAttempts) {
+                                        // Try different loading methods
+                                        if (loadAttempts === 1) {
+                                            // Try PDF.js viewer
+                                            console.log('INDEX: Trying PDF.js viewer...');
+                                            pdfViewer.src = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
+                                        } else if (loadAttempts === 2) {
+                                            // Try Google Docs viewer
+                                            console.log('INDEX: Trying Google Docs viewer...');
+                                            pdfViewer.src = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+                                        }
+                                        
+                                        // Try again after a short delay
+                                        setTimeout(tryLoadPDF, 1000);
+                                    } else {
+                                        // All attempts failed
+                                        statusEl.innerHTML = '❌ PDF preview failed to load. <a href="' + pdfUrl + '" target="_blank" style="color: #2563eb;">Click here to view PDF</a>';
+                                        statusEl.style.background = '#f8d7da';
+                                        statusEl.style.color = '#721c24';
+                                    }
+                                };
+
+                                // Set the PDF source
+                                if (loadAttempts === 1) {
+                                    pdfViewer.src = pdfUrl;
+                                }
+                            }
+                            
+                            // Start loading
+                            tryLoadPDF();
+                            
+                            // Set a timeout to show error if PDF doesn't load within 10 seconds
+                            const loadTimeout = setTimeout(() => {
+                                if (loadAttempts < maxAttempts) {
+                                    console.log('INDEX: PDF load timeout, trying next method...');
+                                    tryLoadPDF();
+                                }
+                            }, 10000);
+                            
+                            // Clear timeout if PDF loads successfully
+                            const originalOnload = pdfViewer.onload;
+                            pdfViewer.onload = function() {
+                                clearTimeout(loadTimeout);
+                                if (originalOnload) originalOnload();
+                            };
+                            
+                            // Update download button
+                            const downloadBtn = document.querySelector('.pdf-download-btn');
+                            if (downloadBtn) {
+                                downloadBtn.onclick = function() {
+                                    const link = document.createElement('a');
+                                    link.href = pdfUrl;
+                                    link.download = filename;
+                                    link.target = '_blank';
+                                    document.body.appendChild(link);
+                                    link.click();
+                                    document.body.removeChild(link);
+                                };
+                            }
+                        } else {
+                            console.error('INDEX: PDF viewer iframe not found');
+                            statusEl.innerHTML = '❌ PDF viewer not found';
+                            statusEl.style.background = '#f8d7da';
+                            statusEl.style.color = '#721c24';
                         }
 
                     } catch (error) {
@@ -371,22 +441,44 @@
                         statusEl.style.background = '#f8d7da';
                         statusEl.style.color = '#721c24';
 
-                        // Load default PDF as fallback (section already shown)
-                        if (window.indexPDFViewer) {
-                            window.indexPDFViewer.loadDefaultPDF();
+                        // Load default PDF as fallback
+                        if (pdfViewer) {
+                            pdfViewer.src = './COAs/Zyntro BPC-157.pdf';
                         }
                     }
                 }
 
+                // Download function for the current PDF
+                function downloadCurrentPDF() {
+                    if (!currentIndexCOA || !currentIndexCOA.file_url) {
+                        // Use default PDF
+                        const link = document.createElement('a');
+                        link.href = './COAs/Zyntro BPC-157.pdf';
+                        link.download = 'Sample COA.pdf';
+                        link.target = '_blank';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        return;
+                    }
+                    
+                    console.log('Downloading PDF:', currentIndexCOA.file_url);
+                    
+                    const link = document.createElement('a');
+                    link.href = currentIndexCOA.file_url;
+                    link.download = currentIndexCOA.id ? `${currentIndexCOA.id}_COA.pdf` : 'COA.pdf';
+                    link.target = '_blank';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    console.log('PDF download initiated');
+                }
+
                 // Auto-load when page is ready
                 document.addEventListener('DOMContentLoaded', () => {
-                    // Wait for PDFViewer to be available
-                    if (window.PDFViewer) {
-                        console.log('INDEX: Page loaded, initializing PDF viewer...');
-                        setTimeout(loadIndexCOA, 500);
-                    } else {
-                        console.error('INDEX: PDFViewer not available');
-                    }
+                    console.log('INDEX: Page loaded, initializing PDF viewer...');
+                    setTimeout(loadIndexCOA, 1000);
                 });
                 </script>
                 
