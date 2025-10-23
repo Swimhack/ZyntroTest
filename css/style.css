@@ -1162,11 +1162,34 @@ svg.icon {
     padding: var(--space-2xl);
     border-radius: var(--radius-xl);
     border: 2px solid var(--gray-200);
+    margin: 2rem auto;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .coa-preview h3 {
     margin-bottom: var(--space-lg);
     color: var(--gray-900);
+    text-align: center;
+}
+
+/* COA Status Message Centering */
+#cms-status {
+    text-align: center !important;
+    margin: 1rem auto !important;
+    max-width: 100% !important;
+    display: block !important;
+    width: 100%;
+}
+
+/* COA Button Centering */
+.coa-preview .btn {
+    margin: 1rem auto !important;
+    display: block !important;
+    text-align: center;
 }
 
 .coa-thumbnail {
@@ -2837,14 +2860,15 @@ svg.icon {
     }
 }
 
-/* PDF Preview Styles - Enhanced for all devices with centering */
+/* PDF Preview Styles - Optimized for responsive display */
 .pdf-iframe {
     width: 100% !important;
-    height: 600px !important;
+    max-width: 100% !important;
+    height: 500px !important;
     border: 2px solid #e5e7eb !important;
-    border-radius: 0.5rem !important;
+    border-radius: 0.75rem !important;
     background: #f8fafc !important;
-    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06) !important;
     transition: all 0.3s ease !important;
     display: block !important;
     margin: 0 auto !important;
@@ -2852,17 +2876,50 @@ svg.icon {
 }
 
 .pdf-iframe:hover {
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05) !important;
+    transform: translateY(-2px) !important;
 }
 
 .pdf-preview-container {
     position: relative;
     width: 100%;
-    margin: 1rem auto !important;
+    max-width: 100%;
+    margin: 1.5rem auto !important;
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
     flex-direction: column !important;
+    padding: 0 1rem !important;
+}
+
+/* PDF Download Button Styling */
+.pdf-download-btn {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8) !important;
+    color: white !important;
+    border: none !important;
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 0.5rem !important;
+    font-weight: 600 !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1) !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0.5rem !important;
+    margin-bottom: 1.5rem !important;
+    text-decoration: none !important;
+}
+
+.pdf-download-btn:hover {
+    background: linear-gradient(135deg, #1d4ed8, #1e40af) !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 8px 15px -3px rgb(0 0 0 / 0.1) !important;
+}
+
+.pdf-download-btn:active {
+    transform: translateY(0) !important;
+    box-shadow: 0 2px 4px -1px rgb(0 0 0 / 0.1) !important;
 }
 
 /* Ensure all PDF viewer containers are centered */
@@ -2887,14 +2944,23 @@ svg.icon {
 @media (max-width: 768px) {
     .pdf-iframe {
         height: 400px !important;
-        border-radius: 0.375rem !important;
+        border-radius: 0.5rem !important;
         margin: 0 auto !important;
         display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
     }
     
     .pdf-preview-container {
-        margin: 0.5rem auto !important;
-        padding: 0 1rem !important;
+        margin: 1rem auto !important;
+        padding: 0 0.5rem !important;
+        max-width: 100% !important;
+    }
+    
+    .pdf-download-btn {
+        padding: 0.625rem 1.25rem !important;
+        font-size: 0.875rem !important;
+        margin-bottom: 1rem !important;
     }
     
     #iframe-pdf-viewer,
@@ -2902,49 +2968,98 @@ svg.icon {
     #pdfjs-viewer {
         padding: 0 !important;
         margin: 0 auto !important;
+        width: 100% !important;
+    }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+    .pdf-iframe {
+        height: 350px !important;
+        border-radius: 0.375rem !important;
+    }
+    
+    .pdf-preview-container {
+        padding: 0 0.25rem !important;
+    }
+    
+    .pdf-download-btn {
+        padding: 0.5rem 1rem !important;
+        font-size: 0.8rem !important;
     }
 }
 
 /* Tablet PDF iframe adjustments */
 @media (min-width: 769px) and (max-width: 1024px) {
     .pdf-iframe {
-        height: 500px !important;
+        height: 550px !important;
         margin: 0 auto !important;
         display: block !important;
+        max-width: 95% !important;
     }
     
     .pdf-preview-container {
-        margin: 1rem auto !important;
-        max-width: 90% !important;
+        margin: 1.5rem auto !important;
+        max-width: 95% !important;
+        padding: 0 1rem !important;
+    }
+    
+    .pdf-download-btn {
+        padding: 0.875rem 1.75rem !important;
+        font-size: 1.1rem !important;
     }
 }
 
 /* Desktop PDF iframe adjustments */
 @media (min-width: 1025px) {
     .pdf-iframe {
-        height: 700px !important;
+        height: 650px !important;
         margin: 0 auto !important;
         display: block !important;
-        max-width: 100% !important;
+        max-width: 90% !important;
     }
     
     .pdf-preview-container {
         margin: 2rem auto !important;
-        max-width: 95% !important;
+        max-width: 90% !important;
+        padding: 0 2rem !important;
+    }
+    
+    .pdf-download-btn {
+        padding: 1rem 2rem !important;
+        font-size: 1.125rem !important;
     }
 }
 
 /* Large desktop PDF iframe adjustments */
 @media (min-width: 1400px) {
     .pdf-iframe {
-        height: 800px !important;
+        height: 750px !important;
         max-width: 1200px !important;
         margin: 0 auto !important;
     }
     
     .pdf-preview-container {
         max-width: 1200px !important;
-        margin: 2rem auto !important;
+        margin: 2.5rem auto !important;
+        padding: 0 3rem !important;
+    }
+    
+    .pdf-download-btn {
+        padding: 1.125rem 2.25rem !important;
+        font-size: 1.25rem !important;
+    }
+}
+
+/* Ultra-wide screens */
+@media (min-width: 1920px) {
+    .pdf-iframe {
+        height: 800px !important;
+        max-width: 1400px !important;
+    }
+    
+    .pdf-preview-container {
+        max-width: 1400px !important;
     }
 }
 
