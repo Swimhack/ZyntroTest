@@ -197,8 +197,8 @@ class PDFViewer {
     normalizeURL(url) {
         if (!url) return '';
 
-        // Already a full URL (http:// or https://)
-        if (url.startsWith('http://') || url.startsWith('https://')) {
+        // Already a full URL (https://)
+        if (url.startsWith('https://')) {
             return url;
         }
 
