@@ -47,106 +47,70 @@ class PDFViewer {
      * @param {string} filename - Optional filename for download
      */
     async loadPDF(pdfUrl, filename = null) {
-        console.log('PDFViewer.loadPDF called with:', { pdfUrl, filename });
-        
         if (!pdfUrl) {
-            console.error('PDFViewer: No PDF URL provided');
             this.showError('No PDF file specified');
             return false;
         }
 
-        // Normalize the URL
-        const normalizedUrl = this.normalizeURL(pdfUrl);
-        console.log('PDFViewer: Normalized URL:', normalizedUrl);
-
-        // Store current PDF info
-        this.currentPDF = normalizedUrl;
-        this.currentFilename = filename || this.extractFilename(normalizedUrl);
-
-        // Update status
+        this.currentPDF = this.normalizeURL(pdfUrl);
+        this.currentFilename = filename || this.extractFilename(this.currentPDF);
         this.showStatus('Loading PDF...', 'loading');
 
-        try {
-            // Set iframe source
-            if (this.iframe) {
-                console.log('PDFViewer: Setting iframe src to:', normalizedUrl);
-                // Clear any previous content
-                this.iframe.src = '';
+        // Primary method: Google Docs viewer
+        this.renderWithGoogleViewer();
+        return true;
+    }
 
-                // Add load and error handlers
-                this.iframe.onload = () => this.handleIframeLoad();
-                this.iframe.onerror = () => this.handleIframeError();
+    renderWithGoogleViewer() {
+        const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(this.currentPDF)}&embedded=true`;
+        this.renderPDF(viewerUrl, 'google');
+    }
 
-                // Set the source
-                this.iframe.src = normalizedUrl;
-            } else {
-                console.error('PDFViewer: No iframe element found!');
-            }
+    renderWithDirectIframe() {
+        this.renderPDF(this.currentPDF, 'direct');
+    }
 
-            // Update download button
-            if (this.downloadBtn && this.options.showDownloadButton) {
-                this.downloadBtn.href = normalizedUrl;
-                this.downloadBtn.download = this.currentFilename;
-                this.downloadBtn.style.display = 'inline-flex';
-            }
+    renderPDF(url, method) {
+        if (!this.iframe) {
+            console.error('PDFViewer: No iframe element found!');
+            return;
+        }
 
-            return true;
-        } catch (error) {
-            console.error('PDFViewer: Error loading PDF:', error);
-            this.showError('Failed to load PDF file');
-            return false;
+        this.iframe.onload = () => this.handleIframeLoad(method);
+        this.iframe.onerror = () => this.handleIframeError(method);
+        this.iframe.src = url;
+
+        if (this.downloadBtn && this.options.showDownloadButton) {
+            this.downloadBtn.href = this.currentPDF;
+            this.downloadBtn.download = this.currentFilename;
+            this.downloadBtn.style.display = 'inline-flex';
         }
     }
 
     /**
      * Handle successful iframe load
      */
-    handleIframeLoad() {
-        try {
-            // Try to check if iframe loaded an error page
-            const iframeDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
-            const iframeContent = iframeDoc.body.textContent || iframeDoc.body.innerText || '';
-
-            // Check for error indicators
-            const errorIndicators = ['statusCode', 'Bucket not found', 'Access Denied', 'blocked', 'This page has been blocked'];
-            const hasError = errorIndicators.some(indicator =>
-                iframeContent.toLowerCase().includes(indicator.toLowerCase())
-            );
-
-            if (hasError) {
-                this.handleIframeError();
-                return;
-            }
-
-            // Success
+    handleIframeLoad(method) {
+        // With Google Viewer, a successful load still might show an error inside the iframe
+        if (method === 'google') {
+            // A slight delay to let the viewer render
+            setTimeout(() => {
+                this.showStatus('PDF loaded', 'success');
+                this.hideError();
+            }, 1000);
+        } else {
             this.showStatus('PDF loaded successfully', 'success');
             this.hideError();
-
-            // Call success callback
-            if (this.options.onLoadSuccess) {
-                this.options.onLoadSuccess(this.currentPDF, this.currentFilename);
-            }
-        } catch (e) {
-            // Cross-origin restriction - assume success if no obvious error
-            this.showStatus('PDF loaded', 'success');
-            this.hideError();
-
-            if (this.options.onLoadSuccess) {
-                this.options.onLoadSuccess(this.currentPDF, this.currentFilename);
-            }
         }
     }
 
-    /**
-     * Handle iframe load error
-     */
-    handleIframeError() {
-        this.showError(`Unable to display PDF. <a href="${this.currentPDF}" target="_blank" class="text-blue-600 underline">Open in new tab</a> or <a href="${this.currentPDF}" download="${this.currentFilename}" class="text-blue-600 underline">download</a> to view.`);
-        this.showStatus('Failed to load PDF', 'error');
-
-        // Call error callback
-        if (this.options.onLoadError) {
-            this.options.onLoadError(this.currentPDF);
+    handleIframeError(method) {
+        if (method === 'google') {
+            console.warn('Google Viewer failed, falling back to direct iframe');
+            this.renderWithDirectIframe();
+        } else {
+            this.showError(`Unable to display PDF. <a href="${this.currentPDF}" target="_blank">Open in new tab</a>.`);
+            this.showStatus('Failed to load PDF', 'error');
         }
     }
 
@@ -197,8 +161,8 @@ class PDFViewer {
     normalizeURL(url) {
         if (!url) return '';
 
-        // Already a full URL (https://)
-        if (url.startsWith('https://')) {
+        // Already a full URL (http:// or https://)
+        if (url.startsWith('http://') || url.startsWith('https://')) {
             return url;
         }
 

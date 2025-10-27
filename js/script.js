@@ -862,8 +862,9 @@ window.getProperFileUrl = function(coa) {
 
         // Case 4: Absolute URL (http/https) - force https
         if (fileUrl.startsWith('http://') || fileUrl.startsWith('https://')) {
-            console.log('Using absolute URL:', fileUrl);
-            return fileUrl.replace('http://', 'https://');
+            const secureUrl = fileUrl.replace(/^http:\/\//i, 'https://');
+            console.log('Using absolute URL, ensuring HTTPS:', secureUrl);
+            return secureUrl;
         }
 
         // Unknown format - log warning but try to use it anyway

@@ -12,7 +12,7 @@ const { chromium } = require('playwright');
 const BASE = process.env.TEST_BASE_URL || 'http://127.0.0.1:8080';
 
 async function testZyntroTestSite() {
-    const browser = await chromium.launch({ headless: true }); // Headless for CI/CD
+    const browser = await chromium.launch({ headless: process.env.CI === 'true' });
     const context = await browser.newContext();
     const page = await context.newPage();
     
