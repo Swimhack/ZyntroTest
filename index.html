@@ -219,10 +219,10 @@
                         
                  <!-- PDF Viewer Container -->
                  <div class="pdf-viewer-container">
-                     <iframe id="pdf-viewer" class="pdf-iframe" 
-                             sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-                             loading="lazy">
-                     </iframe>
+                    <iframe id="pdf-viewer" class="pdf-iframe" 
+                            sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-downloads"
+                            loading="eager">
+                    </iframe>
                      
                      <!-- Simple error message if PDF fails to load -->
                      <div id="pdf-error-display" style="display: none; text-align: center; padding: 2rem;">
@@ -480,9 +480,6 @@
     
     <!-- Load header include -->
     <script src="js/load-header.js"></script>
-    
-    <!-- Unified PDF Loader -->
-    <script src="js/unified-pdf-loader.js"></script>
     
     <!-- Main script -->
     <script src="js/script.js?v=20251021181055"></script>
