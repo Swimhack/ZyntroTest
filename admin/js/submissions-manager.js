@@ -129,6 +129,7 @@ function renderContactSubmissions(submissions) {
                         <div class="action-buttons">
                             <button class="btn btn-sm btn-primary" onclick="viewSubmission('contact', '${submission.id}')">View</button>
                             <button class="btn btn-sm btn-outline" onclick="updateStatus('contact', '${submission.id}', '${submission.status}')">Update</button>
+                            <button class="btn btn-sm" style="background: #dc2626; color: white;" onclick="deleteSubmission('contact', '${submission.id}')">Delete</button>
                         </div>
                     </td>
                 </tr>
@@ -213,6 +214,7 @@ function renderSampleSubmissions(submissions) {
                         <div class="action-buttons">
                             <button class="btn btn-sm btn-primary" onclick="viewSubmission('sample', '${submission.id}')">View</button>
                             <button class="btn btn-sm btn-outline" onclick="updateStatus('sample', '${submission.id}', '${submission.status}')">Update</button>
+                            <button class="btn btn-sm" style="background: #dc2626; color: white;" onclick="deleteSubmission('sample', '${submission.id}')">Delete</button>
                         </div>
                     </td>
                 </tr>
@@ -292,6 +294,7 @@ function renderNewsletterSubscriptions(subscriptions) {
                             <button class="btn btn-sm btn-outline" onclick="toggleNewsletterStatus('${subscription.id}', '${subscription.status}')">
                                 ${subscription.status === 'active' ? 'Unsubscribe' : 'Resubscribe'}
                             </button>
+                            <button class="btn btn-sm" style="background: #dc2626; color: white;" onclick="deleteSubmission('newsletter', '${subscription.id}')">Delete</button>
                         </div>
                     </td>
                 </tr>
@@ -496,6 +499,67 @@ async function toggleNewsletterStatus(id, currentStatus) {
     }
 }
 
+// Delete submission
+async function deleteSubmission(type, id) {
+    const typeNames = {
+        contact: 'contact submission',
+        sample: 'sample submission',
+        newsletter: 'newsletter subscription'
+    };
+    
+    const typeName = typeNames[type] || 'submission';
+    
+    if (!confirm(`Are you sure you want to delete this ${typeName}? This action cannot be undone.`)) {
+        return;
+    }
+    
+    try {
+        const supabaseAdmin = await ensureSupabase();
+        
+        // Determine the table name
+        const tableMap = {
+            contact: 'contact_submissions',
+            sample: 'sample_submissions',
+            newsletter: 'newsletter_subscriptions'
+        };
+        
+        const tableName = tableMap[type];
+        
+        if (!tableName) {
+            throw new Error(`Invalid submission type: ${type}`);
+        }
+        
+        console.log(`Deleting ${type} submission with id: ${id} from table: ${tableName}`);
+        
+        const { error } = await supabaseAdmin
+            .from(tableName)
+            .delete()
+            .eq('id', id);
+        
+        if (error) {
+            console.error('Delete error:', error);
+            throw error;
+        }
+        
+        console.log('Delete successful');
+        
+        // Show success message
+        alert(`${typeName.charAt(0).toUpperCase() + typeName.slice(1)} deleted successfully.`);
+        
+        // Refresh the appropriate list
+        if (type === 'contact') {
+            loadContactSubmissions();
+        } else if (type === 'sample') {
+            loadSampleSubmissions();
+        } else if (type === 'newsletter') {
+            loadNewsletterSubscriptions();
+        }
+    } catch (error) {
+        console.error('Error deleting submission:', error);
+        alert(`Error deleting ${typeName}: ${error.message}`);
+    }
+}
+
 // Export functions
 function exportToCSV(data, filename) {
     if (!data || data.length === 0) {
@@ -557,6 +621,7 @@ window.loadNewsletterSubscriptions = loadNewsletterSubscriptions;
 window.viewSubmission = viewSubmission;
 window.updateStatus = updateStatus;
 window.toggleNewsletterStatus = toggleNewsletterStatus;
+window.deleteSubmission = deleteSubmission;
 window.exportContactSubmissions = exportContactSubmissions;
 window.exportSampleSubmissions = exportSampleSubmissions;
 window.exportNewsletterSubscriptions = exportNewsletterSubscriptions;
