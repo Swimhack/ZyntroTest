@@ -343,8 +343,26 @@
         </div>
     </div>
     
+    <!-- Supabase Library -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+    
+    <!-- Initialize Supabase directly -->
+    <script>
+        // Initialize Supabase clients immediately
+        const supabaseUrl = 'https://hctdzwmlkgnuxcuhjooe.supabase.co';
+        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog';
+        const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDEyMTY2MCwiZXhwIjoyMDc1Njk3NjYwfQ.V4Xr2nGmXO4Y9TJe51X1wAILIIAVL5ha61JoW9XmeV0';
+        
+        window.supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+        window.supabaseAdmin = supabase.createClient(supabaseUrl, supabaseServiceKey);
+        
+        console.log('Supabase clients created:', {
+            client: !!window.supabaseClient,
+            admin: !!window.supabaseAdmin
+        });
+    </script>
+    
     <!-- Scripts -->
-    <script src="js/supabase-config.js"></script>
     <script src="js/submissions-manager.js"></script>
     <script>
         // Tab switching
