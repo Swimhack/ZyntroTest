@@ -185,14 +185,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 try {
                     // Check if this is a contact form
                     if (form.classList.contains('contact-form') || form.classList.contains('inquiry-form')) {
+                        // Get selected services
+                        const selectedServices = Array.from(form.querySelectorAll('[name="services"]:checked'))
+                            .map(cb => cb.value)
+                            .join(', ');
+                        const selectedAddons = Array.from(form.querySelectorAll('[name="addons"]:checked'))
+                            .map(cb => cb.value)
+                            .join(', ');
+                        
                         // Collect form data
                         const formData = {
                             name: form.querySelector('[name="name"]')?.value || '',
                             email: form.querySelector('[name="email"]')?.value || '',
                             phone: form.querySelector('[name="phone"]')?.value || '',
                             company: form.querySelector('[name="company"]')?.value || '',
-                            serviceType: form.querySelector('[name="serviceType"]')?.value || '',
-                            sampleType: form.querySelector('[name="sampleType"]')?.value || '',
+                            serviceType: selectedServices || 'Not specified',
+                            sampleType: form.querySelector('[name="sample-type"]')?.value || '',
+                            quantity: form.querySelector('[name="quantity"]')?.value || '',
+                            timeline: form.querySelector('[name="timeline"]')?.value || '',
+                            addons: selectedAddons || 'None',
                             message: form.querySelector('[name="message"]')?.value || ''
                         };
                         
@@ -292,18 +303,27 @@ document.addEventListener('DOMContentLoaded', function() {
             submitBtn.textContent = 'Submitting...';
             
             try {
+                // Get selected testing services
+                const testingServices = Array.from(form.querySelectorAll('[name="testing-services"]:checked'))
+                    .map(cb => cb.value)
+                    .join(', ');
+                
                 // Collect form data
                 const formData = {
                     client_name: form.querySelector('[name="client-name"]')?.value || '',
-                    email: form.querySelector('[name="email"]')?.value || '',
+                    email: form.querySelector('[name="client-email"]')?.value || '',
                     phone: form.querySelector('[name="phone"]')?.value || '',
-                    company: form.querySelector('[name="company"]')?.value || '',
+                    company: form.querySelector('[name="company-name"]')?.value || '',
                     sample_type: form.querySelector('[name="sample-type"]')?.value || '',
-                    sample_count: parseInt(form.querySelector('[name="sample-count"]')?.value) || 0,
-                    analysis_requested: form.querySelector('[name="analysis-requested"]')?.value || '',
-                    rush_service: form.querySelector('[name="rush-service"]')?.checked || false,
-                    shipping_method: form.querySelector('[name="shipping-method"]')?.value || '',
-                    message: form.querySelector('[name="message"]')?.value || ''
+                    sample_count: parseInt(form.querySelector('[name="num-samples"]')?.value) || 0,
+                    sample_description: form.querySelector('[name="sample-description"]')?.value || '',
+                    analysis_requested: testingServices || 'Not specified',
+                    rush_service: form.querySelector('[name="turnaround"]')?.value === 'rush',
+                    shipping_method: 'Not specified',
+                    turnaround: form.querySelector('[name="turnaround"]')?.value || 'standard',
+                    budget: form.querySelector('[name="budget"]')?.value || '',
+                    special_requirements: form.querySelector('[name="special-requirements"]')?.value || '',
+                    message: form.querySelector('[name="special-requirements"]')?.value || ''
                 };
                 
                 // Save to database first
@@ -315,16 +335,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Database save failed, continuing with email:', dbError);
                 }
                 
-                // Then send email (reuse contact email function)
-                await sendContactEmail({
-                    name: formData.client_name,
-                    email: formData.email,
-                    phone: formData.phone,
-                    company: formData.company,
-                    serviceType: 'Sample Submission',
-                    sampleType: formData.sample_type,
-                    message: `Sample Submission Details:\n\nSample Type: ${formData.sample_type}\nSample Count: ${formData.sample_count}\nAnalysis Requested: ${formData.analysis_requested}\nRush Service: ${formData.rush_service ? 'Yes' : 'No'}\nShipping Method: ${formData.shipping_method}\n\nAdditional Message: ${formData.message}`
-                });
+                // Then send email via Resend API
+                await sendSampleSubmissionEmail(formData);
                 
                 showNotification('Sample submission received! We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
                 form.reset();

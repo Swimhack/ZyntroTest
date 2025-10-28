@@ -4,7 +4,9 @@
   "description": "Automated testing for ZyntroTest.com",
   "scripts": {
     "test": "node test-site.js",
-    "test:headed": "node test-site.js"
+    "test:headed": "node test-site.js",
+    "dev": "vercel dev",
+    "deploy": "vercel --prod"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",
@@ -12,6 +14,7 @@
     "playwright": "^1.40.0"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.75.1"
+    "@supabase/supabase-js": "^2.75.1",
+    "resend": "^6.3.0"
   }
 }

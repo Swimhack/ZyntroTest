@@ -6,14 +6,27 @@ let sampleSubmissions = [];
 let newsletterSubscriptions = [];
 
 // Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', async () => {
-    try {
-        await initSupabase();
-        console.log('Submissions manager initialized');
-    } catch (error) {
-        console.error('Failed to initialize submissions manager:', error);
+let supabaseReady = false;
+
+async function ensureSupabase() {
+    if (supabaseReady && window.supabaseAdmin) {
+        return window.supabaseAdmin;
     }
-});
+    
+    // Wait for Supabase to be initialized
+    let attempts = 0;
+    while (!window.supabaseAdmin && attempts < 50) {
+        await new Promise(resolve => setTimeout(resolve, 100));
+        attempts++;
+    }
+    
+    if (!window.supabaseAdmin) {
+        throw new Error('Supabase admin client not available');
+    }
+    
+    supabaseReady = true;
+    return window.supabaseAdmin;
+}
 
 // Load contact submissions
 async function loadContactSubmissions() {
@@ -21,19 +34,31 @@ async function loadContactSubmissions() {
         const container = document.getElementById('contact-submissions-container');
         container.innerHTML = '<div class="loading">Loading contact submissions...</div>';
         
+        const supabaseAdmin = await ensureSupabase();
+        
         const { data, error } = await supabaseAdmin
             .from('contact_submissions')
             .select('*')
             .order('created_at', { ascending: false });
         
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+        }
         
         contactSubmissions = data || [];
+        console.log('Loaded contact submissions:', contactSubmissions.length);
         renderContactSubmissions(contactSubmissions);
     } catch (error) {
         console.error('Error loading contact submissions:', error);
-        document.getElementById('contact-submissions-container').innerHTML = 
-            '<div class="no-data">Error loading contact submissions. Please try again.</div>';
+        const container = document.getElementById('contact-submissions-container');
+        container.innerHTML = `
+            <div class="no-data">
+                <p>Error loading contact submissions.</p>
+                <p style="color: var(--gray-500); font-size: 0.875rem;">${error.message}</p>
+                <button class="btn btn-primary" onclick="loadContactSubmissions()">Retry</button>
+            </div>
+        `;
     }
 }
 
@@ -91,19 +116,31 @@ async function loadSampleSubmissions() {
         const container = document.getElementById('sample-submissions-container');
         container.innerHTML = '<div class="loading">Loading sample submissions...</div>';
         
+        const supabaseAdmin = await ensureSupabase();
+        
         const { data, error } = await supabaseAdmin
             .from('sample_submissions')
             .select('*')
             .order('created_at', { ascending: false });
         
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+        }
         
         sampleSubmissions = data || [];
+        console.log('Loaded sample submissions:', sampleSubmissions.length);
         renderSampleSubmissions(sampleSubmissions);
     } catch (error) {
         console.error('Error loading sample submissions:', error);
-        document.getElementById('sample-submissions-container').innerHTML = 
-            '<div class="no-data">Error loading sample submissions. Please try again.</div>';
+        const container = document.getElementById('sample-submissions-container');
+        container.innerHTML = `
+            <div class="no-data">
+                <p>Error loading sample submissions.</p>
+                <p style="color: var(--gray-500); font-size: 0.875rem;">${error.message}</p>
+                <button class="btn btn-primary" onclick="loadSampleSubmissions()">Retry</button>
+            </div>
+        `;
     }
 }
 
@@ -163,19 +200,31 @@ async function loadNewsletterSubscriptions() {
         const container = document.getElementById('newsletter-container');
         container.innerHTML = '<div class="loading">Loading newsletter subscriptions...</div>';
         
+        const supabaseAdmin = await ensureSupabase();
+        
         const { data, error } = await supabaseAdmin
             .from('newsletter_subscriptions')
             .select('*')
             .order('subscribed_at', { ascending: false });
         
-        if (error) throw error;
+        if (error) {
+            console.error('Supabase error:', error);
+            throw error;
+        }
         
         newsletterSubscriptions = data || [];
+        console.log('Loaded newsletter subscriptions:', newsletterSubscriptions.length);
         renderNewsletterSubscriptions(newsletterSubscriptions);
     } catch (error) {
         console.error('Error loading newsletter subscriptions:', error);
-        document.getElementById('newsletter-container').innerHTML = 
-            '<div class="no-data">Error loading newsletter subscriptions. Please try again.</div>';
+        const container = document.getElementById('newsletter-container');
+        container.innerHTML = `
+            <div class="no-data">
+                <p>Error loading newsletter subscriptions.</p>
+                <p style="color: var(--gray-500); font-size: 0.875rem;">${error.message}</p>
+                <button class="btn btn-primary" onclick="loadNewsletterSubscriptions()">Retry</button>
+            </div>
+        `;
     }
 }
 
@@ -358,6 +407,8 @@ function viewSubmission(type, id) {
 // Update submission status
 async function updateSubmissionStatus(id, status, table) {
     try {
+        const supabaseAdmin = await ensureSupabase();
+        
         const { error } = await supabaseAdmin
             .from(table)
             .update({ status, updated_at: new Date() })
@@ -394,6 +445,7 @@ function updateStatus(type, id, currentStatus) {
 // Toggle newsletter subscription status
 async function toggleNewsletterStatus(id, currentStatus) {
     try {
+        const supabaseAdmin = await ensureSupabase();
         const newStatus = currentStatus === 'active' ? 'unsubscribed' : 'active';
         const unsubscribedAt = newStatus === 'unsubscribed' ? new Date() : null;
         

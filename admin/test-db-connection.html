@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Database Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .result {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+        }
+        pre {
+            background: #f8f9fa;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>ZyntroTest Database Connection Test</h1>
+    
+    <div id="results"></div>
+    
+    <button onclick="testConnection()">Test Connection</button>
+    <button onclick="checkTables()">Check Tables</button>
+    <button onclick="testQueries()">Test Queries</button>
+    <button onclick="createTestData()">Create Test Submission</button>
+    
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+    <script>
+        const resultsDiv = document.getElementById('results');
+        
+        // Initialize Supabase
+        const SUPABASE_URL = 'https://hctdzwmlkgnuxcuhjooe.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog';
+        const SUPABASE_SERVICE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDEyMTY2MCwiZXhwIjoyMDc1Njk3NjYwfQ.V4Xr2nGmXO4Y9TJe51X1wAILIIAVL5ha61JoW9XmeV0';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseAdmin = supabase.createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+        
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `result ${type}`;
+            div.innerHTML = message;
+            resultsDiv.appendChild(div);
+        }
+        
+        async function testConnection() {
+            resultsDiv.innerHTML = '';
+            addResult('Testing connection to Supabase...', 'info');
+            
+            try {
+                // Test basic connection
+                const { data, error } = await supabaseClient
+                    .from('coas')
+                    .select('count')
+                    .limit(1);
+                
+                if (error) {
+                    addResult(`Connection test: ${error.message}`, 'error');
+                    addResult(`Error code: ${error.code}`, 'error');
+                } else {
+                    addResult('✓ Successfully connected to Supabase!', 'success');
+                }
+            } catch (err) {
+                addResult(`Connection error: ${err.message}`, 'error');
+            }
+        }
+        
+        async function checkTables() {
+            resultsDiv.innerHTML = '';
+            addResult('Checking database tables...', 'info');
+            
+            const tables = [
+                'contact_submissions',
+                'sample_submissions',
+                'newsletter_subscriptions',
+                'coas'
+            ];
+            
+            for (const table of tables) {
+                try {
+                    const { data, error, count } = await supabaseAdmin
+                        .from(table)
+                        .select('*', { count: 'exact', head: true });
+                    
+                    if (error) {
+                        if (error.code === '42P01') {
+                            addResult(`✗ Table "${table}" does not exist`, 'error');
+                        } else {
+                            addResult(`✗ Error checking "${table}": ${error.message}`, 'error');
+                        }
+                    } else {
+                        addResult(`✓ Table "${table}" exists (${count || 0} rows)`, 'success');
+                    }
+                } catch (err) {
+                    addResult(`✗ Exception checking "${table}": ${err.message}`, 'error');
+                }
+            }
+        }
+        
+        async function testQueries() {
+            resultsDiv.innerHTML = '';
+            addResult('Testing queries...', 'info');
+            
+            try {
+                // Test contact submissions
+                const { data: contacts, error: contactError } = await supabaseAdmin
+                    .from('contact_submissions')
+                    .select('*')
+                    .limit(5);
+                
+                if (contactError) {
+                    addResult(`Contact submissions query error: ${contactError.message}`, 'error');
+                } else {
+                    addResult(`✓ Contact submissions: ${contacts.length} records`, 'success');
+                    if (contacts.length > 0) {
+                        addResult(`<pre>${JSON.stringify(contacts[0], null, 2)}</pre>`, 'info');
+                    }
+                }
+                
+                // Test sample submissions
+                const { data: samples, error: sampleError } = await supabaseAdmin
+                    .from('sample_submissions')
+                    .select('*')
+                    .limit(5);
+                
+                if (sampleError) {
+                    addResult(`Sample submissions query error: ${sampleError.message}`, 'error');
+                } else {
+                    addResult(`✓ Sample submissions: ${samples.length} records`, 'success');
+                    if (samples.length > 0) {
+                        addResult(`<pre>${JSON.stringify(samples[0], null, 2)}</pre>`, 'info');
+                    }
+                }
+                
+                // Test newsletter
+                const { data: newsletter, error: newsletterError } = await supabaseAdmin
+                    .from('newsletter_subscriptions')
+                    .select('*')
+                    .limit(5);
+                
+                if (newsletterError) {
+                    addResult(`Newsletter query error: ${newsletterError.message}`, 'error');
+                } else {
+                    addResult(`✓ Newsletter subscriptions: ${newsletter.length} records`, 'success');
+                    if (newsletter.length > 0) {
+                        addResult(`<pre>${JSON.stringify(newsletter[0], null, 2)}</pre>`, 'info');
+                    }
+                }
+            } catch (err) {
+                addResult(`Query test error: ${err.message}`, 'error');
+            }
+        }
+        
+        async function createTestData() {
+            resultsDiv.innerHTML = '';
+            addResult('Creating test submission...', 'info');
+            
+            try {
+                const testData = {
+                    name: 'Test User',
+                    email: 'test@example.com',
+                    phone: '555-1234',
+                    company: 'Test Company',
+                    service_type: 'Peptide Testing',
+                    sample_type: 'peptide',
+                    message: 'This is a test submission',
+                    status: 'unread'
+                };
+                
+                const { data, error } = await supabaseAdmin
+                    .from('contact_submissions')
+                    .insert([testData])
+                    .select();
+                
+                if (error) {
+                    addResult(`Error creating test data: ${error.message}`, 'error');
+                    addResult(`<pre>${JSON.stringify(error, null, 2)}</pre>`, 'error');
+                } else {
+                    addResult('✓ Test submission created successfully!', 'success');
+                    addResult(`<pre>${JSON.stringify(data, null, 2)}</pre>`, 'info');
+                }
+            } catch (err) {
+                addResult(`Exception creating test data: ${err.message}`, 'error');
+            }
+        }
+    </script>
+</body>
+</html>
