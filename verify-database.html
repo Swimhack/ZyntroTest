@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Verification - ZyntroTest</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2563eb;
+            margin-bottom: 10px;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 4px;
+            border-left: 4px solid;
+        }
+        .status.success {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+        .status.error {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+        }
+        .status.info {
+            background: #dbeafe;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 10px 10px 0;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+        button:disabled {
+            background: #94a3b8;
+            cursor: not-allowed;
+        }
+        pre {
+            background: #f1f5f9;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        .test-results {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 ZyntroTest Database Verification</h1>
+        <p>This tool checks if all form submission tables exist and have proper RLS policies configured.</p>
+        
+        <div>
+            <button onclick="checkDatabase()">Check Database Tables</button>
+            <button onclick="runSchemaSetup()">Run Schema Setup</button>
+            <button onclick="testFormSubmission()">Test Form Submission</button>
+        </div>
+        
+        <div id="results" class="test-results"></div>
+    </div>
+
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+    <script>
+        // Initialize Supabase client
+        const supabaseClient = supabase.createClient(
+            'https://hctdzwmlkgnuxcuhjooe.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzQ5NzQ0NzAsImV4cCI6MjA1MDU1MDQ3MH0.8QZqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJqJq'
+        );
+
+        function showResult(message, type = 'info') {
+            const results = document.getElementById('results');
+            const div = document.createElement('div');
+            div.className = `status ${type}`;
+            div.innerHTML = message;
+            results.appendChild(div);
+        }
+
+        function clearResults() {
+            document.getElementById('results').innerHTML = '';
+        }
+
+        async function checkDatabase() {
+            clearResults();
+            showResult('🔄 Checking database tables...', 'info');
+
+            const tables = [
+                'contact_submissions',
+                'sample_submissions',
+                'newsletter_subscriptions'
+            ];
+
+            for (const table of tables) {
+                try {
+                    const { data, error } = await supabaseClient
+                        .from(table)
+                        .select('count')
+                        .limit(1);
+
+                    if (error) {
+                        if (error.code === '42P01') {
+                            showResult(`❌ Table <strong>${table}</strong> does NOT exist`, 'error');
+                        } else if (error.code === 'PGRST116') {
+                            showResult(`⚠️ Table <strong>${table}</strong> exists but RLS may be blocking access`, 'error');
+                        } else {
+                            showResult(`❌ Error checking <strong>${table}</strong>: ${error.message}`, 'error');
+                        }
+                    } else {
+                        showResult(`✅ Table <strong>${table}</strong> exists and is accessible`, 'success');
+                    }
+                } catch (err) {
+                    showResult(`❌ Error checking <strong>${table}</strong>: ${err.message}`, 'error');
+                }
+            }
+        }
+
+        async function runSchemaSetup() {
+            clearResults();
+            showResult('🔄 Running schema setup...', 'info');
+            showResult('⚠️ Please run the SQL script <strong>admin/setup-form-submissions.sql</strong> in your Supabase SQL Editor manually.', 'info');
+            showResult('<pre>1. Go to https://supabase.com/dashboard/project/hctdzwmlkgnuxcuhjooe/sql\n2. Open admin/setup-form-submissions.sql\n3. Copy and paste the SQL\n4. Click "Run"\n5. Return here and click "Check Database Tables"</pre>', 'info');
+        }
+
+        async function testFormSubmission() {
+            clearResults();
+            showResult('🔄 Testing form submission...', 'info');
+
+            // Test contact submission
+            const testData = {
+                name: 'Test User',
+                email: 'test@example.com',
+                phone: '555-1234',
+                company: 'Test Company',
+                service_type: 'Peptide Testing',
+                sample_type: 'peptide',
+                message: 'This is a test submission',
+                status: 'unread'
+            };
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('contact_submissions')
+                    .insert([testData])
+                    .select();
+
+                if (error) {
+                    showResult(`❌ Test submission failed: ${error.message}`, 'error');
+                    showResult(`<pre>Error details: ${JSON.stringify(error, null, 2)}</pre>`, 'error');
+                } else {
+                    showResult(`✅ Test submission successful!`, 'success');
+                    showResult(`<pre>Submitted data: ${JSON.stringify(data, null, 2)}</pre>`, 'success');
+                    
+                    // Clean up test data
+                    if (data && data[0] && data[0].id) {
+                        await supabaseClient
+                            .from('contact_submissions')
+                            .delete()
+                            .eq('id', data[0].id);
+                        showResult(`🧹 Test data cleaned up`, 'info');
+                    }
+                }
+            } catch (err) {
+                showResult(`❌ Exception during test: ${err.message}`, 'error');
+            }
+        }
+
+        // Auto-run check on page load
+        window.addEventListener('load', () => {
+            setTimeout(checkDatabase, 500);
+        });
+    </script>
+</body>
+</html>

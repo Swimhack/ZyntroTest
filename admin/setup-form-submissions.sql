@@ -87,16 +87,21 @@ CREATE TRIGGER update_sample_submissions_updated_at
     EXECUTE FUNCTION update_updated_at_column();
 
 -- Create RLS policies for service role access
+-- Drop existing policies first to avoid conflicts
+DROP POLICY IF EXISTS "Allow service role to manage contact submissions" ON contact_submissions;
 CREATE POLICY "Allow service role to manage contact submissions" ON contact_submissions
     FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow service role to manage sample submissions" ON sample_submissions;
 CREATE POLICY "Allow service role to manage sample submissions" ON sample_submissions
     FOR ALL USING (true);
 
+DROP POLICY IF EXISTS "Allow service role to manage newsletter subscriptions" ON newsletter_subscriptions;
 CREATE POLICY "Allow service role to manage newsletter subscriptions" ON newsletter_subscriptions
     FOR ALL USING (true);
 
 -- Allow public read access for newsletter subscriptions (for unsubscribe functionality)
+DROP POLICY IF EXISTS "Allow public read newsletter subscriptions" ON newsletter_subscriptions;
 CREATE POLICY "Allow public read newsletter subscriptions" ON newsletter_subscriptions
     FOR SELECT USING (true);
 
@@ -110,14 +115,17 @@ GRANT SELECT ON newsletter_subscriptions TO anon;
 
 -- RLS policies to allow public (anon) INSERTs from website forms
 -- NOTE: These allow unauthenticated inserts only; reads remain restricted.
-CREATE POLICY IF NOT EXISTS "Allow public insert contact submissions" ON contact_submissions
+DROP POLICY IF EXISTS "Allow public insert contact submissions" ON contact_submissions;
+CREATE POLICY "Allow public insert contact submissions" ON contact_submissions
     FOR INSERT
     WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow public insert sample submissions" ON sample_submissions
+DROP POLICY IF EXISTS "Allow public insert sample submissions" ON sample_submissions;
+CREATE POLICY "Allow public insert sample submissions" ON sample_submissions
     FOR INSERT
     WITH CHECK (true);
 
-CREATE POLICY IF NOT EXISTS "Allow public insert newsletter subscriptions" ON newsletter_subscriptions
+DROP POLICY IF EXISTS "Allow public insert newsletter subscriptions" ON newsletter_subscriptions;
+CREATE POLICY "Allow public insert newsletter subscriptions" ON newsletter_subscriptions
     FOR INSERT
     WITH CHECK (true);
