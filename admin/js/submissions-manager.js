@@ -72,7 +72,15 @@ async function loadContactSubmissions() {
         
         contactSubmissions = data || [];
         console.log('Successfully loaded contact submissions:', contactSubmissions.length);
+        console.log('Full data array:', contactSubmissions);
         console.log('Sample data:', contactSubmissions[0]);
+        console.log('Data is array?', Array.isArray(contactSubmissions));
+        console.log('Data type:', typeof contactSubmissions);
+        
+        if (contactSubmissions.length === 0) {
+            console.warn('WARNING: Query returned 0 results but succeeded');
+            console.log('This might be a timing issue or the data might be filtering out');
+        }
         
         renderContactSubmissions(contactSubmissions);
     } catch (error) {
