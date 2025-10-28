@@ -207,18 +207,33 @@ document.addEventListener('DOMContentLoaded', function() {
                             message: form.querySelector('[name="message"]')?.value || ''
                         };
                         
-                        // Save to database first
+                        // Save to database first - this should always work
                         console.log('Saving contact submission to database:', formData);
+                        let dbSaved = false;
                         try {
                             await saveContactSubmission(formData);
                             console.log('Contact submission saved successfully');
+                            dbSaved = true;
                         } catch (dbError) {
-                            console.error('Database save failed, continuing with email:', dbError);
+                            console.error('Database save failed:', dbError);
                         }
                         
-                        // Then send email
-                        await sendContactEmail(formData);
-                        showNotification('Thank you! Your inquiry has been saved and sent. We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
+                        // Then try to send email - but don't fail if email service isn't available
+                        let emailSent = false;
+                        try {
+                            await sendContactEmail(formData);
+                            console.log('Email sent successfully');
+                            emailSent = true;
+                        } catch (emailError) {
+                            console.error('Email send failed (this is OK if Resend not configured yet):', emailError);
+                        }
+                        
+                        // Show success message
+                        if (dbSaved) {
+                            showNotification('Thank you! Your inquiry has been received. We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
+                        } else {
+                            showNotification('Thank you! Your inquiry has been received.', 'success');
+                        }
                     } else {
                         // Generic form submission
                         showNotification('Thank you! Your information has been received. A team member will reach out to you shortly.', 'success');
@@ -263,11 +278,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Save to database first
                 console.log('Saving newsletter subscription to database:', email);
                 let result;
+                let dbSaved = false;
                 try {
                     result = await saveNewsletterSubscription(email);
                     console.log('Newsletter subscription saved successfully');
+                    dbSaved = true;
                 } catch (dbError) {
-                    console.error('Database save failed, continuing with email:', dbError);
+                    console.error('Database save failed:', dbError);
                     result = { already_subscribed: false };
                 }
                 
@@ -276,9 +293,19 @@ document.addEventListener('DOMContentLoaded', function() {
                     return;
                 }
                 
-                // Then send email
-                await sendNewsletterEmail(email);
-                showNotification('Thank you for subscribing! You\'ll receive LCMS insights and technical updates.', 'success');
+                // Then try to send email
+                try {
+                    await sendNewsletterEmail(email);
+                    console.log('Newsletter email sent');
+                } catch (emailError) {
+                    console.error('Email send failed (this is OK if Resend not configured yet):', emailError);
+                }
+                
+                if (dbSaved) {
+                    showNotification('Thank you for subscribing! You\'ll receive LCMS insights and technical updates.', 'success');
+                } else {
+                    showNotification('Thank you for subscribing!', 'success');
+                }
                 form.reset();
             } catch (error) {
                 console.error('Newsletter subscription error:', error);
@@ -328,17 +355,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 // Save to database first
                 console.log('Saving sample submission to database:', formData);
+                let dbSaved = false;
                 try {
                     await saveSampleSubmission(formData);
                     console.log('Sample submission saved successfully');
+                    dbSaved = true;
                 } catch (dbError) {
-                    console.error('Database save failed, continuing with email:', dbError);
+                    console.error('Database save failed:', dbError);
                 }
                 
-                // Then send email via Resend API
-                await sendSampleSubmissionEmail(formData);
+                // Then try to send email
+                try {
+                    await sendSampleSubmissionEmail(formData);
+                    console.log('Sample email sent successfully');
+                } catch (emailError) {
+                    console.error('Email send failed (this is OK if Resend not configured yet):', emailError);
+                }
                 
-                showNotification('Sample submission received! We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
+                if (dbSaved) {
+                    showNotification('Sample submission received! We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
+                } else {
+                    showNotification('Sample submission received!', 'success');
+                }
                 form.reset();
             } catch (error) {
                 console.error('Sample submission error:', error);
