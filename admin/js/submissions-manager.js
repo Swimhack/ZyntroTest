@@ -30,35 +30,51 @@ async function ensureSupabase() {
 
 // Load contact submissions
 async function loadContactSubmissions() {
+    console.log('=== Loading Contact Submissions ===');
     try {
         const container = document.getElementById('contact-submissions-container');
+        if (!container) {
+            console.error('Container element not found: contact-submissions-container');
+            return;
+        }
+        
         container.innerHTML = '<div class="loading">Loading contact submissions...</div>';
+        console.log('Container found, loading data...');
         
         const supabaseAdmin = await ensureSupabase();
+        console.log('Supabase admin client ready:', !!supabaseAdmin);
         
         const { data, error } = await supabaseAdmin
             .from('contact_submissions')
             .select('*')
             .order('created_at', { ascending: false });
         
+        console.log('Query result:', { dataCount: data?.length, error });
+        
         if (error) {
-            console.error('Supabase error:', error);
+            console.error('Supabase query error:', error);
             throw error;
         }
         
         contactSubmissions = data || [];
-        console.log('Loaded contact submissions:', contactSubmissions.length);
+        console.log('Successfully loaded contact submissions:', contactSubmissions.length);
+        console.log('Sample data:', contactSubmissions[0]);
+        
         renderContactSubmissions(contactSubmissions);
     } catch (error) {
-        console.error('Error loading contact submissions:', error);
+        console.error('CATCH ERROR in loadContactSubmissions:', error);
+        console.error('Error stack:', error.stack);
         const container = document.getElementById('contact-submissions-container');
-        container.innerHTML = `
-            <div class="no-data">
-                <p>Error loading contact submissions.</p>
-                <p style="color: var(--gray-500); font-size: 0.875rem;">${error.message}</p>
-                <button class="btn btn-primary" onclick="loadContactSubmissions()">Retry</button>
-            </div>
-        `;
+        if (container) {
+            container.innerHTML = `
+                <div class="no-data">
+                    <p>Error loading contact submissions.</p>
+                    <p style="color: var(--gray-500); font-size: 0.875rem;">Error: ${error.message}</p>
+                    <p style="color: var(--gray-500); font-size: 0.75rem;">Check browser console for details</p>
+                    <button class="btn btn-primary" onclick="loadContactSubmissions()">Retry</button>
+                </div>
+            `;
+        }
     }
 }
 

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Submissions</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .section {
+            margin: 30px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .error {
+            color: #dc2626;
+            background: #fee2e2;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            color: #16a34a;
+            background: #dcfce7;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        pre {
+            background: #f3f4f6;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+        button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #1d4ed8;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Database Test - Form Submissions</h1>
+    
+    <div class="section">
+        <h2>Status</h2>
+        <div id="status">Connecting to Supabase...</div>
+    </div>
+    
+    <div class="section">
+        <h2>Contact Submissions</h2>
+        <button onclick="loadContactSubmissions()">Load Contact Forms</button>
+        <div id="contact-results"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Sample Submissions</h2>
+        <button onclick="loadSampleSubmissions()">Load Sample Submissions</button>
+        <div id="sample-results"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Newsletter Subscriptions</h2>
+        <button onclick="loadNewsletterSubscriptions()">Load Newsletter</button>
+        <div id="newsletter-results"></div>
+    </div>
+    
+    <div class="section">
+        <h2>Raw Query Test</h2>
+        <button onclick="testRawQuery()">Run Raw Query</button>
+        <div id="raw-results"></div>
+    </div>
+
+    <!-- Supabase -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+    <script>
+        // Initialize Supabase
+        const supabaseUrl = 'https://hctdzwmlkgnuxcuhjooe.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDEyMTY2MCwiZXhwIjoyMDc1Njk3NjYwfQ.V4Xr2nGmXO4Y9TJe51X1wAILIIAVL5ha61JoW9XmeV0';
+        
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        
+        document.getElementById('status').innerHTML = '<div class="success">✅ Connected to Supabase</div>';
+        
+        async function loadContactSubmissions() {
+            const resultsDiv = document.getElementById('contact-results');
+            resultsDiv.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('contact_submissions')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div><pre>${JSON.stringify(error, null, 2)}</pre>`;
+                    return;
+                }
+                
+                if (!data || data.length === 0) {
+                    resultsDiv.innerHTML = '<div class="success">✅ Query successful but no records found</div>';
+                    return;
+                }
+                
+                resultsDiv.innerHTML = `
+                    <div class="success">✅ Found ${data.length} contact submissions</div>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (err) {
+                resultsDiv.innerHTML = `<div class="error">❌ Catch Error: ${err.message}</div><pre>${JSON.stringify(err, null, 2)}</pre>`;
+            }
+        }
+        
+        async function loadSampleSubmissions() {
+            const resultsDiv = document.getElementById('sample-results');
+            resultsDiv.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('sample_submissions')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div><pre>${JSON.stringify(error, null, 2)}</pre>`;
+                    return;
+                }
+                
+                if (!data || data.length === 0) {
+                    resultsDiv.innerHTML = '<div class="success">✅ Query successful but no records found</div>';
+                    return;
+                }
+                
+                resultsDiv.innerHTML = `
+                    <div class="success">✅ Found ${data.length} sample submissions</div>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (err) {
+                resultsDiv.innerHTML = `<div class="error">❌ Catch Error: ${err.message}</div><pre>${JSON.stringify(err, null, 2)}</pre>`;
+            }
+        }
+        
+        async function loadNewsletterSubscriptions() {
+            const resultsDiv = document.getElementById('newsletter-results');
+            resultsDiv.innerHTML = '<p>Loading...</p>';
+            
+            try {
+                const { data, error } = await supabaseClient
+                    .from('newsletter_subscriptions')
+                    .select('*')
+                    .order('subscribed_at', { ascending: false });
+                
+                if (error) {
+                    resultsDiv.innerHTML = `<div class="error">❌ Error: ${error.message}</div><pre>${JSON.stringify(error, null, 2)}</pre>`;
+                    return;
+                }
+                
+                if (!data || data.length === 0) {
+                    resultsDiv.innerHTML = '<div class="success">✅ Query successful but no records found</div>';
+                    return;
+                }
+                
+                resultsDiv.innerHTML = `
+                    <div class="success">✅ Found ${data.length} newsletter subscriptions</div>
+                    <pre>${JSON.stringify(data, null, 2)}</pre>
+                `;
+            } catch (err) {
+                resultsDiv.innerHTML = `<div class="error">❌ Catch Error: ${err.message}</div><pre>${JSON.stringify(err, null, 2)}</pre>`;
+            }
+        }
+        
+        async function testRawQuery() {
+            const resultsDiv = document.getElementById('raw-results');
+            resultsDiv.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                // Test 1: Check connection
+                const { data: test1, error: error1 } = await supabaseClient
+                    .from('contact_submissions')
+                    .select('count');
+                
+                let results = `<h3>Test 1: Connection Test</h3>`;
+                if (error1) {
+                    results += `<div class="error">❌ ${error1.message}</div>`;
+                } else {
+                    results += `<div class="success">✅ Connection successful</div>`;
+                }
+                
+                // Test 2: Get first record
+                const { data: test2, error: error2 } = await supabaseClient
+                    .from('contact_submissions')
+                    .select('*')
+                    .limit(1);
+                
+                results += `<h3>Test 2: First Record</h3>`;
+                if (error2) {
+                    results += `<div class="error">❌ ${error2.message}</div>`;
+                } else if (!test2 || test2.length === 0) {
+                    results += `<div class="success">✅ Query works but no data</div>`;
+                } else {
+                    results += `<div class="success">✅ Found data</div><pre>${JSON.stringify(test2, null, 2)}</pre>`;
+                }
+                
+                resultsDiv.innerHTML = results;
+            } catch (err) {
+                resultsDiv.innerHTML = `<div class="error">❌ Test failed: ${err.message}</div>`;
+            }
+        }
+        
+        // Auto-run tests on load
+        window.addEventListener('load', () => {
+            console.log('Page loaded, Supabase client ready');
+            testRawQuery();
+        });
+    </script>
+</body>
+</html>
