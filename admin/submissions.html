@@ -372,9 +372,26 @@
             });
         });
         
-        // Load initial data
-        document.addEventListener('DOMContentLoaded', () => {
-            loadContactSubmissions();
+        // Load initial data - wait for Supabase to be ready
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('DOM loaded, waiting for Supabase...');
+            // Wait a bit for Supabase to initialize
+            let attempts = 0;
+            while (!window.supabaseAdmin && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            
+            if (window.supabaseAdmin) {
+                console.log('Supabase ready, loading submissions...');
+                loadContactSubmissions();
+            } else {
+                console.error('Supabase failed to initialize after 2 seconds');
+                const container = document.getElementById('contact-submissions-container');
+                if (container) {
+                    container.innerHTML = '<div class="no-data"><p>Failed to connect to database. Please refresh the page.</p></div>';
+                }
+            }
         });
         
         function closeModal() {

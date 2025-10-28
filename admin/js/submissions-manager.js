@@ -9,22 +9,36 @@ let newsletterSubscriptions = [];
 let supabaseReady = false;
 
 async function ensureSupabase() {
+    console.log('ensureSupabase called, current state:', {
+        supabaseReady,
+        hasWindow: !!window,
+        hasSupabaseAdmin: !!window.supabaseAdmin
+    });
+    
     if (supabaseReady && window.supabaseAdmin) {
+        console.log('Supabase already ready');
         return window.supabaseAdmin;
     }
     
     // Wait for Supabase to be initialized
     let attempts = 0;
+    console.log('Waiting for Supabase to initialize...');
     while (!window.supabaseAdmin && attempts < 50) {
         await new Promise(resolve => setTimeout(resolve, 100));
         attempts++;
+        if (attempts % 10 === 0) {
+            console.log(`Still waiting... attempt ${attempts}/50`);
+        }
     }
     
     if (!window.supabaseAdmin) {
-        throw new Error('Supabase admin client not available');
+        console.error('Supabase admin client not available after waiting');
+        console.log('Available window properties:', Object.keys(window).filter(k => k.toLowerCase().includes('supabase')));
+        throw new Error('Supabase admin client not available after 5 seconds');
     }
     
     supabaseReady = true;
+    console.log('Supabase is now ready!');
     return window.supabaseAdmin;
 }
 
