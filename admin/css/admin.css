@@ -308,11 +308,14 @@ body {
     font-size: 1.25rem;
     color: var(--gray-900);
     margin-bottom: var(--spacing-xs);
+    line-height: 1.4;
+    overflow: visible;
 }
 
 .sidebar-header p {
     font-size: 0.75rem;
     color: var(--gray-600);
+    line-height: 1.4;
 }
 
 .sidebar-nav {
@@ -362,6 +365,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    min-height: 80px;
 }
 
 .main-header h1 {
@@ -369,6 +373,10 @@ body {
     font-size: 1.875rem;
     color: var(--gray-900);
     margin: 0;
+    line-height: 1.3;
+    overflow: visible;
+    white-space: normal;
+    word-wrap: break-word;
 }
 
 .user-menu {
