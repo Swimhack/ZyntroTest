@@ -32,6 +32,23 @@ Thumbs.db
 # Testing
 coverage/
 .nyc_output/
+test-results/
+playwright-report/
+archive/
+
+# Test and utility files
+test-*.html
+test-*.js
+debug-*.html
+debug-*.js
+verify-*.html
+verify-*.js
+check-*.js
+fix-*.js
+setup-*.js
+add-demo-*.js
+create-*.js
+upload-*.js
 
 # Temporary files
 *.tmp
