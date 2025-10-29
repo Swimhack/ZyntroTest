@@ -253,6 +253,81 @@
             color: var(--gray-900);
             font-size: 0.9375rem;
         }
+        
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .main-header {
+                padding: 1rem;
+            }
+            
+            .main-header h1 {
+                font-size: 1.5rem;
+            }
+            
+            .tabs {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
+            
+            .tabs::-webkit-scrollbar {
+                display: none;
+            }
+            
+            .tab {
+                padding: 0.5rem 1rem;
+                font-size: 0.875rem;
+                white-space: nowrap;
+            }
+            
+            .submissions-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+            
+            .filter-group {
+                flex-wrap: wrap;
+            }
+            
+            .submissions-table {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .submissions-table table {
+                min-width: 600px;
+            }
+            
+            .submissions-table th,
+            .submissions-table td {
+                padding: 0.75rem 0.5rem;
+                font-size: 0.75rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn-sm {
+                padding: 0.5rem;
+                font-size: 0.75rem;
+                white-space: nowrap;
+            }
+            
+            .modal-content {
+                width: 95vw;
+                max-height: 90vh;
+                margin: 1rem;
+            }
+            
+            .detail-row {
+                margin-bottom: 0.75rem;
+            }
+        }
     </style>
 </head>
 <body class="dashboard-layout">
