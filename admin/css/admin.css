@@ -280,11 +280,6 @@ body {
     background-color: var(--gray-100);
 }
 
-/* Hide the main site header on admin pages */
-.dashboard-layout .header {
-    display: none;
-}
-
 .sidebar {
     width: 280px;
     background-color: white;
