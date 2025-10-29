@@ -11,137 +11,33 @@
     <link rel="stylesheet" href="css/admin.css">
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <style>
-        body {
-            background: var(--gray-50);
-            font-family: 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        
-        .dashboard-layout {
-            display: grid;
-            grid-template-columns: 250px 1fr;
-            min-height: 100vh;
-        }
-        
-        .sidebar {
-            background: white;
-            border-right: 1px solid var(--gray-200);
-            padding: 2rem 0;
-        }
-        
-        .sidebar-header {
-            padding: 0 1.5rem 2rem;
-            border-bottom: 1px solid var(--gray-200);
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--gray-200);
             margin-bottom: 1.5rem;
         }
         
-        .sidebar-header .logo img {
-            max-width: 180px;
-            height: auto;
-        }
-        
-        .sidebar-header h2 {
-            font-size: 1.25rem;
-            margin: 0.5rem 0 0.25rem;
-        }
-        
-        .sidebar-header p {
-            font-size: 0.875rem;
-            color: var(--gray-500);
-            margin: 0;
-        }
-        
-        .sidebar-nav .nav-item {
-            margin-bottom: 0.25rem;
-        }
-        
-        .sidebar-nav .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.75rem 1.5rem;
-            color: var(--gray-700);
-            text-decoration: none;
-            transition: all 0.2s;
-        }
-        
-        .sidebar-nav .nav-link:hover {
-            background: var(--gray-50);
-            color: var(--primary-color);
-        }
-        
-        .sidebar-nav .nav-link.active {
-            background: var(--gray-100);
-            color: var(--primary-color);
-            font-weight: 500;
-        }
-        
-        .main-content {
-            padding: 2rem;
-            overflow-y: auto;
-        }
-        
-        .main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
-        }
-        
-        .main-header h1 {
-            margin: 0;
-            font-size: 2rem;
-        }
-        
-        .user-menu {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        
-        .user-info {
-            text-align: right;
-        }
-        
-        .user-name {
-            font-weight: 600;
-            font-size: 0.875rem;
-        }
-        
-        .user-role {
-            font-size: 0.75rem;
-            color: var(--gray-500);
-        }
-        
-        .tabs {
-            display: flex;
-            border-bottom: 2px solid var(--gray-200);
-            margin-bottom: 2rem;
-            gap: 0.5rem;
-        }
-        
         .tab {
+            padding: 0.75rem 1.5rem;
             background: none;
             border: none;
-            padding: 1rem 2rem;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--gray-600);
             border-bottom: 3px solid transparent;
+            color: var(--gray-600);
+            font-size: 0.9375rem;
+            font-weight: 500;
+            cursor: pointer;
             transition: all 0.2s ease;
-            margin-bottom: -2px;
+        }
+        
+        .tab:hover {
+            color: var(--primary-color);
+            background-color: var(--gray-50);
         }
         
         .tab.active {
             color: var(--primary-color);
             border-bottom-color: var(--primary-color);
-        }
-        
-        .tab:hover {
-            color: var(--primary-color);
-            background: var(--gray-50);
         }
         
         .tab-content {
@@ -150,49 +46,70 @@
         
         .tab-content.active {
             display: block;
-            animation: fadeIn 0.3s;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        .submissions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .search-box {
+            display: flex;
+            gap: 0.5rem;
+            flex: 1;
+            max-width: 400px;
+        }
+        
+        .search-box input {
+            flex: 1;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+        }
+        
+        .filter-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
         }
         
         .submissions-table {
             width: 100%;
-            border-collapse: collapse;
             background: white;
             border-radius: var(--radius-lg);
-            overflow: hidden;
             box-shadow: var(--shadow-sm);
+            overflow: hidden;
         }
         
-        .submissions-table th,
-        .submissions-table td {
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid var(--gray-200);
+        .submissions-table table {
+            width: 100%;
+            border-collapse: collapse;
         }
         
         .submissions-table th {
-            background: var(--gray-50);
+            background-color: var(--gray-50);
+            padding: 1rem;
+            text-align: left;
+            font-size: 0.75rem;
             font-weight: 600;
-            color: var(--gray-900);
-            font-size: 0.875rem;
             text-transform: uppercase;
-            letter-spacing: 0.05em;
+            color: var(--gray-600);
+            border-bottom: 1px solid var(--gray-200);
         }
         
-        .submissions-table tbody tr {
-            transition: background 0.15s;
+        .submissions-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-100);
+            font-size: 0.875rem;
         }
         
-        .submissions-table tbody tr:hover {
-            background: var(--gray-50);
-        }
-        
-        .submissions-table tbody tr:last-child td {
-            border-bottom: none;
+        .submissions-table tr:hover {
+            background-color: var(--gray-50);
         }
         
         .status-badge {
@@ -200,102 +117,78 @@
             padding: 0.25rem 0.75rem;
             border-radius: 9999px;
             font-size: 0.75rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
+            font-weight: 500;
         }
         
         .status-unread {
-            background: #dbeafe;
-            color: #1e40af;
+            background-color: #fef3c7;
+            color: #92400e;
         }
         
         .status-read {
-            background: #f3f4f6;
-            color: #4b5563;
+            background-color: #dbeafe;
+            color: #1e40af;
         }
         
         .status-responded {
-            background: #d1fae5;
+            background-color: #d1fae5;
             color: #065f46;
         }
         
         .status-completed {
-            background: #d1fae5;
-            color: #065f46;
-        }
-        
-        .status-in_progress {
-            background: #fef3c7;
-            color: #92400e;
+            background-color: #dcfce7;
+            color: #166534;
         }
         
         .status-active {
-            background: #d1fae5;
-            color: #065f46;
+            background-color: #dcfce7;
+            color: #166534;
         }
         
         .status-unsubscribed {
-            background: #fee2e2;
-            color: #991b1b;
+            background-color: #f3f4f6;
+            color: #6b7280;
         }
         
         .action-buttons {
             display: flex;
             gap: 0.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 0.5rem 1rem;
-            border: 1px solid transparent;
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-block;
         }
         
         .btn-sm {
             padding: 0.375rem 0.75rem;
-            font-size: 0.8125rem;
+            font-size: 0.75rem;
         }
         
-        .btn-primary {
-            background: var(--primary-color);
-            color: white;
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
         }
         
-        .btn-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-1px);
-            box-shadow: var(--shadow-md);
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
         }
         
-        .btn-outline {
-            background: white;
-            color: var(--gray-700);
-            border-color: var(--gray-300);
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
         }
         
-        .btn-outline:hover {
-            background: var(--gray-50);
-            border-color: var(--gray-400);
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--gray-200);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
         }
         
-        .btn-danger {
-            background: #dc2626;
-            color: white;
-        }
-        
-        .btn-danger:hover {
-            background: #b91c1c;
-        }
-        
-        .logout-btn {
-            font-size: 0.8125rem;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
         
         .modal {
@@ -305,7 +198,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -318,190 +211,47 @@
         .modal-content {
             background: white;
             border-radius: var(--radius-lg);
-            padding: 2rem;
-            max-width: 700px;
+            max-width: 600px;
             width: 90%;
-            max-height: 85vh;
+            max-height: 80vh;
             overflow-y: auto;
             box-shadow: var(--shadow-xl);
-            animation: slideUp 0.3s;
-        }
-        
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
         
         .modal-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--gray-200);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--gray-200);
         }
         
-        .modal-header h2 {
-            margin: 0;
-            font-size: 1.5rem;
+        .modal-body {
+            padding: 1.5rem;
         }
         
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 2rem;
-            cursor: pointer;
-            color: var(--gray-400);
-            line-height: 1;
-            padding: 0;
-            width: 32px;
-            height: 32px;
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--gray-200);
             display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-md);
-            transition: all 0.2s;
-        }
-        
-        .close-modal:hover {
-            background: var(--gray-100);
-            color: var(--gray-700);
-        }
-        
-        .submission-details {
-            margin-bottom: 1.5rem;
+            justify-content: flex-end;
+            gap: 0.5rem;
         }
         
         .detail-row {
-            display: grid;
-            grid-template-columns: 180px 1fr;
-            gap: 1rem;
             margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid var(--gray-100);
-        }
-        
-        .detail-row:last-child {
-            border-bottom: none;
         }
         
         .detail-label {
             font-weight: 600;
             color: var(--gray-700);
             font-size: 0.875rem;
+            margin-bottom: 0.25rem;
         }
         
         .detail-value {
             color: var(--gray-900);
-            word-wrap: break-word;
-        }
-        
-        .export-buttons {
-            margin-bottom: 1.5rem;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .loading {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--gray-600);
-        }
-        
-        .loading::after {
-            content: '...';
-            animation: dots 1.5s steps(4, end) infinite;
-        }
-        
-        @keyframes dots {
-            0%, 20% { content: '.'; }
-            40% { content: '..'; }
-            60%, 100% { content: '...'; }
-        }
-        
-        .no-data {
-            text-align: center;
-            padding: 4rem 2rem;
-            color: var(--gray-500);
-            background: white;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-        }
-        
-        .no-data p {
-            margin: 0.5rem 0;
-        }
-        
-        .search-filters {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        
-        .search-filters .form-group {
-            margin-bottom: 0;
-        }
-        
-        .search-box {
-            flex: 1;
-            min-width: 250px;
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-        }
-        
-        .filter-dropdown {
-            min-width: 150px;
-        }
-        
-        .filter-dropdown select {
-            width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-md);
-            font-size: 0.875rem;
-            background: white;
-        }
-        
-        .submission-stats {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-        
-        .stat-card {
-            background: white;
-            padding: 1rem;
-            border-radius: var(--radius-lg);
-            box-shadow: var(--shadow-sm);
-            border-left: 4px solid var(--primary-color);
-        }
-        
-        .stat-card h3 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.5rem;
-            color: var(--primary-color);
-        }
-        
-        .stat-card p {
-            margin: 0;
-            color: var(--gray-600);
-            font-size: 0.875rem;
+            font-size: 0.9375rem;
         }
     </style>
 </head>
@@ -510,9 +260,9 @@
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="logo">
-                <img src="../images/zyntrotest-logo.svg" alt="ZyntroTest" onerror="this.style.display='none'">
+                <img src="../images/zyntrotest-logo.svg" alt="ZyntroTest">
             </div>
-            <h2>Submissions</h2>
+            <h2>COA Dashboard</h2>
             <p>Admin Panel</p>
         </div>
         
@@ -521,12 +271,6 @@
                 <a href="dashboard.html" class="nav-link">
                     <span class="nav-icon">🏠</span>
                     Admin Home
-                </a>
-            </div>
-            <div class="nav-item">
-                <a href="submissions.html" class="nav-link active">
-                    <span class="nav-icon">📬</span>
-                    Form Submissions
                 </a>
             </div>
             <div class="nav-item">
@@ -539,6 +283,12 @@
                 <a href="cms.html" class="nav-link">
                     <span class="nav-icon">📝</span>
                     Content Management
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="submissions.html" class="nav-link active">
+                    <span class="nav-icon">📧</span>
+                    Form Submissions
                 </a>
             </div>
             <div class="nav-item">
@@ -558,246 +308,249 @@
     
     <!-- Main Content Area -->
     <main class="main-content">
-        <!-- Header -->
         <header class="main-header">
             <h1>Form Submissions</h1>
             <div class="user-menu">
                 <div class="user-info">
-                    <div class="user-name" id="current-user">Drew</div>
+                    <div class="user-name" id="current-user">Admin</div>
                     <div class="user-role">Administrator</div>
                 </div>
                 <button onclick="logout()" class="btn btn-outline logout-btn">Logout</button>
             </div>
         </header>
         
-        <!-- Tab Navigation -->
+        <!-- Tabs -->
         <div class="tabs">
             <button class="tab active" data-tab="contact">Contact Forms</button>
-            <button class="tab" data-tab="samples">Sample Submissions</button>
-            <button class="tab" data-tab="newsletter">Newsletter</button>
+            <button class="tab" data-tab="sample">Sample Submissions</button>
+            <button class="tab" data-tab="newsletter">Newsletter Subscriptions</button>
         </div>
         
-        <!-- Tab Content Areas -->
-        <div id="contact-tab" class="tab-content active">
-            <div class="export-buttons">
-                <button class="btn btn-primary" onclick="exportContactSubmissions()">Export Contact Forms</button>
-                <button class="btn btn-outline" onclick="refreshContactSubmissions()">Refresh</button>
-                <button class="btn btn-outline" onclick="markAllAsRead('contact')">Mark All as Read</button>
-            </div>
-            
-            <!-- Search and Filter Controls -->
-            <div class="search-filters">
-                <div class="form-group search-box">
-                    <input type="text" id="contact-search-input" placeholder="Search by name, email, or company..." onkeyup="handleContactSearch()">
+        <!-- Contact Forms Tab -->
+        <div class="tab-content active" id="contact-tab">
+            <div class="submissions-header">
+                <div class="search-box">
+                    <input type="text" id="contact-search" placeholder="Search by name, email, or company..." />
                 </div>
-                <div class="form-group filter-dropdown">
-                    <select id="contact-status-filter" onchange="handleContactFilter()">
+                <div class="filter-group">
+                    <select id="contact-status-filter" class="form-control">
                         <option value="">All Status</option>
                         <option value="unread">Unread</option>
                         <option value="read">Read</option>
                         <option value="responded">Responded</option>
                         <option value="completed">Completed</option>
                     </select>
+                    <button class="btn btn-outline btn-sm" onclick="exportCSV('contact')">Export CSV</button>
+                    <button class="btn btn-primary btn-sm" onclick="refreshSubmissions('contact')">Refresh</button>
                 </div>
-                <div class="form-group filter-dropdown">
-                    <select id="contact-service-filter" onchange="handleContactFilter()">
-                        <option value="">All Services</option>
-                        <option value="peptide">Peptide Analysis</option>
-                        <option value="supplement">Supplement Screening</option>
-                        <option value="hemp">Hemp Testing</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <button onclick="clearContactFilters()" class="btn btn-outline">Clear Filters</button>
             </div>
             
-            <div id="contact-submissions-container">
-                <div class="loading">Loading contact submissions</div>
+            <div id="contact-loading" class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            
+            <div id="contact-table" style="display: none;">
+                <div class="submissions-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Company</th>
+                                <th>Service Type</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contact-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="contact-empty" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📭</div>
+                <h3>No Contact Submissions</h3>
+                <p>Contact form submissions will appear here.</p>
             </div>
         </div>
         
-        <div id="samples-tab" class="tab-content">
-            <div class="export-buttons">
-                <button class="btn btn-primary" onclick="exportSampleSubmissions()">Export Sample Submissions</button>
-                <button class="btn btn-outline" onclick="refreshSampleSubmissions()">Refresh</button>
-                <button class="btn btn-outline" onclick="markAllAsRead('sample')">Mark All as Read</button>
-            </div>
-            
-            <!-- Search and Filter Controls -->
-            <div class="search-filters">
-                <div class="form-group search-box">
-                    <input type="text" id="sample-search-input" placeholder="Search by client name, email, or company..." onkeyup="handleSampleSearch()">
+        <!-- Sample Submissions Tab -->
+        <div class="tab-content" id="sample-tab">
+            <div class="submissions-header">
+                <div class="search-box">
+                    <input type="text" id="sample-search" placeholder="Search by client name, email..." />
                 </div>
-                <div class="form-group filter-dropdown">
-                    <select id="sample-status-filter" onchange="handleSampleFilter()">
+                <div class="filter-group">
+                    <select id="sample-status-filter" class="form-control">
                         <option value="">All Status</option>
                         <option value="unread">Unread</option>
                         <option value="read">Read</option>
                         <option value="in_progress">In Progress</option>
                         <option value="completed">Completed</option>
                     </select>
+                    <button class="btn btn-outline btn-sm" onclick="exportCSV('sample')">Export CSV</button>
+                    <button class="btn btn-primary btn-sm" onclick="refreshSubmissions('sample')">Refresh</button>
                 </div>
-                <div class="form-group filter-dropdown">
-                    <select id="sample-type-filter" onchange="handleSampleFilter()">
-                        <option value="">All Sample Types</option>
-                        <option value="peptide">Peptide</option>
-                        <option value="supplement">Supplement</option>
-                        <option value="hemp">Hemp/Cannabis</option>
-                        <option value="other">Other</option>
-                    </select>
-                </div>
-                <button onclick="clearSampleFilters()" class="btn btn-outline">Clear Filters</button>
             </div>
             
-            <div id="sample-submissions-container">
-                <div class="loading">Loading sample submissions</div>
+            <div id="sample-loading" class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            
+            <div id="sample-table" style="display: none;">
+                <div class="submissions-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Client Name</th>
+                                <th>Email</th>
+                                <th>Sample Type</th>
+                                <th>Rush Service</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sample-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="sample-empty" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📭</div>
+                <h3>No Sample Submissions</h3>
+                <p>Sample submission requests will appear here.</p>
             </div>
         </div>
         
-        <div id="newsletter-tab" class="tab-content">
-            <div class="export-buttons">
-                <button class="btn btn-primary" onclick="exportNewsletterSubscriptions()">Export Newsletter</button>
-                <button class="btn btn-outline" onclick="refreshNewsletterSubscriptions()">Refresh</button>
+        <!-- Newsletter Subscriptions Tab -->
+        <div class="tab-content" id="newsletter-tab">
+            <div class="submissions-header">
+                <div class="search-box">
+                    <input type="text" id="newsletter-search" placeholder="Search by email..." />
+                </div>
+                <div class="filter-group">
+                    <select id="newsletter-status-filter" class="form-control">
+                        <option value="">All Status</option>
+                        <option value="active">Active</option>
+                        <option value="unsubscribed">Unsubscribed</option>
+                    </select>
+                    <button class="btn btn-outline btn-sm" onclick="exportCSV('newsletter')">Export CSV</button>
+                    <button class="btn btn-primary btn-sm" onclick="refreshSubmissions('newsletter')">Refresh</button>
+                </div>
             </div>
-            <div id="newsletter-container">
-                <div class="loading">Loading newsletter subscriptions</div>
+            
+            <div id="newsletter-loading" class="loading-spinner">
+                <div class="spinner"></div>
+            </div>
+            
+            <div id="newsletter-table" style="display: none;">
+                <div class="submissions-table">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Subscribed Date</th>
+                                <th>Email</th>
+                                <th>Source</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="newsletter-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div id="newsletter-empty" class="empty-state" style="display: none;">
+                <div class="empty-state-icon">📭</div>
+                <h3>No Newsletter Subscriptions</h3>
+                <p>Newsletter subscriptions will appear here.</p>
             </div>
         </div>
     </main>
     
-    <!-- Submission Detail Modal -->
-    <div id="submission-modal" class="modal">
+    <!-- Detail Modal -->
+    <div id="detail-modal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2 id="modal-title">Submission Details</h2>
-                <button class="close-modal" onclick="closeModal()">&times;</button>
+                <button onclick="closeModal()" class="btn btn-outline btn-sm">Close</button>
             </div>
-            <div id="modal-body">
-                <!-- Dynamic content will be inserted here -->
+            <div class="modal-body" id="modal-body">
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModal()" class="btn btn-outline">Close</button>
             </div>
         </div>
     </div>
     
-    <!-- Supabase Library -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-    
-    <!-- Initialize Supabase -->
-    <script>
-        // Initialize Supabase clients
-        (function() {
-            const supabaseUrl = 'https://hctdzwmlkgnuxcuhjooe.supabase.co';
-            const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog';
-            const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDEyMTY2MCwiZXhwIjoyMDc1Njk3NjYwfQ.V4Xr2nGmXO4Y9TJe51X1wAILIIAVL5ha61JoW9XmeV0';
-            
-            try {
-                window.supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
-                window.supabaseAdmin = supabase.createClient(supabaseUrl, supabaseServiceKey);
-                console.log('✓ Supabase initialized successfully');
-            } catch (error) {
-                console.error('✗ Supabase initialization failed:', error);
-            }
-        })();
-    </script>
-    
-    <!-- Submissions Manager -->
+    <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/supabase-config.js"></script>
     <script src="js/submissions-manager.js"></script>
     
-    <!-- Main Application Script -->
     <script>
-        // Tab switching functionality
-        function initTabs() {
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.addEventListener('click', function() {
-                    // Remove active from all
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    // Add active to clicked
-                    this.classList.add('active');
-                    const tabId = this.dataset.tab;
-                    const tabContent = document.getElementById(`${tabId}-tab`);
-                    if (tabContent) tabContent.classList.add('active');
-                    
-                    // Load data
-                    if (tabId === 'contact') {
-                        loadContactSubmissions();
-                    } else if (tabId === 'samples') {
-                        loadSampleSubmissions();
-                    } else if (tabId === 'newsletter') {
-                        loadNewsletterSubscriptions();
-                    }
-                });
-            });
-        }
-        
-        // Modal functions
-        function closeModal() {
-            const modal = document.getElementById('submission-modal');
-            if (modal) modal.classList.remove('active');
-        }
-        
-        function initModal() {
-            const modal = document.getElementById('submission-modal');
-            if (modal) {
-                modal.addEventListener('click', function(e) {
-                    if (e.target === this) closeModal();
-                });
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Check authentication
+            if (!Auth.requireAuth()) {
+                return;
             }
             
-            // ESC key to close modal
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape') closeModal();
+            // Set current user
+            const user = Auth.getCurrentUser();
+            if (user) {
+                document.getElementById('current-user').textContent = user.username;
+            }
+            
+            // Initialize tabs
+            initTabs();
+            
+            // Initialize submissions manager
+            await SubmissionsManager.init();
+        });
+        
+        function initTabs() {
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabName = tab.dataset.tab;
+                    
+                    // Update active states
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(tc => tc.classList.remove('active'));
+                    
+                    tab.classList.add('active');
+                    document.getElementById(`${tabName}-tab`).classList.add('active');
+                    
+                    // Load data if not already loaded
+                    refreshSubmissions(tabName);
+                });
             });
         }
         
-        // Logout function
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
-                window.location.href = 'index.html';
+                Auth.logout();
             }
         }
         
-        // Initialize everything when DOM is ready
-        async function initApp() {
-            console.log('🚀 Initializing submissions page...');
-            
-            // Initialize UI
-            initTabs();
-            initModal();
-            
-            // Wait for Supabase
-            let attempts = 0;
-            while (!window.supabaseAdmin && attempts < 30) {
-                await new Promise(resolve => setTimeout(resolve, 100));
-                attempts++;
-            }
-            
-            if (window.supabaseAdmin) {
-                console.log('✓ Supabase connected');
-                // Load initial tab data
-                loadContactSubmissions();
-            } else {
-                console.error('✗ Supabase connection failed');
-                document.getElementById('contact-submissions-container').innerHTML = `
-                    <div class="no-data">
-                        <p><strong>Database Connection Error</strong></p>
-                        <p>Unable to connect to the database. Please try:</p>
-                        <ul style="text-align: left; max-width: 300px; margin: 1rem auto;">
-                            <li>Refreshing the page</li>
-                            <li>Checking your internet connection</li>
-                            <li>Clearing browser cache</li>
-                        </ul>
-                        <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
-                    </div>
-                `;
-            }
+        function closeModal() {
+            document.getElementById('detail-modal').classList.remove('active');
         }
         
-        // Start when DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initApp);
-        } else {
-            initApp();
+        function refreshSubmissions(type) {
+            SubmissionsManager.loadSubmissions(type);
+        }
+        
+        function exportCSV(type) {
+            SubmissionsManager.exportToCSV(type);
         }
     </script>
 </body>
