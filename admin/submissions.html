@@ -9,13 +9,116 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/admin.css">
-    <link rel="stylesheet" href="../css/style.css">
     <link rel="icon" type="image/x-icon" href="../favicon.ico">
     <style>
+        body {
+            background: var(--gray-50);
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background: white;
+            border-right: 1px solid var(--gray-200);
+            padding: 2rem 0;
+        }
+        
+        .sidebar-header {
+            padding: 0 1.5rem 2rem;
+            border-bottom: 1px solid var(--gray-200);
+            margin-bottom: 1.5rem;
+        }
+        
+        .sidebar-header .logo img {
+            max-width: 180px;
+            height: auto;
+        }
+        
+        .sidebar-header h2 {
+            font-size: 1.25rem;
+            margin: 0.5rem 0 0.25rem;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.875rem;
+            color: var(--gray-500);
+            margin: 0;
+        }
+        
+        .sidebar-nav .nav-item {
+            margin-bottom: 0.25rem;
+        }
+        
+        .sidebar-nav .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1.5rem;
+            color: var(--gray-700);
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        
+        .sidebar-nav .nav-link:hover {
+            background: var(--gray-50);
+            color: var(--primary-color);
+        }
+        
+        .sidebar-nav .nav-link.active {
+            background: var(--gray-100);
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+        
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .main-header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        
+        .user-menu {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .user-info {
+            text-align: right;
+        }
+        
+        .user-name {
+            font-weight: 600;
+            font-size: 0.875rem;
+        }
+        
+        .user-role {
+            font-size: 0.75rem;
+            color: var(--gray-500);
+        }
+        
         .tabs {
             display: flex;
             border-bottom: 2px solid var(--gray-200);
             margin-bottom: 2rem;
+            gap: 0.5rem;
         }
         
         .tab {
@@ -26,17 +129,19 @@
             font-size: 1rem;
             font-weight: 500;
             color: var(--gray-600);
-            border-bottom: 2px solid transparent;
+            border-bottom: 3px solid transparent;
             transition: all 0.2s ease;
+            margin-bottom: -2px;
         }
         
         .tab.active {
-            color: var(--primary-blue);
-            border-bottom-color: var(--primary-blue);
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
         }
         
         .tab:hover {
-            color: var(--primary-blue);
+            color: var(--primary-color);
+            background: var(--gray-50);
         }
         
         .tab-content {
@@ -45,12 +150,18 @@
         
         .tab-content.active {
             display: block;
+            animation: fadeIn 0.3s;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
         .submissions-table {
             width: 100%;
             border-collapse: collapse;
-            background: var(--white);
+            background: white;
             border-radius: var(--radius-lg);
             overflow: hidden;
             box-shadow: var(--shadow-sm);
@@ -67,54 +178,124 @@
             background: var(--gray-50);
             font-weight: 600;
             color: var(--gray-900);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         
-        .submissions-table tr:hover {
+        .submissions-table tbody tr {
+            transition: background 0.15s;
+        }
+        
+        .submissions-table tbody tr:hover {
             background: var(--gray-50);
+        }
+        
+        .submissions-table tbody tr:last-child td {
+            border-bottom: none;
         }
         
         .status-badge {
             display: inline-block;
             padding: 0.25rem 0.75rem;
-            border-radius: var(--radius-full);
+            border-radius: 9999px;
             font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
         
         .status-unread {
-            background: var(--primary-blue);
-            color: var(--white);
+            background: #dbeafe;
+            color: #1e40af;
         }
         
         .status-read {
-            background: var(--gray-400);
-            color: var(--white);
+            background: #f3f4f6;
+            color: #4b5563;
         }
         
         .status-responded {
-            background: var(--secondary-dark);
-            color: var(--white);
+            background: #d1fae5;
+            color: #065f46;
         }
         
         .status-completed {
-            background: var(--accent-teal);
-            color: var(--white);
+            background: #d1fae5;
+            color: #065f46;
         }
         
-        .status-in-progress {
-            background: var(--accent-cyan);
-            color: var(--white);
+        .status-in_progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .status-active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        
+        .status-unsubscribed {
+            background: #fee2e2;
+            color: #991b1b;
         }
         
         .action-buttons {
             display: flex;
             gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            display: inline-block;
         }
         
         .btn-sm {
-            padding: 0.5rem 1rem;
-            font-size: 0.875rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.8125rem;
+        }
+        
+        .btn-primary {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: var(--gray-700);
+            border-color: var(--gray-300);
+        }
+        
+        .btn-outline:hover {
+            background: var(--gray-50);
+            border-color: var(--gray-400);
+        }
+        
+        .btn-danger {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+        
+        .logout-btn {
+            font-size: 0.8125rem;
         }
         
         .modal {
@@ -126,22 +307,35 @@
             height: 100%;
             background: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-        }
-        
-        .modal.active {
-            display: flex;
             align-items: center;
             justify-content: center;
         }
         
+        .modal.active {
+            display: flex;
+        }
+        
         .modal-content {
-            background: var(--white);
+            background: white;
             border-radius: var(--radius-lg);
             padding: 2rem;
-            max-width: 600px;
+            max-width: 700px;
             width: 90%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            animation: slideUp 0.3s;
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .modal-header {
@@ -149,14 +343,35 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
         }
         
         .close-modal {
             background: none;
             border: none;
-            font-size: 1.5rem;
+            font-size: 2rem;
             cursor: pointer;
-            color: var(--gray-500);
+            color: var(--gray-400);
+            line-height: 1;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            transition: all 0.2s;
+        }
+        
+        .close-modal:hover {
+            background: var(--gray-100);
+            color: var(--gray-700);
         }
         
         .submission-details {
@@ -164,76 +379,75 @@
         }
         
         .detail-row {
-            display: flex;
-            margin-bottom: 0.75rem;
+            display: grid;
+            grid-template-columns: 180px 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        
+        .detail-row:last-child {
+            border-bottom: none;
         }
         
         .detail-label {
             font-weight: 600;
             color: var(--gray-700);
-            width: 150px;
-            flex-shrink: 0;
+            font-size: 0.875rem;
         }
         
         .detail-value {
             color: var(--gray-900);
-            flex: 1;
+            word-wrap: break-word;
         }
         
         .export-buttons {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             display: flex;
             gap: 1rem;
+            flex-wrap: wrap;
         }
         
         .loading {
             text-align: center;
-            padding: 2rem;
+            padding: 4rem 2rem;
             color: var(--gray-600);
+        }
+        
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4, end) infinite;
+        }
+        
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
         }
         
         .no-data {
             text-align: center;
-            padding: 3rem;
+            padding: 4rem 2rem;
             color: var(--gray-500);
+            background: white;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+        }
+        
+        .no-data p {
+            margin: 0.5rem 0;
         }
     </style>
 </head>
 <body class="dashboard-layout">
-    <!-- Site Header -->
-    <header class="header">
-        <nav class="nav">
-            <div class="container">
-                <div class="nav-brand">
-                    <a href="../index.html" class="logo">
-                        <img src="../images/zyntrotest-logo.svg" alt="Zyntro - Analytical Lab Solutions">
-                    </a>
-                </div>
-                <div class="nav-menu" id="nav-menu">
-                    <ul class="nav-list">
-                        <li><a href="../index.html" class="nav-link">Home</a></li>
-                        <li><a href="../services.html" class="nav-link">Services</a></li>
-                        <li><a href="../sample-submission.html" class="nav-link">Submit Sample</a></li>
-                        <li><a href="../search.html" class="nav-link">COA Search</a></li>
-                        <li><a href="../blog.html" class="nav-link">Blog</a></li>
-                        <li><a href="../contact.html" class="nav-link">Contact</a></li>
-                    </ul>
-                </div>
-                <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-            </div>
-        </nav>
-    </header>
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <div class="logo">
-                <img src="../images/zyntrotest-logo.svg" alt="ZyntroTest">
+                <img src="../images/zyntrotest-logo.svg" alt="ZyntroTest" onerror="this.style.display='none'">
             </div>
-            <h2>Form Submissions</h2>
+            <h2>Submissions</h2>
             <p>Admin Panel</p>
         </div>
         
@@ -305,7 +519,7 @@
                 <button class="btn btn-outline" onclick="refreshContactSubmissions()">Refresh</button>
             </div>
             <div id="contact-submissions-container">
-                <div class="loading">Loading contact submissions...</div>
+                <div class="loading">Loading contact submissions</div>
             </div>
         </div>
         
@@ -315,7 +529,7 @@
                 <button class="btn btn-outline" onclick="refreshSampleSubmissions()">Refresh</button>
             </div>
             <div id="sample-submissions-container">
-                <div class="loading">Loading sample submissions...</div>
+                <div class="loading">Loading sample submissions</div>
             </div>
         </div>
         
@@ -325,7 +539,7 @@
                 <button class="btn btn-outline" onclick="refreshNewsletterSubscriptions()">Refresh</button>
             </div>
             <div id="newsletter-container">
-                <div class="loading">Loading newsletter subscriptions...</div>
+                <div class="loading">Loading newsletter subscriptions</div>
             </div>
         </div>
     </main>
@@ -344,86 +558,126 @@
     </div>
     
     <!-- Supabase Library -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     
-    <!-- Initialize Supabase directly -->
+    <!-- Initialize Supabase -->
     <script>
-        // Initialize Supabase clients immediately
-        const supabaseUrl = 'https://hctdzwmlkgnuxcuhjooe.supabase.co';
-        const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog';
-        const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDEyMTY2MCwiZXhwIjoyMDc1Njk3NjYwfQ.V4Xr2nGmXO4Y9TJe51X1wAILIIAVL5ha61JoW9XmeV0';
-        
-        window.supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
-        window.supabaseAdmin = supabase.createClient(supabaseUrl, supabaseServiceKey);
-        
-        console.log('Supabase clients created:', {
-            client: !!window.supabaseClient,
-            admin: !!window.supabaseAdmin
-        });
+        // Initialize Supabase clients
+        (function() {
+            const supabaseUrl = 'https://hctdzwmlkgnuxcuhjooe.supabase.co';
+            const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog';
+            const supabaseServiceKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2MDEyMTY2MCwiZXhwIjoyMDc1Njk3NjYwfQ.V4Xr2nGmXO4Y9TJe51X1wAILIIAVL5ha61JoW9XmeV0';
+            
+            try {
+                window.supabaseClient = supabase.createClient(supabaseUrl, supabaseAnonKey);
+                window.supabaseAdmin = supabase.createClient(supabaseUrl, supabaseServiceKey);
+                console.log('✓ Supabase initialized successfully');
+            } catch (error) {
+                console.error('✗ Supabase initialization failed:', error);
+            }
+        })();
     </script>
     
-    <!-- Scripts -->
+    <!-- Submissions Manager -->
     <script src="js/submissions-manager.js"></script>
+    
+    <!-- Main Application Script -->
     <script>
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Remove active class from all tabs and content
-                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                
-                // Add active class to clicked tab
-                tab.classList.add('active');
-                
-                // Show corresponding content
-                const tabId = tab.dataset.tab;
-                document.getElementById(`${tabId}-tab`).classList.add('active');
-                
-                // Load data for the active tab
-                if (tabId === 'contact') {
-                    loadContactSubmissions();
-                } else if (tabId === 'samples') {
-                    loadSampleSubmissions();
-                } else if (tabId === 'newsletter') {
-                    loadNewsletterSubscriptions();
-                }
+        // Tab switching functionality
+        function initTabs() {
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    // Remove active from all
+                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                    
+                    // Add active to clicked
+                    this.classList.add('active');
+                    const tabId = this.dataset.tab;
+                    const tabContent = document.getElementById(`${tabId}-tab`);
+                    if (tabContent) tabContent.classList.add('active');
+                    
+                    // Load data
+                    if (tabId === 'contact') {
+                        loadContactSubmissions();
+                    } else if (tabId === 'samples') {
+                        loadSampleSubmissions();
+                    } else if (tabId === 'newsletter') {
+                        loadNewsletterSubscriptions();
+                    }
+                });
             });
-        });
+        }
         
-        // Load initial data - wait for Supabase to be ready
-        document.addEventListener('DOMContentLoaded', async () => {
-            console.log('DOM loaded, waiting for Supabase...');
-            // Wait a bit for Supabase to initialize
+        // Modal functions
+        function closeModal() {
+            const modal = document.getElementById('submission-modal');
+            if (modal) modal.classList.remove('active');
+        }
+        
+        function initModal() {
+            const modal = document.getElementById('submission-modal');
+            if (modal) {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === this) closeModal();
+                });
+            }
+            
+            // ESC key to close modal
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeModal();
+            });
+        }
+        
+        // Logout function
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                window.location.href = 'index.html';
+            }
+        }
+        
+        // Initialize everything when DOM is ready
+        async function initApp() {
+            console.log('🚀 Initializing submissions page...');
+            
+            // Initialize UI
+            initTabs();
+            initModal();
+            
+            // Wait for Supabase
             let attempts = 0;
-            while (!window.supabaseAdmin && attempts < 20) {
+            while (!window.supabaseAdmin && attempts < 30) {
                 await new Promise(resolve => setTimeout(resolve, 100));
                 attempts++;
             }
             
             if (window.supabaseAdmin) {
-                console.log('Supabase ready, loading submissions...');
+                console.log('✓ Supabase connected');
+                // Load initial tab data
                 loadContactSubmissions();
             } else {
-                console.error('Supabase failed to initialize after 2 seconds');
-                const container = document.getElementById('contact-submissions-container');
-                if (container) {
-                    container.innerHTML = '<div class="no-data"><p>Failed to connect to database. Please refresh the page.</p></div>';
-                }
+                console.error('✗ Supabase connection failed');
+                document.getElementById('contact-submissions-container').innerHTML = `
+                    <div class="no-data">
+                        <p><strong>Database Connection Error</strong></p>
+                        <p>Unable to connect to the database. Please try:</p>
+                        <ul style="text-align: left; max-width: 300px; margin: 1rem auto;">
+                            <li>Refreshing the page</li>
+                            <li>Checking your internet connection</li>
+                            <li>Clearing browser cache</li>
+                        </ul>
+                        <button class="btn btn-primary" onclick="location.reload()">Refresh Page</button>
+                    </div>
+                `;
             }
-        });
-        
-        function closeModal() {
-            document.getElementById('submission-modal').classList.remove('active');
         }
         
-        // Close modal when clicking outside
-        document.getElementById('submission-modal').addEventListener('click', (e) => {
-            if (e.target.id === 'submission-modal') {
-                closeModal();
-            }
-        });
+        // Start when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initApp);
+        } else {
+            initApp();
+        }
     </script>
-    
-    <script src="../js/load-header.js"></script>
 </body>
 </html>
