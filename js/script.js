@@ -207,15 +207,24 @@ document.addEventListener('DOMContentLoaded', function() {
                             message: form.querySelector('[name="message"]')?.value || ''
                         };
                         
+                        // Validate form data before submission
+                        const validation = validateFormData(formData, ['name', 'email']);
+                        if (!validation.isValid) {
+                            showNotification(validation.errors[0], 'error');
+                            return;
+                        }
+                        
                         // Save to database first - this should always work
                         console.log('Saving contact submission to database:', formData);
                         let dbSaved = false;
                         try {
-                            await saveContactSubmission(formData);
-                            console.log('Contact submission saved successfully');
+                            const result = await saveContactSubmission(formData);
+                            console.log('Contact submission saved successfully:', result);
                             dbSaved = true;
                         } catch (dbError) {
                             console.error('Database save failed:', dbError);
+                            showNotification('There was an issue saving your submission. Please try again or contact us directly.', 'error');
+                            return;
                         }
                         
                         // Then try to send email - but don't fail if email service isn't available
@@ -231,19 +240,17 @@ document.addEventListener('DOMContentLoaded', function() {
                         // Show success message
                         if (dbSaved) {
                             showNotification('Thank you! Your inquiry has been received. We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
-                        } else {
-                            showNotification('Thank you! Your inquiry has been received.', 'success');
+                            form.reset();
                         }
                     } else {
                         // Generic form submission
                         showNotification('Thank you! Your information has been received. A team member will reach out to you shortly.', 'success');
+                        form.reset();
                     }
                     
-                    form.reset();
                 } catch (error) {
                     console.error('Form submission error:', error);
-                    showNotification('Thank you! Your information has been received. We\'ll contact you soon.', 'success');
-                    form.reset();
+                    showNotification('There was an issue submitting your form. Please try again or contact us directly.', 'error');
                 } finally {
                     // Reset button state
                     submitBtn.disabled = false;
@@ -281,11 +288,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 let dbSaved = false;
                 try {
                     result = await saveNewsletterSubscription(email);
-                    console.log('Newsletter subscription saved successfully');
+                    console.log('Newsletter subscription saved successfully:', result);
                     dbSaved = true;
                 } catch (dbError) {
                     console.error('Database save failed:', dbError);
-                    result = { already_subscribed: false };
+                    showNotification('There was an issue subscribing you. Please try again or contact us directly.', 'error');
+                    return;
                 }
                 
                 if (result.already_subscribed) {
@@ -301,15 +309,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Email send failed (this is OK if Resend not configured yet):', emailError);
                 }
                 
+                // Show success message
                 if (dbSaved) {
                     showNotification('Thank you for subscribing! You\'ll receive LCMS insights and technical updates.', 'success');
-                } else {
-                    showNotification('Thank you for subscribing!', 'success');
+                    form.reset();
                 }
-                form.reset();
             } catch (error) {
                 console.error('Newsletter subscription error:', error);
-                showNotification('Error saving subscription. Please try again.', 'error');
+                showNotification('There was an issue subscribing you. Please try again or contact us directly.', 'error');
             } finally {
                 // Reset button state
                 submitBtn.textContent = originalText;
@@ -353,15 +360,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     message: form.querySelector('[name="special-requirements"]')?.value || ''
                 };
                 
+                // Validate form data before submission
+                const validation = validateFormData(formData, ['client_name', 'email']);
+                if (!validation.isValid) {
+                    showNotification(validation.errors[0], 'error');
+                    return;
+                }
+                
                 // Save to database first
                 console.log('Saving sample submission to database:', formData);
                 let dbSaved = false;
                 try {
-                    await saveSampleSubmission(formData);
-                    console.log('Sample submission saved successfully');
+                    const result = await saveSampleSubmission(formData);
+                    console.log('Sample submission saved successfully:', result);
                     dbSaved = true;
                 } catch (dbError) {
                     console.error('Database save failed:', dbError);
+                    showNotification('There was an issue saving your submission. Please try again or contact us directly.', 'error');
+                    return;
                 }
                 
                 // Then try to send email
@@ -372,12 +388,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     console.error('Email send failed (this is OK if Resend not configured yet):', emailError);
                 }
                 
+                // Show success message
                 if (dbSaved) {
-                    showNotification('Sample submission received! We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
-                } else {
-                    showNotification('Sample submission received!', 'success');
+                    showNotification('Thank you! Your testing request has been received. We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
+                    form.reset();
                 }
-                form.reset();
             } catch (error) {
                 console.error('Sample submission error:', error);
                 showNotification('Error submitting form. Please try again.', 'error');

@@ -438,6 +438,71 @@
         .no-data p {
             margin: 0.5rem 0;
         }
+        
+        .search-filters {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .search-filters .form-group {
+            margin-bottom: 0;
+        }
+        
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+        }
+        
+        .filter-dropdown {
+            min-width: 150px;
+        }
+        
+        .filter-dropdown select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            background: white;
+        }
+        
+        .submission-stats {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-sm);
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .stat-card h3 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+        
+        .stat-card p {
+            margin: 0;
+            color: var(--gray-600);
+            font-size: 0.875rem;
+        }
     </style>
 </head>
 <body class="dashboard-layout">
@@ -517,7 +582,35 @@
             <div class="export-buttons">
                 <button class="btn btn-primary" onclick="exportContactSubmissions()">Export Contact Forms</button>
                 <button class="btn btn-outline" onclick="refreshContactSubmissions()">Refresh</button>
+                <button class="btn btn-outline" onclick="markAllAsRead('contact')">Mark All as Read</button>
             </div>
+            
+            <!-- Search and Filter Controls -->
+            <div class="search-filters">
+                <div class="form-group search-box">
+                    <input type="text" id="contact-search-input" placeholder="Search by name, email, or company..." onkeyup="handleContactSearch()">
+                </div>
+                <div class="form-group filter-dropdown">
+                    <select id="contact-status-filter" onchange="handleContactFilter()">
+                        <option value="">All Status</option>
+                        <option value="unread">Unread</option>
+                        <option value="read">Read</option>
+                        <option value="responded">Responded</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="form-group filter-dropdown">
+                    <select id="contact-service-filter" onchange="handleContactFilter()">
+                        <option value="">All Services</option>
+                        <option value="peptide">Peptide Analysis</option>
+                        <option value="supplement">Supplement Screening</option>
+                        <option value="hemp">Hemp Testing</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <button onclick="clearContactFilters()" class="btn btn-outline">Clear Filters</button>
+            </div>
+            
             <div id="contact-submissions-container">
                 <div class="loading">Loading contact submissions</div>
             </div>
@@ -527,7 +620,35 @@
             <div class="export-buttons">
                 <button class="btn btn-primary" onclick="exportSampleSubmissions()">Export Sample Submissions</button>
                 <button class="btn btn-outline" onclick="refreshSampleSubmissions()">Refresh</button>
+                <button class="btn btn-outline" onclick="markAllAsRead('sample')">Mark All as Read</button>
             </div>
+            
+            <!-- Search and Filter Controls -->
+            <div class="search-filters">
+                <div class="form-group search-box">
+                    <input type="text" id="sample-search-input" placeholder="Search by client name, email, or company..." onkeyup="handleSampleSearch()">
+                </div>
+                <div class="form-group filter-dropdown">
+                    <select id="sample-status-filter" onchange="handleSampleFilter()">
+                        <option value="">All Status</option>
+                        <option value="unread">Unread</option>
+                        <option value="read">Read</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="completed">Completed</option>
+                    </select>
+                </div>
+                <div class="form-group filter-dropdown">
+                    <select id="sample-type-filter" onchange="handleSampleFilter()">
+                        <option value="">All Sample Types</option>
+                        <option value="peptide">Peptide</option>
+                        <option value="supplement">Supplement</option>
+                        <option value="hemp">Hemp/Cannabis</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <button onclick="clearSampleFilters()" class="btn btn-outline">Clear Filters</button>
+            </div>
+            
             <div id="sample-submissions-container">
                 <div class="loading">Loading sample submissions</div>
             </div>

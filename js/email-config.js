@@ -38,6 +38,52 @@ function isValidEmail(email) {
     return emailRegex.test(email);
 }
 
+// Input sanitization function
+function sanitizeInput(input) {
+    if (!input || typeof input !== 'string') return '';
+    
+    return input
+        .trim()
+        .replace(/[<>]/g, '') // Remove potential HTML tags
+        .replace(/javascript:/gi, '') // Remove javascript: protocol
+        .replace(/on\w+=/gi, '') // Remove event handlers
+        .substring(0, 1000); // Limit length to prevent abuse
+}
+
+// Phone number validation
+function isValidPhone(phone) {
+    if (!phone) return true; // Phone is optional
+    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    return phoneRegex.test(phone.replace(/[\s\-\(\)]/g, ''));
+}
+
+// Form validation helper
+function validateFormData(formData, requiredFields = []) {
+    const errors = [];
+    
+    // Check required fields
+    requiredFields.forEach(field => {
+        if (!formData[field] || formData[field].toString().trim() === '') {
+            errors.push(`${field} is required`);
+        }
+    });
+    
+    // Validate email if present
+    if (formData.email && !isValidEmail(formData.email)) {
+        errors.push('Invalid email format');
+    }
+    
+    // Validate phone if present
+    if (formData.phone && !isValidPhone(formData.phone)) {
+        errors.push('Invalid phone number format');
+    }
+    
+    return {
+        isValid: errors.length === 0,
+        errors
+    };
+}
+
 // Send newsletter subscription email
 async function sendNewsletterEmail(email) {
     try {
@@ -74,76 +120,165 @@ async function sendSampleSubmissionEmail(formData) {
     }
 }
 
-// Database save functions
+// Database save functions with enhanced error handling and validation
 async function saveContactSubmission(formData) {
-    if (!window.supabaseClient) {
-        throw new Error('Supabase client not initialized');
+    try {
+        // Validate required fields
+        if (!formData.name || !formData.email) {
+            throw new Error('Name and email are required fields');
+        }
+        
+        // Validate email format
+        if (!isValidEmail(formData.email)) {
+            throw new Error('Invalid email format');
+        }
+        
+        if (!window.supabaseClient) {
+            throw new Error('Database connection not available. Please refresh the page and try again.');
+        }
+        
+        // Sanitize and prepare data
+        const sanitizedData = {
+            name: sanitizeInput(formData.name),
+            email: sanitizeInput(formData.email).toLowerCase(),
+            phone: sanitizeInput(formData.phone) || null,
+            company: sanitizeInput(formData.company) || null,
+            service_type: sanitizeInput(formData.serviceType) || null,
+            sample_type: sanitizeInput(formData.sampleType) || null,
+            message: sanitizeInput(formData.message) || null,
+            status: 'unread',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        
+        console.log('Saving contact submission:', sanitizedData);
+        
+        const { data, error } = await window.supabaseClient
+            .from('contact_submissions')
+            .insert([sanitizedData])
+            .select()
+            .single();
+        
+        if (error) {
+            console.error('Database error:', error);
+            throw new Error(`Database error: ${error.message}`);
+        }
+        
+        console.log('Contact submission saved successfully:', data);
+        return { success: true, data };
+        
+    } catch (error) {
+        console.error('Error saving contact submission:', error);
+        throw error;
     }
-    
-    const { data, error } = await window.supabaseClient
-        .from('contact_submissions')
-        .insert([{
-            name: formData.name,
-            email: formData.email,
-            phone: formData.phone,
-            company: formData.company,
-            service_type: formData.serviceType,
-            sample_type: formData.sampleType,
-            message: formData.message,
-            status: 'unread'
-        }]);
-    
-    if (error) throw error;
-    return data;
 }
 
 async function saveSampleSubmission(formData) {
-    if (!window.supabaseClient) {
-        throw new Error('Supabase client not initialized');
+    try {
+        // Validate required fields
+        if (!formData.client_name || !formData.email) {
+            throw new Error('Client name and email are required fields');
+        }
+        
+        // Validate email format
+        if (!isValidEmail(formData.email)) {
+            throw new Error('Invalid email format');
+        }
+        
+        if (!window.supabaseClient) {
+            throw new Error('Database connection not available. Please refresh the page and try again.');
+        }
+        
+        // Sanitize and prepare data
+        const sanitizedData = {
+            client_name: sanitizeInput(formData.client_name),
+            email: sanitizeInput(formData.email).toLowerCase(),
+            phone: sanitizeInput(formData.phone) || null,
+            company: sanitizeInput(formData.company) || null,
+            sample_type: sanitizeInput(formData.sample_type) || null,
+            sample_count: parseInt(formData.sample_count) || 0,
+            analysis_requested: sanitizeInput(formData.analysis_requested) || null,
+            rush_service: Boolean(formData.rush_service),
+            shipping_method: sanitizeInput(formData.shipping_method) || null,
+            message: sanitizeInput(formData.message) || null,
+            status: 'unread',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+        };
+        
+        console.log('Saving sample submission:', sanitizedData);
+        
+        const { data, error } = await window.supabaseClient
+            .from('sample_submissions')
+            .insert([sanitizedData])
+            .select()
+            .single();
+        
+        if (error) {
+            console.error('Database error:', error);
+            throw new Error(`Database error: ${error.message}`);
+        }
+        
+        console.log('Sample submission saved successfully:', data);
+        return { success: true, data };
+        
+    } catch (error) {
+        console.error('Error saving sample submission:', error);
+        throw error;
     }
-    
-    const { data, error } = await window.supabaseClient
-        .from('sample_submissions')
-        .insert([{
-            client_name: formData.client_name,
-            email: formData.email,
-            phone: formData.phone,
-            company: formData.company,
-            sample_type: formData.sample_type,
-            sample_count: formData.sample_count,
-            analysis_requested: formData.analysis_requested,
-            rush_service: formData.rush_service,
-            shipping_method: formData.shipping_method,
-            message: formData.message,
-            status: 'unread'
-        }]);
-    
-    if (error) throw error;
-    return data;
 }
 
 async function saveNewsletterSubscription(email) {
-    if (!window.supabaseClient) {
-        throw new Error('Supabase client not initialized');
-    }
-    
-    const { data, error } = await window.supabaseClient
-        .from('newsletter_subscriptions')
-        .insert([{ email, status: 'active', source: 'website' }])
-        .select();
-    
-    if (error) {
-        if (error.code === '23505') { // Duplicate email
-            return { already_subscribed: true };
+    try {
+        // Validate email format
+        if (!isValidEmail(email)) {
+            throw new Error('Invalid email format');
         }
+        
+        if (!window.supabaseClient) {
+            throw new Error('Database connection not available. Please refresh the page and try again.');
+        }
+        
+        // Sanitize email
+        const sanitizedEmail = sanitizeInput(email).toLowerCase();
+        
+        console.log('Saving newsletter subscription:', sanitizedEmail);
+        
+        const { data, error } = await window.supabaseClient
+            .from('newsletter_subscriptions')
+            .insert([{ 
+                email: sanitizedEmail, 
+                status: 'active', 
+                source: 'website',
+                subscribed_at: new Date().toISOString()
+            }])
+            .select()
+            .single();
+        
+        if (error) {
+            if (error.code === '23505') { // Duplicate email
+                console.log('Email already subscribed:', sanitizedEmail);
+                return { already_subscribed: true };
+            }
+            console.error('Database error:', error);
+            throw new Error(`Database error: ${error.message}`);
+        }
+        
+        console.log('Newsletter subscription saved successfully:', data);
+        return { success: true, data };
+        
+    } catch (error) {
+        console.error('Error saving newsletter subscription:', error);
         throw error;
     }
-    return data;
 }
 
 // Make functions globally available
 window.EMAIL_CONFIG = EMAIL_CONFIG;
 window.isValidEmail = isValidEmail;
+window.isValidPhone = isValidPhone;
+window.sanitizeInput = sanitizeInput;
+window.validateFormData = validateFormData;
 window.sendNewsletterEmail = sendNewsletterEmail;
 window.sendContactEmail = sendContactEmail;
 window.sendSampleSubmissionEmail = sendSampleSubmissionEmail;

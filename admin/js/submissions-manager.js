@@ -4,6 +4,8 @@
 let contactSubmissions = [];
 let sampleSubmissions = [];
 let newsletterSubscriptions = [];
+let filteredContactSubmissions = [];
+let filteredSampleSubmissions = [];
 
 // Initialize when DOM is loaded
 let supabaseReady = false;
@@ -82,7 +84,9 @@ async function loadContactSubmissions() {
             console.log('This might be a timing issue or the data might be filtering out');
         }
         
-        renderContactSubmissions(contactSubmissions);
+        // Initialize filtered data
+        filteredContactSubmissions = [...contactSubmissions];
+        renderContactSubmissions(filteredContactSubmissions);
     } catch (error) {
         console.error('CATCH ERROR in loadContactSubmissions:', error);
         console.error('Error stack:', error.stack);
@@ -169,7 +173,10 @@ async function loadSampleSubmissions() {
         
         sampleSubmissions = data || [];
         console.log('Loaded sample submissions:', sampleSubmissions.length);
-        renderSampleSubmissions(sampleSubmissions);
+        
+        // Initialize filtered data
+        filteredSampleSubmissions = [...sampleSubmissions];
+        renderSampleSubmissions(filteredSampleSubmissions);
     } catch (error) {
         console.error('Error loading sample submissions:', error);
         const container = document.getElementById('sample-submissions-container');
@@ -636,3 +643,146 @@ window.exportNewsletterSubscriptions = exportNewsletterSubscriptions;
 window.refreshContactSubmissions = refreshContactSubmissions;
 window.refreshSampleSubmissions = refreshSampleSubmissions;
 window.refreshNewsletterSubscriptions = refreshNewsletterSubscriptions;
+
+// Search and Filter Functions
+function handleContactSearch() {
+    const searchTerm = document.getElementById('contact-search-input').value.toLowerCase();
+    const statusFilter = document.getElementById('contact-status-filter').value;
+    const serviceFilter = document.getElementById('contact-service-filter').value;
+    
+    filteredContactSubmissions = contactSubmissions.filter(submission => {
+        const matchesSearch = !searchTerm || 
+            submission.name.toLowerCase().includes(searchTerm) ||
+            submission.email.toLowerCase().includes(searchTerm) ||
+            (submission.company && submission.company.toLowerCase().includes(searchTerm));
+        
+        const matchesStatus = !statusFilter || submission.status === statusFilter;
+        
+        const matchesService = !serviceFilter || 
+            (submission.service_type && submission.service_type.toLowerCase().includes(serviceFilter));
+        
+        return matchesSearch && matchesStatus && matchesService;
+    });
+    
+    renderContactSubmissions(filteredContactSubmissions);
+}
+
+function handleContactFilter() {
+    handleContactSearch(); // Reuse search logic for filtering
+}
+
+function clearContactFilters() {
+    document.getElementById('contact-search-input').value = '';
+    document.getElementById('contact-status-filter').value = '';
+    document.getElementById('contact-service-filter').value = '';
+    filteredContactSubmissions = [...contactSubmissions];
+    renderContactSubmissions(filteredContactSubmissions);
+}
+
+function handleSampleSearch() {
+    const searchTerm = document.getElementById('sample-search-input').value.toLowerCase();
+    const statusFilter = document.getElementById('sample-status-filter').value;
+    const typeFilter = document.getElementById('sample-type-filter').value;
+    
+    filteredSampleSubmissions = sampleSubmissions.filter(submission => {
+        const matchesSearch = !searchTerm || 
+            submission.client_name.toLowerCase().includes(searchTerm) ||
+            submission.email.toLowerCase().includes(searchTerm) ||
+            (submission.company && submission.company.toLowerCase().includes(searchTerm));
+        
+        const matchesStatus = !statusFilter || submission.status === statusFilter;
+        
+        const matchesType = !typeFilter || 
+            (submission.sample_type && submission.sample_type.toLowerCase().includes(typeFilter));
+        
+        return matchesSearch && matchesStatus && matchesType;
+    });
+    
+    renderSampleSubmissions(filteredSampleSubmissions);
+}
+
+function handleSampleFilter() {
+    handleSampleSearch(); // Reuse search logic for filtering
+}
+
+function clearSampleFilters() {
+    document.getElementById('sample-search-input').value = '';
+    document.getElementById('sample-status-filter').value = '';
+    document.getElementById('sample-type-filter').value = '';
+    filteredSampleSubmissions = [...sampleSubmissions];
+    renderSampleSubmissions(filteredSampleSubmissions);
+}
+
+// Mark all submissions as read
+async function markAllAsRead(type) {
+    if (!confirm(`Are you sure you want to mark all ${type} submissions as read?`)) {
+        return;
+    }
+    
+    try {
+        const supabaseAdmin = await ensureSupabase();
+        const tableName = type === 'contact' ? 'contact_submissions' : 'sample_submissions';
+        
+        const { error } = await supabaseAdmin
+            .from(tableName)
+            .update({ status: 'read', updated_at: new Date() })
+            .eq('status', 'unread');
+        
+        if (error) throw error;
+        
+        // Refresh the appropriate list
+        if (type === 'contact') {
+            loadContactSubmissions();
+        } else if (type === 'sample') {
+            loadSampleSubmissions();
+        }
+        
+        alert(`All ${type} submissions marked as read successfully.`);
+    } catch (error) {
+        console.error('Error marking submissions as read:', error);
+        alert('Error updating submissions. Please try again.');
+    }
+}
+
+// Export functions with better error handling
+function exportToCSV(data, filename) {
+    if (!data || data.length === 0) {
+        alert('No data to export');
+        return;
+    }
+    
+    try {
+        const headers = Object.keys(data[0]);
+        const csvContent = [
+            headers.join(','),
+            ...data.map(row => 
+                headers.map(header => {
+                    const value = row[header];
+                    return typeof value === 'string' && value.includes(',') 
+                        ? `"${value.replace(/"/g, '""')}"` 
+                        : value || '';
+                }).join(',')
+            )
+        ].join('\n');
+        
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('Export error:', error);
+        alert('Error exporting data. Please try again.');
+    }
+}
+
+// Make new functions globally available
+window.handleContactSearch = handleContactSearch;
+window.handleContactFilter = handleContactFilter;
+window.clearContactFilters = clearContactFilters;
+window.handleSampleSearch = handleSampleSearch;
+window.handleSampleFilter = handleSampleFilter;
+window.clearSampleFilters = clearSampleFilters;
+window.markAllAsRead = markAllAsRead;
