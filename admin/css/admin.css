@@ -280,6 +280,11 @@ body {
     background-color: var(--gray-100);
 }
 
+/* Hide the main site header on admin pages */
+.dashboard-layout .header {
+    display: none;
+}
+
 .sidebar {
     width: 280px;
     background-color: white;
@@ -361,7 +366,7 @@ body {
 
 .main-header {
     background-color: white;
-    padding: var(--spacing-lg) var(--spacing-xl);
+    padding: var(--spacing-xl);
     border-radius: var(--radius-lg);
     box-shadow: var(--shadow-sm);
     margin-bottom: var(--spacing-xl);
@@ -369,8 +374,7 @@ body {
     align-items: center;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: var(--spacing-md);
-    min-height: 80px;
+    gap: var(--spacing-lg);
     width: 100%;
     box-sizing: border-box;
 }
@@ -380,12 +384,10 @@ body {
     font-size: 1.875rem;
     color: var(--gray-900);
     margin: 0;
-    line-height: 1.4;
-    white-space: normal;
-    word-wrap: break-word;
-    overflow-wrap: break-word;
-    flex: 1 1 auto;
-    min-width: 0;
+    line-height: 1.3;
+    white-space: nowrap;
+    overflow: visible;
+    flex: 0 1 auto;
 }
 
 .user-menu {
