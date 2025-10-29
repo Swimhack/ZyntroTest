@@ -5,6 +5,10 @@
   "scripts": {
     "test": "node test-site.js",
     "test:headed": "node test-site.js",
+    "test:contact": "playwright test tests/contact-form.spec.js",
+    "test:contact:headed": "playwright test tests/contact-form.spec.js --headed",
+    "test:contact:debug": "playwright test tests/contact-form.spec.js --debug",
+    "test:playwright": "playwright test",
     "dev": "vercel dev",
     "deploy": "vercel --prod"
   },
