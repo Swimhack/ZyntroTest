@@ -152,20 +152,18 @@ async function saveContactSubmission(formData) {
         };
         
         console.log('Saving contact submission:', sanitizedData);
-        
-        const { data, error } = await window.supabaseClient
+
+        const { error } = await window.supabaseClient
             .from('contact_submissions')
-            .insert([sanitizedData])
-            .select()
-            .single();
-        
+            .insert([sanitizedData]);
+
         if (error) {
             console.error('Database error:', error);
             throw new Error(`Database error: ${error.message}`);
         }
-        
-        console.log('Contact submission saved successfully:', data);
-        return { success: true, data };
+
+        console.log('Contact submission saved successfully');
+        return { success: true };
         
     } catch (error) {
         console.error('Error saving contact submission:', error);
@@ -207,20 +205,18 @@ async function saveSampleSubmission(formData) {
         };
         
         console.log('Saving sample submission:', sanitizedData);
-        
-        const { data, error } = await window.supabaseClient
+
+        const { error } = await window.supabaseClient
             .from('sample_submissions')
-            .insert([sanitizedData])
-            .select()
-            .single();
-        
+            .insert([sanitizedData]);
+
         if (error) {
             console.error('Database error:', error);
             throw new Error(`Database error: ${error.message}`);
         }
-        
-        console.log('Sample submission saved successfully:', data);
-        return { success: true, data };
+
+        console.log('Sample submission saved successfully');
+        return { success: true };
         
     } catch (error) {
         console.error('Error saving sample submission:', error);
@@ -243,18 +239,16 @@ async function saveNewsletterSubscription(email) {
         const sanitizedEmail = sanitizeInput(email).toLowerCase();
         
         console.log('Saving newsletter subscription:', sanitizedEmail);
-        
-        const { data, error } = await window.supabaseClient
+
+        const { error } = await window.supabaseClient
             .from('newsletter_subscriptions')
-            .insert([{ 
-                email: sanitizedEmail, 
-                status: 'active', 
+            .insert([{
+                email: sanitizedEmail,
+                status: 'active',
                 source: 'website',
                 subscribed_at: new Date().toISOString()
-            }])
-            .select()
-            .single();
-        
+            }]);
+
         if (error) {
             if (error.code === '23505') { // Duplicate email
                 console.log('Email already subscribed:', sanitizedEmail);
@@ -263,9 +257,9 @@ async function saveNewsletterSubscription(email) {
             console.error('Database error:', error);
             throw new Error(`Database error: ${error.message}`);
         }
-        
-        console.log('Newsletter subscription saved successfully:', data);
-        return { success: true, data };
+
+        console.log('Newsletter subscription saved successfully');
+        return { success: true };
         
     } catch (error) {
         console.error('Error saving newsletter subscription:', error);

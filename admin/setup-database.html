@@ -317,25 +317,46 @@ CREATE TRIGGER update_sample_submissions_updated_at
     FOR EACH ROW
     EXECUTE FUNCTION update_updated_at_column();
 
--- Create RLS policies for service role access
-CREATE POLICY "Allow service role to manage contact submissions" ON contact_submissions
-    FOR ALL USING (true);
+-- Service role: full access (admin dashboard)
+CREATE POLICY "service_role_contact_all" ON contact_submissions
+    FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY "Allow service role to manage sample submissions" ON sample_submissions
-    FOR ALL USING (true);
+CREATE POLICY "service_role_sample_all" ON sample_submissions
+    FOR ALL TO service_role USING (true) WITH CHECK (true);
 
-CREATE POLICY "Allow service role to manage newsletter subscriptions" ON newsletter_subscriptions
-    FOR ALL USING (true);
+CREATE POLICY "service_role_newsletter_all" ON newsletter_subscriptions
+    FOR ALL TO service_role USING (true) WITH CHECK (true);
 
--- Allow public read access for newsletter subscriptions
-CREATE POLICY "Allow public read newsletter subscriptions" ON newsletter_subscriptions
-    FOR SELECT USING (true);
+-- Anon role: INSERT only (public form submissions from website)
+CREATE POLICY "anon_contact_insert" ON contact_submissions
+    FOR INSERT TO anon WITH CHECK (true);
+
+CREATE POLICY "anon_sample_insert" ON sample_submissions
+    FOR INSERT TO anon WITH CHECK (true);
+
+CREATE POLICY "anon_newsletter_insert" ON newsletter_subscriptions
+    FOR INSERT TO anon WITH CHECK (true);
+
+-- Authenticated role: read access
+CREATE POLICY "authenticated_contact_select" ON contact_submissions
+    FOR SELECT TO authenticated USING (true);
+
+CREATE POLICY "authenticated_sample_select" ON sample_submissions
+    FOR SELECT TO authenticated USING (true);
+
+CREATE POLICY "authenticated_newsletter_select" ON newsletter_subscriptions
+    FOR SELECT TO authenticated USING (true);
 
 -- Grant permissions
 GRANT ALL ON contact_submissions TO service_role;
 GRANT ALL ON sample_submissions TO service_role;
 GRANT ALL ON newsletter_subscriptions TO service_role;
-GRANT SELECT ON newsletter_subscriptions TO anon;`;
+GRANT INSERT ON contact_submissions TO anon;
+GRANT INSERT ON sample_submissions TO anon;
+GRANT INSERT ON newsletter_subscriptions TO anon;
+GRANT SELECT ON contact_submissions TO authenticated;
+GRANT SELECT ON sample_submissions TO authenticated;
+GRANT SELECT ON newsletter_subscriptions TO authenticated;`;
 
         async function checkDatabaseStatus() {
             try {
