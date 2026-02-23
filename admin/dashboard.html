@@ -200,7 +200,7 @@
     
     <script src="js/auth.js"></script>
     <script src="js/admin.js"></script>
-    <script src="js/supabase-config.js"></script>
+    <script src="../js/api-client.js"></script>
     <script src="js/supabase-coa-manager.js"></script>
     <script>
         // Initialize dashboard
@@ -285,39 +285,42 @@
         }
         
         async function checkStatus() {
-            // Check database status
+            // Check database/API status
             try {
-                const isConnected = await SupabaseUtils.isConnected();
-                document.getElementById('db-status').innerHTML = isConnected ? 
-                    '<span style="color: #10b981;">✓ Connected</span>' : 
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                if (data.status === 'ok') {
+                    document.getElementById('db-status').innerHTML =
+                        '<span style="color: #10b981;">✓ Connected</span>';
+                    document.getElementById('bucket-status').innerHTML =
+                        '<span style="color: #10b981;">✓ Storage Ready</span>';
+                } else {
+                    document.getElementById('db-status').innerHTML =
+                        '<span style="color: #ef4444;">✗ API returned non-ok status</span>';
+                    document.getElementById('bucket-status').innerHTML =
+                        '<span style="color: #ef4444;">✗ Check server logs</span>';
+                }
+            } catch (error) {
+                document.getElementById('db-status').innerHTML =
+                    '<span style="color: #ef4444;">✗ Disconnected: ' + error.message + '</span>';
+                document.getElementById('bucket-status').innerHTML =
                     '<span style="color: #ef4444;">✗ Disconnected</span>';
-            } catch (error) {
-                document.getElementById('db-status').innerHTML = '<span style="color: #ef4444;">✗ Error: ' + error.message + '</span>';
-            }
-            
-            // Check bucket status
-            try {
-                const bucketSetup = await SupabaseUtils.setupBucket();
-                document.getElementById('bucket-status').innerHTML = bucketSetup ? 
-                    '<span style="color: #10b981;">✓ Bucket Ready</span>' : 
-                    '<span style="color: #ef4444;">✗ Bucket Error</span>';
-            } catch (error) {
-                document.getElementById('bucket-status').innerHTML = '<span style="color: #ef4444;">✗ Error: ' + error.message + '</span>';
             }
         }
-        
+
         async function setupBucket() {
             try {
                 const btn = event.target;
                 btn.disabled = true;
-                btn.textContent = 'Setting up...';
-                
-                const success = await SupabaseUtils.setupBucket();
-                if (success) {
-                    alert('Storage bucket setup completed successfully!');
+                btn.textContent = 'Checking...';
+
+                const response = await fetch('/api/health');
+                const data = await response.json();
+                if (data.status === 'ok') {
+                    alert('Storage is ready and connected!');
                     checkStatus();
                 } else {
-                    alert('There was an error setting up the storage bucket. Check the console for details.');
+                    alert('Server returned a non-ok status. Check server logs for details.');
                 }
             } catch (error) {
                 console.error('Setup error:', error);
@@ -400,7 +403,6 @@
     <div id="notification" class="notification"></div>
     
     <!-- Scripts -->
-    <script src="js/supabase-config.js"></script>
     <script src="js/admin.js"></script>
     <script src="js/coa-manager.js"></script>
     <script src="../js/load-header.js"></script>

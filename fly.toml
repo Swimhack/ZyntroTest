@@ -1,12 +1,12 @@
-# Fly.io configuration for ZyntroTest static site
+# Fly.io configuration for ZyntroTest Express server
 app = "zyntrotest"
 primary_region = "dfw"
 
 [build]
-  builtin = "static"
 
 [env]
   PORT = "8080"
+  NODE_ENV = "production"
 
 [http_service]
   internal_port = 8080
@@ -20,8 +20,4 @@ primary_region = "dfw"
   interval = "30s"
   method = "GET"
   timeout = "5s"
-  path = "/"
-
-[[statics]]
-  guest_path = "/app"
-  url_prefix = "/"
+  path = "/api/health"

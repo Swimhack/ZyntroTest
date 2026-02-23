@@ -339,17 +339,9 @@
     <!-- EmailJS -->
     <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     
-    <!-- Supabase -->
-    <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
-    <script>
-        // Initialize Supabase client
-        const supabaseClient = supabase.createClient(
-            'https://hctdzwmlkgnuxcuhjooe.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
-        );
-        window.supabaseClient = supabaseClient;
-    </script>
-    
+    <!-- API Client -->
+    <script src="js/api-client.js"></script>
+
     <script src="js/email-config.js"></script>
     
     <!-- Load header include -->

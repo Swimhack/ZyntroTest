@@ -232,36 +232,15 @@
         </div>
     </footer>
 
+    <!-- API Client -->
+    <script src="js/api-client.js"></script>
+
     <!-- Unified PDF Loader -->
     <script src="js/unified-pdf-loader.js"></script>
-    
+
     <script src="js/script.js"></script>
     <script src="js/pdfViewer.js"></script>
     <script>
-        // Initialize Supabase for COA search
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                if (!window.supabase) {
-                    const script = document.createElement('script');
-                    script.src = 'https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js';
-                    script.onload = () => {
-                        window.supabaseClient = window.supabase.createClient(
-                            'https://hctdzwmlkgnuxcuhjooe.supabase.co',
-                            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
-                        );
-                    };
-                    document.head.appendChild(script);
-                } else {
-                    window.supabaseClient = window.supabase.createClient(
-                        'https://hctdzwmlkgnuxcuhjooe.supabase.co',
-                        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
-                    );
-                }
-            } catch (error) {
-                console.warn('Failed to initialize Supabase:', error);
-            }
-        });
-        
         // COA Search Functionality
         function searchCOA(event) {
             event.preventDefault();
@@ -298,37 +277,16 @@
         
         async function findCOAInDatabase(coaNumber) {
             try {
-                // Wait for Supabase client to be ready
-                let attempts = 0;
-                while (typeof window.supabaseClient === 'undefined' && attempts < 10) {
-                    await new Promise(resolve => setTimeout(resolve, 100));
-                    attempts++;
-                }
-                
-                if (typeof window.supabaseClient !== 'undefined' && window.supabaseClient) {
-                    console.log('Searching database for COA:', coaNumber.toUpperCase());
-                    const { data, error } = await window.supabaseClient
-                        .from('coas')
-                        .select('*')
-                        .eq('id', coaNumber.toUpperCase())
-                        .single();
-                    
-                    if (error) {
-                        console.warn('Database query error:', error);
-                    } else if (data) {
-                        console.log('Found COA in database:', data);
-                        return data;
-                    } else {
-                        console.log('No COA found in database for:', coaNumber.toUpperCase());
-                    }
-                } else {
-                    console.warn('Supabase client not available after waiting');
+                const result = await window.ApiClient.getCOAById(coaNumber.toUpperCase());
+                if (result && result.data) {
+                    console.log('Found COA in database:', result.data);
+                    return result.data;
                 }
             } catch (error) {
-                console.warn('Error loading from Supabase:', error);
+                console.warn('Error loading COA:', error);
             }
-            
-            // Fallback demo database - USE ABSOLUTE LOCAL PATHS ONLY
+
+            // Fallback demo database
             const fallbackDatabase = {
                 'ZT-2024-001': {
                     id: 'ZT-2024-001',
@@ -341,7 +299,7 @@
                     file_url: './COAs/Zyntro BPC-157.pdf'
                 }
             };
-            
+
             return fallbackDatabase[coaNumber.toUpperCase()] || null;
         }
         

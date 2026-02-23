@@ -407,7 +407,7 @@
     
     <script src="js/auth.js"></script>
     <script src="js/admin.js"></script>
-    <script src="js/supabase-config.js"></script>
+    <script src="../js/api-client.js"></script>
     <script src="js/supabase-coa-manager.js"></script>
     <script>
         let currentPage = 1;
@@ -428,17 +428,8 @@
                 document.getElementById('current-user').textContent = user.username;
             }
             
-            // Wait for Supabase to initialize
-            try {
-                if (!window.supabaseClient) {
-                    console.log('Waiting for Supabase initialization...');
-                    await window.initSupabase();
-                }
-                console.log('Supabase ready for manage operations');
-            } catch (error) {
-                console.error('Supabase initialization failed:', error);
-                alert('Database connection failed. Please refresh the page.');
-            }
+            // SupabaseCOAManager is already initialized via DOMContentLoaded
+            console.log('COA Manager ready');
             
             // Load COAs
             loadCOAs();
@@ -722,34 +713,14 @@
                     
                     console.log('Uploading new PDF:', file.name);
                     
-                    // Upload new file to Supabase
-                    const timestamp = Date.now();
-                    const fileName = `${updateData.id}_${timestamp}.pdf`;
-                    const filePath = `coa-files/${fileName}`;
+                    // Upload file via API
+                    const uploadResult = await window.ApiClient.uploadCOAFile(file);
+                    updateData.fileUrl = uploadResult.fileUrl;
+                    updateData.fileName = uploadResult.fileName;
+                    updateData.fileSize = uploadResult.fileSize;
                     
-                    const { data, error } = await window.supabaseClient.storage
-                        .from('coa-files')
-                        .upload(filePath, file, {
-                            contentType: 'application/pdf',
-                            upsert: true
-                        });
-                    
-                    if (error) {
-                        throw new Error('PDF upload failed: ' + error.message);
-                    }
-                    
-                    // Get public URL
-                    const { data: { publicUrl } } = window.supabaseClient.storage
-                        .from('coa-files')
-                        .getPublicUrl(filePath);
-                    
-                    // OVERWRITE existing PDF information with new file
-                    updateData.fileUrl = publicUrl;
-                    updateData.fileName = fileName;
-                    updateData.fileSize = file.size;
-                    
-                    console.log('New PDF uploaded successfully:', fileName);
-                    console.log('New PDF URL:', publicUrl);
+                    console.log('New PDF uploaded successfully:', uploadResult.fileName);
+                    console.log('New PDF URL:', uploadResult.fileUrl);
                 } else {
                     // NO NEW PDF UPLOADED - Keep existing PDF information
                     console.log('No new PDF uploaded - preserving existing PDF information');
@@ -998,7 +969,6 @@
     <div id="notification" class="notification"></div>
     
     <!-- Scripts -->
-    <script src="js/supabase-config.js"></script>
     <script src="js/admin.js"></script>
     <script src="js/coa-manager.js"></script>
     <script src="../js/load-header.js"></script>

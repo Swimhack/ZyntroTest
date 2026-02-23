@@ -3,21 +3,18 @@
  * Ensures consistent PDF loading across index and search pages
  */
 
-// Initialize PDF viewer based on page context
 document.addEventListener('DOMContentLoaded', function() {
     const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-    console.log('📄 PDF Loader initializing for page:', currentPage);
-    
-    // Check if we're on a page that needs PDF functionality
+    console.log('PDF Loader initializing for page:', currentPage);
+
     const pdfContainer = document.getElementById('pdf-preview-section');
     const pdfViewer = document.getElementById('pdf-viewer');
-    
+
     if (!pdfContainer || !pdfViewer) {
         console.log('No PDF viewer elements found on this page');
         return;
     }
-    
-    // Initialize based on page type
+
     if (currentPage === 'index.html' || currentPage === '') {
         initializeIndexPDF();
     } else if (currentPage === 'search.html') {
@@ -29,157 +26,106 @@ document.addEventListener('DOMContentLoaded', function() {
  * Initialize PDF viewer on index page - shows default/latest COA
  */
 async function initializeIndexPDF() {
-    console.log('🏠 Initializing INDEX page PDF viewer');
-    
+    console.log('Initializing INDEX page PDF viewer');
+
     const statusEl = document.getElementById('cms-status');
     const pdfSection = document.getElementById('pdf-preview-section');
     const pdfViewer = document.getElementById('pdf-viewer');
-    
-    // Show PDF section
-    if (pdfSection) {
-        pdfSection.style.display = 'block';
-    }
-    
+
+    if (pdfSection) pdfSection.style.display = 'block';
+
     try {
-        if (statusEl) statusEl.innerHTML = '🔄 Loading COA data...';
-        
-        // Load Supabase if needed
-        if (!window.supabase) {
-            await loadSupabase();
-        }
-        
-        if (statusEl) statusEl.innerHTML = '📊 Fetching latest COA...';
-        
-        const client = supabase.createClient(
-            'https://hctdzwmlkgnuxcuhjooe.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjdGR6d21sa2dudXhjdWhqb29lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjAxMjE2NjAsImV4cCI6MjA3NTY5NzY2MH0.EzxFceWzutTtlJvKpzI5UbWug3B8o2e5hFWi0yaXHog'
-        );
-        
-        // Get latest COA with valid file_url
-        const { data: coas, error } = await client
-            .from('coas')
-            .select('*')
-            .not('file_url', 'is', null)
-            .neq('file_url', '')
-            .order('created_at', { ascending: false })
-            .limit(1);
-        
-        if (error) throw error;
-        
+        if (statusEl) statusEl.innerHTML = 'Loading COA data...';
+
+        const result = await window.ApiClient.getCOAs();
+        const coas = result.data;
+
         let pdfUrl = './COAs/Zyntro BPC-157.pdf'; // Default fallback
-        
+
         if (coas && coas.length > 0) {
-            const coa = coas[0];
-            pdfUrl = coa.file_url;
-            console.log('✅ Loading COA from database:', coa.id);
-        } else {
-            console.log('📋 Using default sample PDF');
+            const coaWithFile = coas.find(c => c.file_url && c.file_url.trim() !== '');
+            if (coaWithFile) {
+                pdfUrl = coaWithFile.file_url;
+                console.log('Loading COA from database:', coaWithFile.id);
+            }
         }
-        
-        // Load the PDF using Google Docs viewer
+
+        // Load the PDF using Google Docs viewer for remote URLs, direct for local
         if (pdfViewer) {
-            const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
-            pdfViewer.src = googleUrl;
-            console.log('📄 PDF loaded via Google Docs viewer:', googleUrl);
+            if (pdfUrl.startsWith('/') || pdfUrl.startsWith('./')) {
+                // Local file - use Google Docs viewer with full URL
+                const fullUrl = window.location.origin + (pdfUrl.startsWith('.') ? pdfUrl.substring(1) : pdfUrl);
+                const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fullUrl)}&embedded=true`;
+                pdfViewer.src = googleUrl;
+            } else {
+                const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+                pdfViewer.src = googleUrl;
+            }
         }
-        
-        // Setup download button
+
         const downloadBtn = document.querySelector('.pdf-download-btn');
         if (downloadBtn) {
             downloadBtn.onclick = () => window.open(pdfUrl, '_blank');
         }
-        
+
         if (statusEl) {
-            statusEl.innerHTML = '✅ COA loaded successfully';
-            setTimeout(() => {
-                statusEl.style.display = 'none';
-            }, 2000);
+            statusEl.innerHTML = 'COA loaded successfully';
+            setTimeout(() => { statusEl.style.display = 'none'; }, 2000);
         }
-        
+
     } catch (error) {
-        console.error('❌ Error loading index PDF:', error);
+        console.error('Error loading index PDF:', error);
         if (statusEl) {
-            statusEl.innerHTML = '⚠️ Error loading COA';
+            statusEl.innerHTML = 'Error loading COA';
             statusEl.style.background = '#fecaca';
         }
-        
-        // Load default PDF as fallback using Google Docs viewer
         if (pdfViewer) {
-            const fallbackUrl = `https://docs.google.com/gview?url=${encodeURIComponent('./COAs/Zyntro BPC-157.pdf')}&embedded=true`;
+            const fallbackUrl = `https://docs.google.com/gview?url=${encodeURIComponent(window.location.origin + '/COAs/Zyntro BPC-157.pdf')}&embedded=true`;
             pdfViewer.src = fallbackUrl;
         }
     }
 }
 
 /**
- * Initialize PDF viewer on search page - provides helper function for PDF loading
+ * Initialize PDF viewer on search page
  */
 function initializeSearchPDF() {
-    console.log('🔍 Initializing SEARCH page PDF viewer - ready for user search');
-    // Don't override existing search functionality
-    // Just provide helper methods for PDF loading
-}
-
-/**
- * Load Supabase library dynamically
- */
-async function loadSupabase() {
-    return new Promise((resolve, reject) => {
-        if (window.supabase) {
-            resolve();
-            return;
-        }
-        
-        const script = document.createElement('script');
-        script.src = 'https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js';
-        script.onload = () => {
-            console.log('✅ Supabase loaded');
-            resolve();
-        };
-        script.onerror = () => {
-            console.error('❌ Failed to load Supabase');
-            reject(new Error('Failed to load Supabase library'));
-        };
-        document.head.appendChild(script);
-    });
+    console.log('Initializing SEARCH page PDF viewer - ready for user search');
 }
 
 /**
  * Load COA PDF in search results
- * Called by search.html after COA is found
  */
 function loadCOA(coa) {
-    console.log('📄 Unified loader: Loading COA PDF', coa);
-    
+    console.log('Unified loader: Loading COA PDF', coa);
+
     const pdfSection = document.getElementById('pdf-preview-section');
     const pdfViewer = document.getElementById('pdf-viewer');
-    
-    if (pdfSection) {
-        pdfSection.style.display = 'block';
-    }
-    
+
+    if (pdfSection) pdfSection.style.display = 'block';
+
     if (pdfViewer && coa.file_url) {
-        const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(coa.file_url)}&embedded=true`;
-        pdfViewer.src = googleUrl;
-        console.log('✅ PDF viewer src set to Google Docs viewer:', googleUrl);
-        
-        // Setup download button
+        let viewerUrl;
+        if (coa.file_url.startsWith('/') || coa.file_url.startsWith('./')) {
+            const fullUrl = window.location.origin + (coa.file_url.startsWith('.') ? coa.file_url.substring(1) : coa.file_url);
+            viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fullUrl)}&embedded=true`;
+        } else {
+            viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(coa.file_url)}&embedded=true`;
+        }
+        pdfViewer.src = viewerUrl;
+
         const downloadBtn = document.getElementById('pdf-download-btn');
         if (downloadBtn) {
             downloadBtn.href = coa.file_url;
             downloadBtn.download = `${coa.id}_COA.pdf`;
             downloadBtn.style.display = 'inline-flex';
         }
-    } else {
-        console.error('❌ PDF viewer element or COA file_url not found');
     }
 }
 
-// Make functions globally available
 window.unifiedPDFLoader = {
     initializeIndexPDF,
     initializeSearchPDF,
-    loadSupabase,
     loadCOA,
-    viewer: document.getElementById('pdf-viewer') // Expose viewer element
+    viewer: document.getElementById('pdf-viewer')
 };

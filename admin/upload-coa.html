@@ -323,7 +323,7 @@
     
     <script src="js/auth.js"></script>
     <script src="js/admin.js"></script>
-    <script src="js/supabase-config.js"></script>
+    <script src="../js/api-client.js"></script>
     <script src="js/supabase-coa-manager.js"></script>
     <script src="js/upload.js"></script>
     <script>
@@ -342,17 +342,8 @@
                 document.getElementById('current-user').textContent = user.username;
             }
             
-            // Wait for Supabase to initialize
-            try {
-                if (!window.supabaseClient) {
-                    console.log('Waiting for Supabase initialization...');
-                    await window.initSupabase();
-                }
-                console.log('Supabase ready for upload operations');
-            } catch (error) {
-                console.error('Supabase initialization failed:', error);
-                alert('Database connection failed. Please refresh the page.');
-            }
+            // SupabaseCOAManager is already initialized via DOMContentLoaded
+            console.log('COA Manager ready');
             
             // Initialize upload functionality
             initializeUpload();
@@ -438,7 +429,7 @@
         
         async function generateCOAId() {
             try {
-                const generatedId = await generateSupabaseCOAId();
+                const generatedId = await SupabaseCOAManager.generateCOAId();
                 document.getElementById('coa-id').value = generatedId;
             } catch (error) {
                 console.error('Error generating COA ID:', error);
@@ -449,96 +440,14 @@
             }
         }
         
-        // Generate COA ID using Supabase data
-        async function generateSupabaseCOAId() {
-            const currentYear = new Date().getFullYear();
-            const yearPrefix = `ZT-${currentYear}-`;
-            
-            try {
-                const result = await SupabaseCOAManager.getAllCOAs();
-                if (!result.success) {
-                    console.warn('Could not load existing COAs for ID generation, using fallback');
-                    return `${yearPrefix}001`;
-                }
-                
-                // Find highest number for current year
-                const currentYearCOAs = result.data.filter(coa => coa.id.startsWith(yearPrefix));
-                let maxNumber = 0;
-                
-                currentYearCOAs.forEach(coa => {
-                    const match = coa.id.match(/ZT-\d{4}-(\d+)/);
-                    if (match) {
-                        const number = parseInt(match[1]);
-                        if (number > maxNumber) {
-                            maxNumber = number;
-                        }
-                    }
-                });
-                
-                const nextNumber = maxNumber + 1;
-                return `${yearPrefix}${nextNumber.toString().padStart(3, '0')}`;
-            } catch (error) {
-                console.error('Error generating COA ID:', error);
-                return `${yearPrefix}001`;
-            }
-        }
-        
-        // Upload file to Supabase Storage
-        async function uploadFileToSupabase(file, coaId) {
-            try {
-                if (!window.supabaseClient) {
-                    throw new Error('Supabase client not initialized');
-                }
-                
-                // Generate unique filename
-                const timestamp = Date.now();
-                const fileExtension = file.name.split('.').pop();
-                const fileName = `${coaId}_${timestamp}.${fileExtension}`;
-                const filePath = `coa-files/${fileName}`;
-                
-                console.log('Uploading file to:', filePath);
-                
-                // Upload to Supabase Storage
-                const { data, error } = await window.supabaseClient.storage
-                    .from('coa-files')
-                    .upload(filePath, file, {
-                        contentType: file.type,
-                        upsert: false
-                    });
-                
-                if (error) {
-                    console.error('Upload error:', error);
-                    throw error;
-                }
-                
-                console.log('File uploaded successfully:', data);
-                
-                // Get public URL - this will work if bucket is public
-                // If not, we'll need to construct the URL manually
-                const { data: { publicUrl } } = window.supabaseClient.storage
-                    .from('coa-files')
-                    .getPublicUrl(filePath);
-                
-                console.log('Public URL:', publicUrl);
-                
-                // Also store the raw file path for alternative access
-                const rawUrl = `https://hctdzwmlkgnuxcuhjooe.supabase.co/storage/v1/object/public/coa-files/${filePath}`;
-                
-                return {
-                    success: true,
-                    file_path: filePath,
-                    file_url: publicUrl || rawUrl,
-                    raw_url: rawUrl,
-                    data: data
-                };
-                
-            } catch (error) {
-                console.error('File upload error:', error);
-                return {
-                    success: false,
-                    error: error.message
-                };
-            }
+        // Upload file via API
+        async function uploadFile(file, coaId) {
+            const result = await window.ApiClient.uploadCOAFile(file);
+            return {
+                publicUrl: result.fileUrl,
+                fileName: result.fileName,
+                fileSize: result.fileSize
+            };
         }
         
         function clearForm() {
@@ -555,20 +464,9 @@
                 alert('Please select a PDF file to upload.');
                 return;
             }
-            
-            // Ensure Supabase is initialized
-            if (!window.supabaseClient) {
-                try {
-                    console.log('Initializing Supabase before upload...');
-                    await window.initSupabase();
-                } catch (error) {
-                    alert('Unable to connect to database. Please refresh and try again.');
-                    return;
-                }
-            }
-            
+
             const coaData = {
-                id: document.getElementById('coa-id').value || await generateSupabaseCOAId(),
+                id: document.getElementById('coa-id').value || await SupabaseCOAManager.generateCOAId(),
                 client: document.getElementById('client-name').value,
                 compound: document.getElementById('compound-name').value,
                 type: document.getElementById('analysis-type').value,
@@ -591,18 +489,15 @@
                 // Show upload progress
                 showUploadProgress();
                 
-                // Upload file to Supabase Storage
-                const fileUploadResult = await uploadFileToSupabase(selectedFile, coaData.id);
-                
-                if (!fileUploadResult.success) {
-                    throw new Error('File upload failed: ' + fileUploadResult.error);
-                }
-                
+                // Upload file via API
+                const fileUploadResult = await uploadFile(selectedFile, coaData.id);
+
                 // Add file info to COA data
-                coaData.fileUrl = fileUploadResult.file_url;
-                coaData.filePath = fileUploadResult.file_path;
-                
-                // Add COA to Supabase database
+                coaData.fileUrl = fileUploadResult.publicUrl;
+                coaData.fileName = fileUploadResult.fileName;
+                coaData.fileSize = fileUploadResult.fileSize;
+
+                // Add COA to database
                 const result = await SupabaseCOAManager.addCOA(coaData);
                 
                 if (!result.success) {

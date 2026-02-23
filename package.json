@@ -1,16 +1,15 @@
 {
-  "name": "zyntrotest-site-testing",
-  "version": "1.0.0",
-  "description": "Automated testing for ZyntroTest.com",
+  "name": "zyntrotest",
+  "version": "2.0.0",
+  "description": "ZyntroTest.com - Analytical Testing Services",
   "scripts": {
+    "start": "node server.js",
     "test": "node test-site.js",
     "test:headed": "node test-site.js",
     "test:contact": "playwright test tests/contact-form.spec.js",
     "test:contact:headed": "playwright test tests/contact-form.spec.js --headed",
     "test:contact:debug": "playwright test tests/contact-form.spec.js --debug",
-    "test:playwright": "playwright test",
-    "dev": "vercel dev",
-    "deploy": "vercel --prod"
+    "test:playwright": "playwright test"
   },
   "devDependencies": {
     "@playwright/test": "^1.56.0",
@@ -18,7 +17,9 @@
     "playwright": "^1.40.0"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.75.1",
+    "express": "^4.21.0",
+    "multer": "^1.4.5-lts.1",
+    "pg": "^8.13.0",
     "resend": "^6.3.0"
   }
 }

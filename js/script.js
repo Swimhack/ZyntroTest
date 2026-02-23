@@ -898,23 +898,11 @@ document.head.appendChild(style);
 // PDF Preview Toggle Function for Homepage (removed - now using search page structure)
 
 // Shared PDF URL Resolution Function
-// Accept BOTH local file paths AND Supabase storage URLs
 window.getProperFileUrl = function(coa) {
-    // Priority order:
-    // 1. fileUrl field (direct URL or local path)
-    // 2. file_url field (legacy format)
-    // 3. fileName field (local path)
-
     let fileUrl = coa.fileUrl || coa.file_url || coa.fileName;
 
     if (fileUrl) {
-        // Case 1: Supabase storage URL (contains supabase)
-        if (fileUrl.includes('supabase.co') || fileUrl.includes('supabase.in')) {
-            console.log('Using Supabase storage URL:', fileUrl);
-            return fileUrl;
-        }
-
-        // Case 2: Local file path - Fix path if it doesn't start with ./
+        // Case 1: Local file path - Fix path if it doesn't start with ./
         if (fileUrl.startsWith('COAs/')) {
             fileUrl = './' + fileUrl;
         }
