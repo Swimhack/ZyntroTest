@@ -3,41 +3,809 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submit Your Sample for LCMS Testing | ZyntroTest</title>
-    <meta name="description" content="Submit your samples for professional LCMS testing at ZyntroTest. Download submission forms and shipping instructions.">
-    <meta name="keywords" content="LCMS sample submission, peptide testing submission, supplement testing samples, biotech sample analysis">
-    
-    <!-- Open Graph / Social Media Meta Tags -->
-    <meta property="og:type" content="website">
-    <meta property="og:title" content="Submit Your Sample for LCMS Testing | ZyntroTest">
-    <meta property="og:description" content="Submit your samples for professional LCMS testing at ZyntroTest. Download submission forms and shipping instructions.">
-    <meta property="og:image" content="images/zyntrotest-social.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:url" content="https://zyntrotest.com/sample-submission.html">
-    <meta property="og:site_name" content="ZyntroTest Laboratory">
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Submit Samples for LCMS Testing">
-    <meta name="twitter:description" content="Professional LCMS analysis with fast results. Submit samples for peptide, supplement, and biotech testing.">
-    <meta name="twitter:image" content="images/zyntrotest-social.png">
-    
+    <title>Submit Samples for LCMS Testing | ZyntroTest</title>
+    <meta name="description" content="Submit your samples for professional LCMS testing. Select your test, pay securely, and ship. Results in 3-5 business days.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/mobile-fixes.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
-    
-    <!-- Cache Busting -->
-    <meta name="version" content="2025.01.21.02">
-    <meta name="build-time" content="2025-01-21T02:52:53Z">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
+    <style>
+        /* ========== HERO ========== */
+        .submit-hero {
+            padding: 10rem 0 4rem;
+            background: linear-gradient(135deg, #0A2540 0%, #1e3a5f 50%, #2563eb 100%);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .submit-hero::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.5;
+        }
+        .submit-hero h1 {
+            color: #ffffff;
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        .submit-hero .hero-sub {
+            color: rgba(255,255,255,0.85);
+            font-size: 1.125rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            position: relative;
+        }
+        .btn-go {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #16a34a, #059669);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-base);
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(22,163,74,0.4);
+            position: relative;
+        }
+        .btn-go:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(22,163,74,0.5);
+            color: #fff;
+        }
+        .trust-line {
+            color: rgba(255,255,255,0.7);
+            font-size: 0.875rem;
+            margin-top: 1.25rem;
+            position: relative;
+        }
+        .trust-line span { margin: 0 0.5rem; opacity: 0.5; }
+
+        /* ========== TRUST BAR ========== */
+        .trust-bar {
+            background: var(--gray-50);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 1rem 0;
+        }
+        .trust-items {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+        .trust-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+        .trust-item svg { width: 20px; height: 20px; color: #16a34a; flex-shrink: 0; }
+
+        /* ========== BUILD YOUR ORDER ========== */
+        .build-order-section {
+            padding: var(--space-3xl) 0 calc(var(--space-3xl) + 80px);
+            background: var(--gray-50);
+        }
+        .build-order-section .section-title { text-align: center; margin-bottom: 0.5rem; }
+        .build-order-sub {
+            text-align: center;
+            color: var(--gray-500);
+            font-size: 1.05rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: var(--white);
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-xl);
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        .empty-state p {
+            color: var(--gray-400);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .btn-add-first {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2.5rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #16a34a, #059669);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-lg);
+            cursor: pointer;
+            transition: var(--transition-base);
+            box-shadow: 0 4px 14px rgba(22,163,74,0.4);
+        }
+        .btn-add-first:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(22,163,74,0.5); }
+
+        /* Sample Cards Container */
+        .sample-cards-container { max-width: 800px; margin: 0 auto; }
+
+        /* Individual Sample Card */
+        .sample-card {
+            background: var(--white);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-xl);
+            padding: 1.75rem;
+            margin-bottom: 1.25rem;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-base);
+        }
+        .sample-card:hover { border-color: var(--gray-300); }
+        .sample-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--gray-100);
+        }
+        .sample-card-header h4 {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+            font-family: var(--font-display);
+        }
+        .btn-remove-sample {
+            background: none;
+            border: none;
+            color: #dc2626;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: var(--radius-sm);
+            transition: var(--transition-base);
+            min-height: 44px;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        .btn-remove-sample:hover { background: #fef2f2; }
+
+        /* Field Layout */
+        .field-row-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        .form-group { margin-bottom: 1rem; }
+        .form-group:last-child { margin-bottom: 0; }
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            margin-bottom: 0.35rem;
+        }
+        .form-group label .req { color: #dc2626; }
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.65rem 0.75rem;
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            font-size: 0.95rem;
+            font-family: var(--font-primary);
+            transition: var(--transition-base);
+            background: var(--white);
+            box-sizing: border-box;
+        }
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+            outline: none;
+        }
+        .form-group input.error,
+        .form-group textarea.error {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220,38,38,0.1);
+        }
+
+        /* Test Checkboxes */
+        .sample-card-tests { margin-top: 0.5rem; }
+        .sample-card-tests h5 {
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            margin: 0 0 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .test-options { display: flex; flex-direction: column; gap: 0; }
+        .test-option {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-base);
+            min-height: 44px;
+            user-select: none;
+        }
+        .test-option:hover { background: var(--gray-50); }
+        .test-option.checked { background: #eff6ff; }
+        .test-option input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary-blue);
+            flex-shrink: 0;
+            cursor: pointer;
+        }
+        .test-label {
+            flex: 1;
+            font-size: 0.95rem;
+            color: var(--gray-800);
+            font-weight: 500;
+        }
+        .test-price {
+            font-weight: 700;
+            color: var(--primary-blue);
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+        .test-helper {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+            margin: 0.5rem 0 0 0;
+            padding-left: 1rem;
+            font-style: italic;
+        }
+
+        /* Per-card validation message */
+        .sample-validation-msg {
+            display: none;
+            margin-top: 0.75rem;
+            padding: 0.5rem 0.75rem;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: var(--radius-md);
+            color: #dc2626;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        .sample-validation-msg.visible { display: block; }
+
+        /* Card Subtotal */
+        .sample-card-subtotal {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid var(--gray-100);
+            font-size: 1rem;
+            color: var(--gray-700);
+            text-align: right;
+        }
+        .sample-card-subtotal strong {
+            font-size: 1.125rem;
+            color: var(--gray-900);
+        }
+
+        /* Add Another Sample Button */
+        .btn-add-another {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            padding: 0.85rem;
+            background: var(--white);
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-lg);
+            color: var(--primary-blue);
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+        .btn-add-another:hover { border-color: var(--primary-blue); background: #eff6ff; }
+
+        /* ========== STICKY TOTALS BAR ========== */
+        .totals-bar {
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: var(--white);
+            border-top: 2px solid var(--gray-200);
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.08);
+            padding: 1rem 0;
+        }
+        .totals-bar-inner {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1.5rem;
+            padding: 0 1rem;
+        }
+        .totals-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+        .totals-sample-count {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+        .totals-discount {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #16a34a;
+        }
+        .totals-amount {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            white-space: nowrap;
+        }
+        .btn-review-pay {
+            padding: 0.85rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #16a34a, #059669);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-base);
+            box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+            white-space: nowrap;
+            min-height: 44px;
+        }
+        .btn-review-pay:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(22,163,74,0.4); }
+        .btn-review-pay:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+        /* ========== REVIEW SECTION ========== */
+        .review-section {
+            max-width: 900px;
+            margin: 2rem auto 0;
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 2px solid var(--primary-blue);
+        }
+        .review-section h3 {
+            font-size: 1.35rem;
+            margin-bottom: 1.5rem;
+            color: var(--gray-900);
+            text-align: center;
+        }
+
+        /* Review Table */
+        .review-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+        .review-table thead th {
+            background: var(--gray-50);
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--gray-600);
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        .review-table tbody td {
+            padding: 0.75rem 1rem;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            border-bottom: 1px solid var(--gray-100);
+            vertical-align: top;
+        }
+        .review-table tbody tr:last-child td { border-bottom: none; }
+        .review-table .instructions-row td {
+            padding: 0.25rem 1rem 0.75rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .review-table .instructions-row details {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+        .review-table .instructions-row summary {
+            cursor: pointer;
+            color: var(--primary-blue);
+            font-weight: 500;
+            font-size: 0.85rem;
+        }
+        .review-table tfoot td {
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+            border-top: 2px solid var(--gray-200);
+        }
+        .review-table .discount-row td { color: #16a34a; font-weight: 600; }
+        .review-table .grand-total-row td { font-size: 1.1rem; }
+
+        /* Review Actions */
+        .review-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        .btn-edit-samples {
+            padding: 0.85rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            background: var(--white);
+            color: var(--gray-700);
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-base);
+            min-height: 44px;
+        }
+        .btn-edit-samples:hover { border-color: var(--gray-500); background: var(--gray-50); }
+        .btn-proceed-checkout {
+            padding: 0.85rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #16a34a, #059669);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-base);
+            box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+            min-height: 44px;
+        }
+        .btn-proceed-checkout:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(22,163,74,0.4); }
+
+        /* ========== CUSTOMER CHECKOUT ========== */
+        .customer-checkout-section {
+            max-width: 700px;
+            margin: 2rem auto 0;
+            background: var(--white);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 2px solid var(--gray-200);
+        }
+        .customer-checkout-section h3 { font-size: 1.25rem; margin-bottom: 1.25rem; color: var(--gray-900); }
+        .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .form-row-3 { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 1rem; }
+        .test-option.disabled { opacity: 0.45; cursor: not-allowed; }
+        .checkbox-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: #eff6ff;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+        }
+        .checkbox-row input[type="checkbox"] {
+            width: 18px; height: 18px;
+            margin-top: 2px;
+            accent-color: var(--primary-blue);
+            flex-shrink: 0;
+        }
+        .checkbox-row label { font-size: 0.875rem; color: var(--gray-700); line-height: 1.5; cursor: pointer; }
+        .checkout-trust {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+        .checkout-trust svg { width: 14px; height: 14px; }
+
+        /* Payment Card Fields */
+        .payment-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 1.5rem 0 1rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid var(--gray-200);
+        }
+        .payment-section-header svg { width: 24px; height: 24px; color: var(--primary-blue); flex-shrink: 0; }
+        .payment-section-header h3 { margin: 0; font-size: 1.15rem; color: var(--gray-900); }
+        .card-row-3 {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 1rem;
+        }
+        @media (max-width: 768px) { .card-row-3 { grid-template-columns: 1fr; } }
+        .payment-error {
+            display: none;
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            background: #fef2f2;
+            border: 1px solid #fecaca;
+            border-radius: var(--radius-md);
+            color: #dc2626;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        .payment-error.visible { display: block; }
+        .payment-processing {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #eff6ff;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--primary-blue);
+        }
+        .payment-processing.visible { display: flex; }
+        .payment-processing .spinner {
+            width: 20px; height: 20px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-place-order {
+            display: block;
+            width: 100%;
+            margin-top: 1.5rem;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #16a34a, #059669);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-base);
+            box-shadow: 0 4px 14px rgba(22,163,74,0.3);
+            min-height: 44px;
+        }
+        .btn-place-order:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(22,163,74,0.4); }
+
+        /* ========== SHIPPING GUIDELINES ========== */
+        .shipping-section {
+            padding: var(--space-3xl) 0;
+            background: var(--white);
+        }
+        .guidelines-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+        .guideline-card {
+            background: var(--gray-50);
+            padding: 1.5rem;
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--gray-200);
+        }
+        .guideline-card h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+        .guideline-card ul { list-style: none; padding: 0; margin: 0; }
+        .guideline-card li {
+            padding: 0.35rem 0;
+            font-size: 0.9rem;
+            color: var(--gray-700);
+            padding-left: 1.25rem;
+            position: relative;
+        }
+        .guideline-card li::before {
+            content: '\2022';
+            position: absolute;
+            left: 0;
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+        .shipping-address-box {
+            background: #eff6ff;
+            border: 2px solid var(--primary-blue);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            max-width: 500px;
+            margin: 2rem auto 0;
+        }
+        .shipping-address-box h4 { margin-bottom: 0.75rem; justify-content: center; }
+        .shipping-address-box p { font-size: 1rem; color: var(--gray-800); margin: 0; line-height: 1.6; }
+        .order-number-note {
+            background: #fefce8;
+            border: 2px solid #facc15;
+            border-radius: var(--radius-lg);
+            padding: 1rem 1.5rem;
+            text-align: center;
+            max-width: 700px;
+            margin: 1.5rem auto 0;
+            font-size: 0.9rem;
+            color: var(--gray-800);
+            font-weight: 500;
+        }
+
+        /* ========== CONFIRMATION MODAL ========== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--radius-2xl);
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-2xl);
+        }
+        .modal-check {
+            width: 64px; height: 64px;
+            background: #dcfce7;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+        }
+        .modal-check svg { width: 32px; height: 32px; color: #16a34a; }
+        .modal-content h2 { text-align: center; font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .modal-order-num { text-align: center; font-size: 1.125rem; color: var(--primary-blue); font-weight: 700; margin-bottom: 1.5rem; }
+        .modal-steps { background: var(--gray-50); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .modal-steps h3 { font-size: 1rem; margin-bottom: 1rem; color: var(--gray-900); }
+        .modal-steps ol { padding-left: 1.25rem; margin: 0; }
+        .modal-steps li { padding: 0.4rem 0; font-size: 0.9rem; color: var(--gray-700); }
+        .modal-ship-address {
+            background: #eff6ff;
+            border: 2px solid var(--primary-blue);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            text-align: center;
+            margin: 1rem 0;
+            font-weight: 500;
+        }
+        .modal-close {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--primary-blue);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition-base);
+        }
+        .modal-close:hover { background: var(--primary-dark); }
+
+        /* ========== BOTTOM CTA ========== */
+        .bottom-cta {
+            padding: var(--space-xl) 0;
+            background: var(--gray-50);
+            text-align: center;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        /* ========== MOBILE REVIEW CARDS ========== */
+        .review-card-mobile {
+            display: none;
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .field-row-3 { grid-template-columns: 1fr; }
+            .form-row-2 { grid-template-columns: 1fr; }
+            .form-row-3 { grid-template-columns: 1fr; }
+            .trust-items { gap: 1rem; }
+            .submit-hero { padding: 9rem 0 3rem; }
+            .guidelines-grid { grid-template-columns: 1fr; }
+
+            .build-order-section { padding-bottom: calc(var(--space-xl) + 100px); }
+            .totals-bar {
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 200;
+            }
+            .totals-bar-inner {
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                padding: 0 0.75rem;
+            }
+            .totals-info { flex-direction: row; gap: 1rem; flex: 1; }
+            .totals-amount { font-size: 1.1rem; }
+            .btn-review-pay {
+                width: 100%;
+                text-align: center;
+            }
+            .sample-card { padding: 1.25rem; }
+            .review-actions { flex-direction: column; }
+            .btn-edit-samples, .btn-proceed-checkout { width: 100%; text-align: center; }
+
+            /* Hide table, show cards on mobile */
+            .review-table { display: none; }
+            .review-card-mobile { display: block; }
+            .review-mobile-card {
+                background: var(--gray-50);
+                border-radius: var(--radius-lg);
+                padding: 1rem;
+                margin-bottom: 0.75rem;
+                border: 1px solid var(--gray-200);
+            }
+            .review-mobile-card h5 {
+                margin: 0 0 0.5rem;
+                font-size: 0.95rem;
+                color: var(--primary-blue);
+            }
+            .review-mobile-card .rmc-row {
+                display: flex;
+                justify-content: space-between;
+                font-size: 0.85rem;
+                padding: 0.2rem 0;
+                color: var(--gray-600);
+            }
+            .review-mobile-card .rmc-row strong { color: var(--gray-900); }
+            .review-mobile-card .rmc-tests {
+                font-size: 0.85rem;
+                color: var(--gray-600);
+                padding: 0.35rem 0;
+            }
+            .review-mobile-card .rmc-subtotal {
+                text-align: right;
+                font-weight: 700;
+                font-size: 1rem;
+                color: var(--gray-900);
+                padding-top: 0.5rem;
+                border-top: 1px solid var(--gray-200);
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
+    <!-- Preview Banner -->
+
     <!-- Header -->
     <header class="header">
         <nav class="nav">
@@ -51,417 +819,159 @@
                     <ul class="nav-list">
                         <li><a href="index.html" class="nav-link">Home</a></li>
                         <li><a href="services.html" class="nav-link">Services</a></li>
-                        <li><a href="sample-submission.html" class="nav-link active">Submit Sample</a></li>
+                        <li><a href="sample-submit-preview.html" class="nav-link active">Submit Sample</a></li>
                         <li><a href="search.html" class="nav-link">COA Search</a></li>
                         <li><a href="blog.html" class="nav-link">Blog</a></li>
                         <li><a href="contact.html" class="nav-link">Contact</a></li>
                     </ul>
                 </div>
-                <button class="nav-toggle" id="nav-toggle">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation menu">
+                    <span></span><span></span><span></span>
                 </button>
             </div>
         </nav>
     </header>
 
-    <!-- Submission Header -->
-    <section class="submission-header">
+    <!-- Hero -->
+    <section class="submit-hero">
         <div class="container">
-            <div class="submission-header-content">
-                <h1>Submit Your Sample for Testing</h1>
-                <p>Professional LCMS analysis with fast results and detailed COAs. Follow our streamlined submission process to get accurate testing results delivered directly to your inbox.</p>
-            </div>
+            <h1>Submit Your Samples for Peptide & Supplement LCMS Testing</h1>
+            <p class="hero-sub">Build your order, choose tests for each sample, pay securely, then ship. Results in 3-5 business days.</p>
+            <a href="#build-order" class="btn-go">Start Your Order &darr;</a>
+            <p class="trust-line">No quote needed <span>|</span> Pay only after you review <span>|</span> Secure checkout</p>
         </div>
     </section>
 
-    <!-- Submission Process -->
-    <section class="submission-process">
+    <!-- Trust Bar -->
+    <section class="trust-bar">
         <div class="container">
-            <h2 class="section-title">How It Works</h2>
-            <div class="process-steps">
-                <div class="process-step">
-                    <div class="step-icon step-quote" role="img" aria-label="Request Quote - Document icon">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" fill="currentColor" fill-opacity="0.1"/>
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <polyline points="14,2 14,8 20,8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </div>
-                    <div class="step-content">
-                        <h3>Request Quote</h3>
-                        <p>Submit your testing inquiry using our online form or download our submission form. We'll review your requirements and send a detailed quote within 24 hours.</p>
-                        <div class="step-actions">
-                            <a href="contact.html" class="btn btn-primary">Request Quote Online</a>
-                            <button class="btn btn-outline" onclick="downloadForm('submission-form')">Download Form</button>
-                        </div>
-                    </div>
+            <div class="trust-items">
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    Secure Payment
                 </div>
-                
-                <div class="process-step">
-                    <div class="step-icon step-invoice" role="img" aria-label="Receive Invoice - Payment card icon">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" fill="currentColor" fill-opacity="0.1"/>
-                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                            <line x1="2" y1="7" x2="22" y2="7" stroke="currentColor" stroke-width="2"/>
-                            <line x1="7" y1="12" x2="13" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="7" y1="14" x2="10" y2="14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <div class="step-content">
-                        <h3>Receive Invoice</h3>
-                        <p>Once we confirm your testing requirements, we'll send an invoice with detailed pricing, payment instructions, and shipping guidelines for your samples.</p>
-                        <div class="step-features">
-                            <div class="feature-item">
-                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" stroke="#2563eb" stroke-width="2" fill="none"/>
-                                </svg>
-                                <span>Multiple payment options</span>
-                            </div>
-                            <div class="feature-item">
-                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" stroke="#2563eb" stroke-width="2" fill="none"/>
-                                </svg>
-                                <span>Detailed testing specifications</span>
-                            </div>
-                            <div class="feature-item">
-                                <svg class="feature-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" stroke="#2563eb" stroke-width="2" fill="none"/>
-                                </svg>
-                                <span>Confirmed turnaround times</span>
-                            </div>
-                        </div>
-                    </div>
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                    Results in 3-5 Days
                 </div>
-                
-                <div class="process-step">
-                    <div class="step-icon step-shipping" role="img" aria-label="Ship Samples - Delivery truck icon">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M16 3h4a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2h-4" fill="currentColor" fill-opacity="0.1"/>
-                            <rect x="1" y="3" width="15" height="13" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                            <path d="M16 8h4a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <circle cx="5.5" cy="18.5" r="2.5" stroke="currentColor" stroke-width="2"/>
-                            <circle cx="18.5" cy="18.5" r="2.5" stroke="currentColor" stroke-width="2"/>
-                        </svg>
-                    </div>
-                    <div class="step-content">
-                        <h3>Ship Samples</h3>
-                        <p>After payment, ship your samples to our Texas laboratory using our detailed packaging and shipping instructions. We'll confirm receipt within 24 hours.</p>
-                        <div class="shipping-info">
-                            <h4>Shipping Address:</h4>
-                            <div class="address-box">
-                                <strong>ZyntroTest Laboratory</strong><br>
-                                11134 Hopes Creek Road<br>
-                                College Station, TX 77845<br>
-                                Email: info@zyntrotest.com
-                            </div>
-                        </div>
-                    </div>
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                    99.9% Accuracy — Agilent LCMS-DAD
                 </div>
-                
-                <div class="process-step">
-                    <div class="step-icon step-results" role="img" aria-label="Receive Results - Completed document icon">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="currentColor" fill-opacity="0.1"/>
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke="currentColor" stroke-width="2"/>
-                            <polyline points="9,11 12,14 22,4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            <line x1="7" y1="7" x2="7" y2="7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="7" y1="17" x2="11" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-                    <div class="step-content">
-                        <h3>Receive Results</h3>
-                        <p>Get your detailed Certificate of Analysis (COA) delivered electronically. Results include comprehensive data, chromatograms, and professional interpretation.</p>
-                        <div class="results-info">
-                            <ul>
-                                <li>✓ Electronic delivery within promised timeframe</li>
-                                <li>✓ Detailed COA with all analytical data</li>
-                                <li>✓ Professional interpretation and conclusions</li>
-                                <li>✓ Raw data files available upon request</li>
-                            </ul>
-                        </div>
-                    </div>
+                <div class="trust-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    Texas-Based Lab
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Sample Requirements -->
-    <section class="sample-requirements">
+    <!-- Build Your Order -->
+    <section class="build-order-section" id="build-order">
         <div class="container">
-            <h2 class="section-title">Sample Requirements</h2>
-            <div class="requirements-grid">
-                <div class="requirement-card">
-                    <div class="requirement-icon peptide-req"></div>
-                    <h3>Peptide Samples</h3>
-                    <div class="requirement-details">
-                        <div class="req-item">
-                            <strong>Minimum Amount:</strong>
-                            <span>1-5 mg</span>
-                        </div>
-                        <div class="req-item">
-                            <strong>Preferred Form:</strong>
-                            <span>Lyophilized powder</span>
-                        </div>
-                        <div class="req-item">
-                            <strong>Storage:</strong>
-                            <span>-20°C preferred, room temp acceptable</span>
-                        </div>
-                        <div class="req-item">
-                            <strong>Packaging:</strong>
-                            <span>Sealed vials or containers</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="requirement-card">
-                    <div class="requirement-icon supplement-req"></div>
-                    <h3>Supplements</h3>
-                    <div class="requirement-details">
-                        <div class="req-item">
-                            <strong>Minimum Amount:</strong>
-                            <span>10-20g or 10-20 units</span>
-                        </div>
-                        <div class="req-item">
-                            <strong>Accepted Forms:</strong>
-                            <span>Tablets, capsules, powders, liquids</span>
-                        </div>
-                        <div class="req-item">
-                            <strong>Storage:</strong>
-                            <span>Room temperature, dry conditions</span>
-                        </div>
-                        <div class="req-item">
-                            <strong>Information Needed:</strong>
-                            <span>Ingredient list, suspected adulterants</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="requirement-card">
-                    <div class="requirement-icon hemp-req"></div>
-                    <h3>Cannabis/Hemp Samples</h3>
-                    <div class="requirement-details">
-                        <div class="req-item">
-                            <strong>Minimum Amount:</strong>
-                            <span>1-10 g plant material or extract</span>
-                        </div>
-                        <div class="req-item">
-                            <strong>Accepted Forms:</strong>
-                            <span>Flower, concentrates, edibles, tinctures</span>
-                        </div>
-                        <div class="req-item">
-                            <strong>Storage:</strong>
-                            <span>Room temperature, sealed containers</span>
-                        </div>
-                        <div class="req-item">
-                            <strong>Testing Status:</strong>
-                            <span>TDA registration pending</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+            <h2 class="section-title">Build Your Order</h2>
+            <p class="build-order-sub">Add each sample and choose exactly which tests it needs. Results in 3-5 business days.</p>
 
-    <!-- Interactive Sample Submission Form -->
-    <section class="sample-submission-form">
-        <div class="container">
-            <h2 class="section-title">Submit Your Testing Request</h2>
-            <div class="form-container">
-                <form class="submission-form" id="sample-submission-form">
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="client-name">Client Name *</label>
-                            <input type="text" id="client-name" name="client-name" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="client-email">Email Address *</label>
-                            <input type="email" id="client-email" name="client-email" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="company-name">Company/Organization</label>
-                            <input type="text" id="company-name" name="company-name">
-                        </div>
-                        <div class="form-group">
-                            <label for="phone">Phone Number</label>
-                            <input type="tel" id="phone" name="phone">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="sample-description">Sample Description *</label>
-                        <textarea id="sample-description" name="sample-description" rows="3" required placeholder="Describe your samples, including compound names, expected purity, batch information, etc."></textarea>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="sample-type">Primary Sample Type *</label>
-                            <select id="sample-type" name="sample-type" required>
-                                <option value="">Select sample type</option>
-                                <option value="peptide">Peptide Purity Analysis</option>
-                                <option value="supplement">Supplement Adulterant Screening</option>
-                                <option value="hemp">Cannabis/Hemp Testing</option>
-                                <option value="other">Other (specify in description)</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="num-samples">Number of Samples *</label>
-                            <input type="number" id="num-samples" name="num-samples" min="1" max="100" required>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label>Requested Testing Services *</label>
-                        <div class="service-checkboxes">
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="testing-services" value="peptide-purity">
-                                <span class="checkbox-custom"></span>
-                                <div class="service-option-content">
-                                    <strong>Peptide Purity Analysis</strong>
-                                    <span>LCMS purity with molecular weight confirmation</span>
-                                    <span class="service-price">$200/sample</span>
-                                </div>
-                            </label>
-                            
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="testing-services" value="supplement-screening">
-                                <span class="checkbox-custom"></span>
-                                <div class="service-option-content">
-                                    <strong>Supplement Adulterant Screening</strong>
-                                    <span>Single analyte or comprehensive panel</span>
-                                    <span class="service-price">$175-275/sample</span>
-                                </div>
-                            </label>
-                            
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="testing-services" value="cannabis-hemp">
-                                <span class="checkbox-custom"></span>
-                                <div class="service-option-content">
-                                    <strong>Cannabis/Hemp Testing</strong>
-                                    <span>Potency, contaminants, or full panel</span>
-                                    <span class="service-price">$150-350/sample (TDA Registration Pending)</span>
-                                </div>
-                            </label>
-                            
-                            <label class="checkbox-option">
-                                <input type="checkbox" name="testing-services" value="custom-analysis">
-                                <span class="checkbox-custom"></span>
-                                <div class="service-option-content">
-                                    <strong>Custom Analysis</strong>
-                                    <span>Method development and specialized testing</span>
-                                    <span class="service-price">Contact for pricing</span>
-                                </div>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="turnaround">Required Turnaround</label>
-                            <select id="turnaround" name="turnaround">
-                                <option value="standard">Standard (3-10 business days)</option>
-                                <option value="expedited">Expedited (2-3 business days) +50%</option>
-                                <option value="rush">Rush (24-48 hours) +100%</option>
-                                <option value="flexible">Flexible timeline</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="budget">Approximate Budget</label>
-                            <select id="budget" name="budget">
-                                <option value="">Select budget range</option>
-                                <option value="under-500">Under $500</option>
-                                <option value="500-1000">$500 - $1,000</option>
-                                <option value="1000-2500">$1,000 - $2,500</option>
-                                <option value="2500-5000">$2,500 - $5,000</option>
-                                <option value="over-5000">Over $5,000</option>
-                            </select>
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="special-requirements">Special Requirements or Instructions</label>
-                        <textarea id="special-requirements" name="special-requirements" rows="4" placeholder="Any special handling requirements, specific analytical methods, reporting formats, or other instructions..."></textarea>
-                    </div>
-                    
-                    <div id="cost-estimate-section" class="cost-estimate-section">
-                        <!-- Dynamic cost estimate will appear here -->
-                    </div>
-                    
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary btn-large">Submit Testing Request</button>
-                        <button type="button" class="btn btn-outline" onclick="downloadForm('detailed-submission')">Download Detailed Form</button>
-                    </div>
-                    
-                    <div class="form-disclaimer">
-                        <p><strong>Next Steps:</strong> After submitting this form, we'll review your requirements and send a detailed quote within 24 hours. No payment is required until you approve the quote and we begin analysis.</p>
-                    </div>
-                </form>
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state">
+                <p>No samples added yet.</p>
+                <button type="button" class="btn-add-first" onclick="addSample()">+ Add First Sample</button>
+            </div>
+
+            <!-- Sample Cards -->
+            <div id="sample-cards-container" class="sample-cards-container"></div>
+
+            <!-- Add Another Sample -->
+            <button type="button" id="btn-add-another" class="btn-add-another" style="display:none;" onclick="addSample()">+ Add Another Sample</button>
+
+            <!-- Review Section (hidden until Review & Pay) -->
+            <div id="review-section" class="review-section" style="display:none;"></div>
+
+            <!-- Customer Checkout (hidden until Proceed to Secure Checkout) -->
+            <div id="customer-checkout" class="customer-checkout-section" style="display:none;"></div>
+        </div>
+
+        <!-- Sticky Totals Bar -->
+        <div id="totals-bar" class="totals-bar" style="display:none;">
+            <div class="totals-bar-inner">
+                <div class="totals-info">
+                    <span class="totals-sample-count" id="totals-sample-count">Total samples: 0</span>
+                    <span class="totals-discount" id="totals-discount"></span>
+                </div>
+                <div class="totals-amount" id="totals-amount">$0</div>
+                <button type="button" id="btn-review-pay" class="btn-review-pay" disabled onclick="showReview()">Review & Pay</button>
             </div>
         </div>
     </section>
 
     <!-- Shipping Guidelines -->
-    <section class="shipping-guidelines">
+    <section class="shipping-section" id="shipping">
         <div class="container">
-            <h2 class="section-title">Shipping Guidelines</h2>
+            <h2 class="section-title">Shipping & Packaging Guidelines</h2>
             <div class="guidelines-grid">
                 <div class="guideline-card">
-                    <div class="guideline-icon">📦</div>
-                    <h3>Packaging Requirements</h3>
+                    <h4>&#128230; Packaging Requirements</h4>
                     <ul>
                         <li>Use leak-proof, sealed containers</li>
                         <li>Include desiccant for moisture-sensitive samples</li>
                         <li>Double-bag liquid samples</li>
                         <li>Use bubble wrap or foam for fragile items</li>
-                        <li>Label each sample clearly with unique ID</li>
+                        <li>Label each sample clearly with unique Sample ID</li>
                     </ul>
                 </div>
-                
                 <div class="guideline-card">
-                    <div class="guideline-icon">🚚</div>
-                    <h3>Preferred Carriers</h3>
+                    <h4>&#128666; Preferred Carriers</h4>
                     <ul>
                         <li><strong>FedEx:</strong> Overnight, 2-day, Ground</li>
                         <li><strong>UPS:</strong> Next Day Air, 2nd Day Air</li>
                         <li><strong>USPS:</strong> Priority Express, Priority Mail</li>
-                        <li><strong>Temperature Control:</strong> Available upon request</li>
-                        <li><strong>International:</strong> Contact for procedures</li>
+                        <li>Temperature-controlled shipping available on request</li>
                     </ul>
                 </div>
-                
                 <div class="guideline-card">
-                    <div class="guideline-icon">📋</div>
-                    <h3>Required Documentation</h3>
+                    <h4>&#128203; What to Include</h4>
                     <ul>
-                        <li>Completed submission form</li>
-                        <li>Sample inventory list</li>
+                        <li>Printed copy of your order confirmation</li>
+                        <li>Sample inventory list with Sample IDs</li>
                         <li>Safety Data Sheets (if applicable)</li>
-                        <li>Chain of custody forms</li>
                         <li>Special handling instructions</li>
                     </ul>
                 </div>
-                
                 <div class="guideline-card">
-                    <div class="guideline-icon">🔒</div>
-                    <h3>Sample Security</h3>
+                    <h4>&#128274; Sample Security</h4>
                     <ul>
                         <li>Samples tracked from receipt to disposal</li>
                         <li>Secure storage in controlled environment</li>
                         <li>Chain of custody maintained throughout</li>
                         <li>Confidentiality agreements available</li>
-                        <li>Sample return available upon request</li>
                     </ul>
                 </div>
+            </div>
+
+            <div class="shipping-address-box">
+                <h4>&#128205; Ship To</h4>
+                <p><strong>ZyntroTest Laboratory</strong><br>
+                11134-A Hopes Creek Road<br>
+                College Station, Texas 77845<br>
+                info@zyntrotest.com</p>
+            </div>
+
+            <div class="order-number-note">
+                <strong>After checkout you will receive an Order Confirmation email with your unique Order #.</strong><br>
+                Write this Order # on the outside of the box AND on the packing slip inside.
             </div>
         </div>
     </section>
 
+    <!-- Bottom CTA -->
+    <section class="bottom-cta">
+        <div class="container">
+            <p style="font-size:1.125rem;color:var(--gray-700);margin-bottom:1rem;">Ready to ship? Complete your order now.</p>
+            <a href="#build-order" class="btn-go">Complete Checkout &uarr;</a>
+        </div>
+    </section>
+
     <!-- Footer -->
-        <!-- Footer will be loaded by JavaScript include -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -469,44 +979,28 @@
                     <div class="footer-logo">
                         <img src="images/zyntrotest-logo.svg" alt="ZyntroTest" width="120" height="40">
                     </div>
-                    <p>Precision LCMS testing for peptides, supplements, and hemp products. Fast, accurate, and reliable analytical services.</p>
+                    <p>Precision LCMS testing for peptides and supplements. Fast, accurate, and reliable analytical services.</p>
                 </div>
-                
-                <div class="footer-links">
-                    <div class="footer-section">
-                        <h4>Services</h4>
-                        <ul>
-                            <li><a href="services.html#peptide">Peptide Testing</a></li>
-                            <li><a href="services.html#supplement">Supplement Testing</a></li>
-                            <li><a href="services.html#hemp">Hemp Testing</a></li>
-                            <li><a href="services.html#pricing">Pricing</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section">
-                        <h4>Resources</h4>
-                        <ul>
-                            <li><a href="search.html">Search COAs</a></li>
-                            <li><a href="sample-submission.html">Submit Sample</a></li>
-                            <li><a href="blog.html">Blog</a></li>
-                            <li><a href="coa-samples.html">Sample COAs</a></li>
-                        </ul>
-                    </div>
-                    
-                    <div class="footer-section">
-                        <h4>Company</h4>
-                        <ul>
-                            <li><a href="contact.html">Contact Us</a></li>
-                            <li><a href="contact.html">Get in Touch</a></li>
-                            <li><a href="contact.html">Location: College Station, Texas</a></li>
-                        </ul>
-                    </div>
+                <div class="footer-section">
+                    <h4>Services</h4>
+                    <ul>
+                        <li><a href="services.html#peptide">Peptide Testing</a></li>
+                        <li><a href="services.html#supplement">Supplement Testing</a></li>
+                        <li><a href="services.html#pricing">Pricing</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="search.html">Search COAs</a></li>
+                        <li><a href="sample-submit-preview.html">Submit Sample</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                    </ul>
                 </div>
             </div>
-            
             <div class="footer-bottom">
                 <div class="footer-bottom-content">
-                    <p>&copy; <span id="current-year">2025</span> ZyntroTest. All rights reserved.</p>
+                    <p>&copy; <span id="current-year">2026</span> ZyntroTest. All rights reserved.</p>
                     <div class="footer-legal">
                         <a href="privacy.html">Privacy Policy</a>
                         <a href="terms.html">Terms of Service</a>
@@ -516,605 +1010,873 @@
         </div>
     </footer>
 
-    <!-- API Client -->
-    <script src="js/api-client.js"></script>
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="confirmation-modal">
+        <div class="modal-content">
+            <div class="modal-check">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+            </div>
+            <h2>Thank You! Your Order Has Been Received</h2>
+            <div class="modal-order-num" id="modal-order-num">Order #ZT-2026-0001</div>
+            <div id="modal-order-summary" style="margin-bottom:1rem;"></div>
+            <div class="modal-steps">
+                <h3>Next Step: Ship Your Samples</h3>
+                <ol>
+                    <li>Package your samples exactly as shown in the shipping guidelines.</li>
+                    <li>Clearly label the outside of the shipping box with your Order Number: <strong id="modal-order-inline">ZT-2026-0001</strong></li>
+                    <li>Include inside the box:
+                        <ul style="margin-top:0.25rem;">
+                            <li>Printed copy of this confirmation (or the packing slip we emailed you)</li>
+                            <li>One copy of your sample details</li>
+                        </ul>
+                    </li>
+                    <li>Ship to the address below.</li>
+                    <li><strong>Tracking tip:</strong> Email the tracking number to <a href="mailto:info@zyntrotest.com">info@zyntrotest.com</a></li>
+                </ol>
+            </div>
+            <div class="modal-ship-address">
+                <strong>ZyntroTest Laboratory</strong><br>
+                11134-A Hopes Creek Road<br>
+                College Station, Texas 77845
+            </div>
+            <button type="button" class="modal-close" onclick="closeModal()">Close</button>
+        </div>
+    </div>
 
-    <!-- EmailJS -->
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script src="js/email-config.js"></script>
-    
+    <!-- Scripts -->
     <script src="js/script.js"></script>
-    <style>
-        /* Additional styles for sample submission page */
-        .submission-header {
-            padding: 8rem 0 4rem;
-            background: linear-gradient(135deg, var(--gray-50) 0%, var(--gray-100) 100%);
-            text-align: center;
-        }
-
-        .submission-header-content h1 {
-            margin-bottom: var(--space-lg);
-            color: var(--gray-900);
-        }
-
-        .submission-header-content p {
-            font-size: 1.125rem;
-            color: var(--gray-600);
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .submission-process {
-            padding: var(--space-3xl) 0;
-            background: var(--white);
-        }
-
-        .process-steps {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        .process-step {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 2rem;
-            margin-bottom: 3rem;
-            position: relative;
-        }
-
-        .process-step:not(:last-child)::after {
-            content: '';
-            position: absolute;
-            left: 2.5rem;
-            top: 5rem;
-            width: 2px;
-            height: calc(100% - 2rem);
-            background: linear-gradient(180deg, #6b7280, transparent);
-        }
-
-        .step-icon {
-            width: 5rem;
-            height: 5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            z-index: 10;
-            color: var(--white);
-        }
-
-        .step-icon svg {
-            width: 2.5rem;
-            height: 2.5rem;
-        }
-
-        .step-quote {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .step-invoice {
-            background: linear-gradient(135deg, #059669, #0d9488);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .step-shipping {
-            background: linear-gradient(135deg, #dc2626, #ea580c);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .step-results {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .step-icon:hover {
-            transform: scale(1.05);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .step-content h3 {
-            margin-bottom: 1rem;
-            color: var(--gray-900);
-        }
-
-        .step-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .step-features {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-            margin-top: 1rem;
-            align-items: center;
-        }
-
-        .feature-item {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            color: var(--gray-700);
-        }
-
-        .feature-icon {
-            font-size: 1.25rem;
-            width: 24px;
-            height: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .shipping-info {
-            margin-top: 1rem;
-        }
-
-        .address-box {
-            background: var(--gray-50);
-            padding: 1rem;
-            border-radius: var(--radius-md);
-            border: 2px solid var(--gray-200);
-            margin-top: 0.5rem;
-            font-family: monospace;
-        }
-
-        .results-info ul {
-            list-style: none;
-            padding: 0;
-            margin-top: 1rem;
-        }
-
-        .results-info li {
-            margin-bottom: 0.5rem;
-            color: var(--gray-700);
-        }
-
-        .sample-requirements {
-            padding: var(--space-3xl) 0;
-            background: var(--gray-50);
-        }
-
-        .requirements-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .requirement-card {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-md);
-            border: 2px solid var(--gray-200);
-            text-align: center;
-            transition: var(--transition-base);
-        }
-
-        .requirement-card:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .requirement-icon {
-            width: 80px;
-            height: 80px;
-            border-radius: var(--radius-lg);
-            margin: 0 auto 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--white);
-        }
-
-        .peptide-req {
-            background: linear-gradient(135deg, var(--primary-blue), var(--primary-light));
-        }
-
-        .supplement-req {
-            background: linear-gradient(135deg, var(--secondary-green), var(--secondary-light));
-        }
-
-        .biotech-req {
-            background: linear-gradient(135deg, var(--accent-teal), var(--accent-cyan));
-        }
-
-        .hemp-req {
-            background: linear-gradient(135deg, var(--accent-teal), var(--secondary-green));
-        }
-
-        .peptide-req::before { content: 'P'; }
-        .supplement-req::before { content: 'S'; }
-        .biotech-req::before { content: 'B'; }
-        .hemp-req::before { content: 'H'; }
-
-        .requirement-details {
-            text-align: left;
-        }
-
-        .req-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 1rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .req-item:last-child {
-            border-bottom: none;
-            margin-bottom: 0;
-            padding-bottom: 0;
-        }
-
-        .req-item strong {
-            color: var(--gray-900);
-            margin-right: 1rem;
-            min-width: 120px;
-        }
-
-        .req-item span {
-            color: var(--gray-700);
-            text-align: right;
-        }
-
-        .sample-submission-form {
-            padding: var(--space-3xl) 0;
-            background: var(--white);
-        }
-
-        .form-container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: var(--gray-50);
-            padding: 3rem;
-            border-radius: var(--radius-2xl);
-            box-shadow: var(--shadow-lg);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        .form-group {
-            margin-bottom: 2rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-            color: var(--gray-900);
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--gray-300);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-            font-family: var(--font-primary);
-            transition: var(--transition-base);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-blue);
-            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-        }
-
-        .service-checkboxes {
-            display: grid;
-            gap: 1rem;
-        }
-
-        .checkbox-option {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--white);
-            border: 2px solid var(--gray-200);
-            border-radius: var(--radius-lg);
-            cursor: pointer;
-            transition: var(--transition-base);
-        }
-
-        .checkbox-option:hover {
-            border-color: var(--primary-blue);
-        }
-
-        .checkbox-option input[type="checkbox"] {
-            display: none;
-        }
-
-        .checkbox-custom {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--gray-300);
-            border-radius: var(--radius-sm);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-base);
-            flex-shrink: 0;
-        }
-
-        .checkbox-option input[type="checkbox"]:checked + .checkbox-custom {
-            background: var(--primary-blue);
-            border-color: var(--primary-blue);
-        }
-
-        .checkbox-option input[type="checkbox"]:checked + .checkbox-custom::after {
-            content: '✓';
-            color: var(--white);
-            font-weight: 700;
-            font-size: 0.875rem;
-        }
-
-        .service-option-content {
-            display: flex;
-            flex-direction: column;
-            gap: 0.25rem;
-        }
-
-        .service-option-content strong {
-            color: var(--gray-900);
-        }
-
-        .service-option-content span {
-            color: var(--gray-600);
-            font-size: 0.95rem;
-        }
-
-        .service-price {
-            color: var(--primary-blue) !important;
-            font-weight: 600 !important;
-        }
-
-        .cost-estimate-section {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: var(--radius-lg);
-            border: 2px solid var(--primary-blue);
-            margin: 2rem 0;
-            display: none;
-        }
-
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 2rem;
-        }
-
-        .form-disclaimer {
-            background: var(--white);
-            padding: 1.5rem;
-            border-radius: var(--radius-lg);
-            border: 2px solid var(--gray-200);
-            margin-top: 2rem;
-            text-align: center;
-        }
-
-        .form-disclaimer p {
-            color: var(--gray-700);
-            margin: 0;
-            font-size: 0.95rem;
-        }
-
-        .shipping-guidelines {
-            padding: var(--space-3xl) 0;
-            background: var(--gray-50);
-        }
-
-        .guidelines-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 2rem;
-        }
-
-        .guideline-card {
-            background: var(--white);
-            padding: 2rem;
-            border-radius: var(--radius-xl);
-            box-shadow: var(--shadow-md);
-            border: 2px solid var(--gray-200);
-        }
-
-        .guideline-icon {
-            font-size: 3rem;
-            text-align: center;
-            margin-bottom: 1rem;
-        }
-
-        .guideline-card h3 {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            color: var(--gray-900);
-        }
-
-        .guideline-card ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .guideline-card li {
-            margin-bottom: 0.75rem;
-            color: var(--gray-700);
-            padding-left: 1.5rem;
-            position: relative;
-        }
-
-        .guideline-card li::before {
-            content: '•';
-            position: absolute;
-            left: 0;
-            color: var(--primary-blue);
-            font-weight: 700;
-        }
-
-        .sample-tracking {
-            padding: var(--space-3xl) 0;
-            background: var(--white);
-        }
-
-        .tracking-content {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 4rem;
-            align-items: start;
-        }
-
-        .tracking-stages {
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem;
-            margin-top: 2rem;
-        }
-
-        .stage {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .stage-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--white);
-            flex-shrink: 0;
-        }
-
-        .received { background: var(--secondary-green); }
-        .prep { background: var(--accent-teal); }
-        .analysis { background: var(--primary-blue); }
-        .review { background: var(--accent-cyan); }
-        .complete { background: var(--secondary-green); }
-
-        .received::before { content: '📥'; }
-        .prep::before { content: '🧪'; }
-        .analysis::before { content: '🔬'; }
-        .review::before { content: '📊'; }
-        .complete::before { content: '✅'; }
-
-        .stage-info {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .stage-info strong {
-            color: var(--gray-900);
-            margin-bottom: 0.25rem;
-        }
-
-        .stage-info span {
-            color: var(--gray-600);
-            font-size: 0.95rem;
-        }
-
-        .tracking-box {
-            background: var(--gray-50);
-            padding: 2rem;
-            border-radius: var(--radius-xl);
-            border: 2px solid var(--gray-200);
-            text-align: center;
-        }
-
-        .track-input-group {
-            display: flex;
-            gap: 0.5rem;
-            margin-top: 1rem;
-        }
-
-        .track-input-group input {
-            flex: 1;
-            padding: 0.75rem 1rem;
-            border: 2px solid var(--gray-300);
-            border-radius: var(--radius-md);
-            font-size: 1rem;
-        }
-
-        .tracking-results {
-            margin-top: 2rem;
-            padding: 1.5rem;
-            background: var(--white);
-            border-radius: var(--radius-lg);
-            border: 2px solid var(--gray-200);
-            display: none;
-        }
-
-        @media (max-width: 768px) {
-            .form-row {
-                grid-template-columns: 1fr;
-                gap: 1rem;
+    <script>
+    // ========== TEST CATALOG ==========
+    const TEST_CATALOG = [
+        { key: 'peptidePurity',       label: 'Peptide Purity Analysis',         price: 200 },
+        { key: 'supplementScreening', label: 'Supplement Adulterant Screening', price: 175 },
+        { key: 'contentAnalysis',     label: 'Content Analysis',                price: 25, requires: 'peptidePurity' },
+        { key: 'phTest',              label: 'pH Test',                         price: 30  },
+        { key: 'endotoxinTesting',    label: 'Endotoxin Testing',               price: 250 },
+        { key: 'sterilityTesting',    label: 'Sterility Testing',               price: 300 }
+    ];
+
+    // ========== STATE ==========
+    const state = {
+        samples: [],
+        nextId: 1
+    };
+
+    // ========== HELPERS ==========
+    function fmt(n) {
+        return '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    }
+
+    function getSampleSubtotal(sample) {
+        let sum = 0;
+        for (const test of TEST_CATALOG) {
+            if (sample.tests[test.key]) sum += test.price;
+        }
+        return sum;
+    }
+
+    function getGrandTotals() {
+        const sampleCount = state.samples.length;
+        let rawTotal = 0;
+        for (const s of state.samples) rawTotal += getSampleSubtotal(s);
+
+        let discountPercent = 0, discountLabel = '';
+        if (sampleCount >= 25) {
+            discountPercent = 0.15;
+            discountLabel = 'Bulk discount (25+ samples, 15% off)';
+        } else if (sampleCount >= 15) {
+            discountPercent = 0.10;
+            discountLabel = 'Bulk discount (15+ samples, 10% off)';
+        }
+        const discountAmount = Math.round(rawTotal * discountPercent * 100) / 100;
+        return { sampleCount, rawTotal, discountPercent, discountAmount, discountLabel, finalTotal: rawTotal - discountAmount };
+    }
+
+    function allSamplesValid() {
+        return state.samples.length > 0 && state.samples.every(s => {
+            return TEST_CATALOG.some(t => s.tests[t.key]);
+        });
+    }
+
+    function findSample(id) {
+        return state.samples.find(s => s.id === id);
+    }
+
+    // ========== SAMPLE MANAGEMENT ==========
+    function addSample() {
+        const sample = {
+            id: state.nextId++,
+            sampleName: '',
+            quantity: '',
+            batchNumber: '',
+            specialInstructions: '',
+            tests: {}
+        };
+        for (const t of TEST_CATALOG) sample.tests[t.key] = false;
+        state.samples.push(sample);
+        hideReview();
+        hideCustomerCheckout();
+        renderAll();
+        // Scroll to the new card
+        setTimeout(() => {
+            const cards = document.querySelectorAll('.sample-card');
+            if (cards.length) cards[cards.length - 1].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 50);
+    }
+
+    function removeSample(id) {
+        state.samples = state.samples.filter(s => s.id !== id);
+        hideReview();
+        hideCustomerCheckout();
+        renderAll();
+    }
+
+    // ========== RENDERING ==========
+    function renderAll() {
+        renderCards();
+        renderTotalsBar();
+    }
+
+    function renderCards() {
+        const container = document.getElementById('sample-cards-container');
+        const emptyState = document.getElementById('empty-state');
+        const addBtn = document.getElementById('btn-add-another');
+
+        if (state.samples.length === 0) {
+            container.innerHTML = '';
+            emptyState.style.display = 'block';
+            addBtn.style.display = 'none';
+            return;
+        }
+
+        emptyState.style.display = 'none';
+        addBtn.style.display = 'flex';
+
+        let html = '';
+        state.samples.forEach((sample, idx) => {
+            const num = idx + 1;
+            const subtotal = getSampleSubtotal(sample);
+            const hasTests = TEST_CATALOG.some(t => sample.tests[t.key]);
+
+            html += `<div class="sample-card" data-sample-id="${sample.id}">
+                <div class="sample-card-header">
+                    <h4>Sample #${num}</h4>
+                    <button type="button" class="btn-remove-sample" data-action="remove" data-sample-id="${sample.id}">&times; Remove</button>
+                </div>
+                <div class="field-row-3">
+                    <div class="form-group">
+                        <label>Sample ID / Name <span class="req">*</span></label>
+                        <input type="text" data-sample-id="${sample.id}" data-field="sampleName" placeholder="e.g. BPC-157-Batch-A" value="${escHtml(sample.sampleName)}">
+                    </div>
+                    <div class="form-group">
+                        <label>Quantity (mg) <span class="req">*</span></label>
+                        <input type="number" data-sample-id="${sample.id}" data-field="quantity" placeholder="e.g. 5" min="0" step="any" value="${escHtml(sample.quantity)}">
+                    </div>
+                    <div class="form-group">
+                        <label>Batch #</label>
+                        <input type="text" data-sample-id="${sample.id}" data-field="batchNumber" placeholder="e.g. LOT-2026-01" value="${escHtml(sample.batchNumber)}">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Special Instructions / Notes for the Lab</label>
+                    <textarea data-sample-id="${sample.id}" data-field="specialInstructions" rows="2" placeholder="Any specific testing requests or notes...">${escHtml(sample.specialInstructions)}</textarea>
+                </div>
+                <div class="sample-card-tests">
+                    <h5>Select Tests</h5>
+                    <div class="test-options">`;
+
+            for (const test of TEST_CATALOG) {
+                const checked = sample.tests[test.key] ? 'checked' : '';
+                const checkedClass = sample.tests[test.key] ? ' checked' : '';
+                const reqMet = !test.requires || sample.tests[test.requires];
+                const disabledAttr = reqMet ? '' : ' disabled';
+                const disabledClass = reqMet ? '' : ' disabled';
+                const reqLabel = test.requires ? ' <span style="font-size:0.75rem;color:var(--gray-500);">(add-on: requires Purity)</span>' : '';
+                html += `<label class="test-option${checkedClass}${disabledClass}">
+                    <input type="checkbox" data-sample-id="${sample.id}" data-test="${test.key}" ${checked}${disabledAttr}>
+                    <span class="test-label">${test.label}${reqLabel}</span>
+                    <span class="test-price">${fmt(test.price)}</span>
+                </label>`;
             }
 
-            .form-container {
-                padding: 2rem 1rem;
-            }
+            html += `</div>
+                    <p class="test-helper">You can select any combination, including standalone add-ons (no base test required).</p>
+                    <div class="sample-validation-msg${!hasTests ? ' visible' : ''}" data-validation-for="${sample.id}">Please select at least one test for this sample.</div>
+                </div>
+                <div class="sample-card-subtotal">
+                    Subtotal for this sample: <strong data-subtotal-for="${sample.id}">${fmt(subtotal)}</strong>
+                </div>
+            </div>`;
+        });
 
-            .tracking-content {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
+        container.innerHTML = html;
+    }
 
-            .requirements-grid,
-            .guidelines-grid {
-                grid-template-columns: 1fr;
-            }
+    function renderTotalsBar() {
+        const bar = document.getElementById('totals-bar');
+        if (state.samples.length === 0) {
+            bar.style.display = 'none';
+            return;
+        }
+        bar.style.display = 'block';
 
-            .process-step {
-                grid-template-columns: 1fr;
-                text-align: center;
-                gap: 1.5rem;
-                margin-bottom: 2rem;
-            }
+        const totals = getGrandTotals();
+        document.getElementById('totals-sample-count').textContent = `Total samples: ${totals.sampleCount}`;
 
-            .process-step::after {
-                display: none;
-            }
+        const discountEl = document.getElementById('totals-discount');
+        if (totals.discountPercent > 0) {
+            discountEl.textContent = `${totals.discountLabel}: -${fmt(totals.discountAmount)}`;
+        } else {
+            discountEl.textContent = '';
+        }
 
-            .step-icon {
-                margin: 0 auto;
-            }
+        document.getElementById('totals-amount').textContent = fmt(totals.finalTotal);
+        document.getElementById('btn-review-pay').disabled = !allSamplesValid();
+    }
 
-            .step-features {
-                align-items: flex-start;
-            }
+    // Targeted update (no full re-render) for subtotal + totals when checkbox/input changes
+    function updateSubtotalFor(sampleId) {
+        const sample = findSample(sampleId);
+        if (!sample) return;
+        const subtotal = getSampleSubtotal(sample);
+        const el = document.querySelector(`[data-subtotal-for="${sampleId}"]`);
+        if (el) el.textContent = fmt(subtotal);
 
-            .feature-item {
-                justify-content: flex-start;
-                text-align: left;
+        // Update validation message
+        const hasTests = TEST_CATALOG.some(t => sample.tests[t.key]);
+        const valEl = document.querySelector(`[data-validation-for="${sampleId}"]`);
+        if (valEl) {
+            if (hasTests) valEl.classList.remove('visible');
+            else valEl.classList.add('visible');
+        }
+
+        renderTotalsBar();
+    }
+
+    // ========== EVENT DELEGATION ==========
+    const cardsContainer = document.getElementById('sample-cards-container');
+
+    cardsContainer.addEventListener('input', function(e) {
+        const el = e.target;
+        const sampleId = parseInt(el.dataset.sampleId);
+        const field = el.dataset.field;
+        if (!sampleId || !field) return;
+
+        const sample = findSample(sampleId);
+        if (!sample) return;
+        sample[field] = el.value;
+    });
+
+    cardsContainer.addEventListener('change', function(e) {
+        const el = e.target;
+        if (el.type !== 'checkbox' || !el.dataset.test) return;
+
+        const sampleId = parseInt(el.dataset.sampleId);
+        const testKey = el.dataset.test;
+        const sample = findSample(sampleId);
+        if (!sample) return;
+
+        sample.tests[testKey] = el.checked;
+
+        // Toggle visual checked class on label
+        const label = el.closest('.test-option');
+        if (label) {
+            if (el.checked) label.classList.add('checked');
+            else label.classList.remove('checked');
+        }
+
+        // Handle dependency: if a prerequisite is unchecked, uncheck dependents
+        const card = el.closest('.sample-card');
+        if (card) {
+            for (const dep of TEST_CATALOG) {
+                if (dep.requires === testKey && !el.checked && sample.tests[dep.key]) {
+                    sample.tests[dep.key] = false;
+                    const depCb = card.querySelector(`[data-test="${dep.key}"]`);
+                    if (depCb) {
+                        depCb.checked = false;
+                        depCb.disabled = true;
+                        const depLabel = depCb.closest('.test-option');
+                        if (depLabel) { depLabel.classList.remove('checked'); depLabel.classList.add('disabled'); }
+                    }
+                }
+                // Enable dependent when prerequisite is checked
+                if (dep.requires === testKey && el.checked) {
+                    const depCb = card.querySelector(`[data-test="${dep.key}"]`);
+                    if (depCb) {
+                        depCb.disabled = false;
+                        const depLabel = depCb.closest('.test-option');
+                        if (depLabel) depLabel.classList.remove('disabled');
+                    }
+                }
             }
         }
-    </style>
-    
-    <!-- No-Cache Headers and Cache-Busting -->
-    <script src="js/no-cache.js" data-no-cache-bust></script>
-    
-    <!-- CMS Content Loader -->
-    <script src="js/cms-loader.js"></script>
+
+        // Hide review/checkout if visible (order changed)
+        hideReview();
+        hideCustomerCheckout();
+
+        updateSubtotalFor(sampleId);
+    });
+
+    cardsContainer.addEventListener('click', function(e) {
+        const btn = e.target.closest('[data-action="remove"]');
+        if (!btn) return;
+        const sampleId = parseInt(btn.dataset.sampleId);
+        removeSample(sampleId);
+    });
+
+    // ========== REVIEW & PAY ==========
+    function showReview() {
+        // Validate: every sample needs at least one test and required fields
+        let valid = true;
+        let firstError = null;
+
+        state.samples.forEach(s => {
+            const hasTests = TEST_CATALOG.some(t => s.tests[t.key]);
+            const valEl = document.querySelector(`[data-validation-for="${s.id}"]`);
+            if (!hasTests) {
+                if (valEl) valEl.classList.add('visible');
+                valid = false;
+                if (!firstError) firstError = valEl;
+            } else {
+                if (valEl) valEl.classList.remove('visible');
+            }
+
+            // Check required fields
+            const card = document.querySelector(`.sample-card[data-sample-id="${s.id}"]`);
+            if (card) {
+                const nameInput = card.querySelector('[data-field="sampleName"]');
+                const qtyInput = card.querySelector('[data-field="quantity"]');
+                [nameInput, qtyInput].forEach(inp => {
+                    if (inp && !inp.value.trim()) {
+                        inp.classList.add('error');
+                        valid = false;
+                        if (!firstError) firstError = inp;
+                    } else if (inp) {
+                        inp.classList.remove('error');
+                    }
+                });
+            }
+        });
+
+        if (!valid) {
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        // Build review content
+        const totals = getGrandTotals();
+        const reviewEl = document.getElementById('review-section');
+
+        // Desktop table
+        let tableHtml = `<h3>Order Review</h3>
+        <table class="review-table">
+            <thead>
+                <tr>
+                    <th>Sample ID</th>
+                    <th>Batch #</th>
+                    <th>Selected Tests</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        // Mobile cards
+        let mobileHtml = '<div class="review-card-mobile">';
+
+        state.samples.forEach((s, idx) => {
+            const selectedTests = TEST_CATALOG.filter(t => s.tests[t.key]);
+            const subtotal = getSampleSubtotal(s);
+            const testNames = selectedTests.map(t => t.label).join('<br>');
+            const testPrices = selectedTests.map(t => fmt(t.price)).join('<br>');
+
+            tableHtml += `<tr>
+                <td>${escHtml(s.sampleName) || '<em>Sample #' + (idx+1) + '</em>'}</td>
+                <td>${escHtml(s.batchNumber) || '—'}</td>
+                <td>${testNames}</td>
+                <td>${testPrices}</td>
+                <td><strong>${fmt(subtotal)}</strong></td>
+            </tr>`;
+
+            if (s.specialInstructions.trim()) {
+                tableHtml += `<tr class="instructions-row">
+                    <td colspan="5">
+                        <details>
+                            <summary>Special Instructions</summary>
+                            <p style="margin:0.5rem 0 0;color:var(--gray-600);">${escHtml(s.specialInstructions)}</p>
+                        </details>
+                    </td>
+                </tr>`;
+            }
+
+            // Mobile card
+            mobileHtml += `<div class="review-mobile-card">
+                <h5>${escHtml(s.sampleName) || 'Sample #' + (idx+1)}</h5>
+                <div class="rmc-row"><span>Batch #</span><strong>${escHtml(s.batchNumber) || '—'}</strong></div>
+                <div class="rmc-tests">${selectedTests.map(t => t.label + ' — ' + fmt(t.price)).join('<br>')}</div>
+                ${s.specialInstructions.trim() ? '<details><summary style="font-size:0.8rem;color:var(--primary-blue);cursor:pointer;">Special Instructions</summary><p style="font-size:0.8rem;color:var(--gray-500);margin:0.25rem 0 0;">' + escHtml(s.specialInstructions) + '</p></details>' : ''}
+                <div class="rmc-subtotal">${fmt(subtotal)}</div>
+            </div>`;
+        });
+
+        tableHtml += `</tbody><tfoot>
+            <tr><td colspan="4" style="text-align:right;">Subtotal</td><td>${fmt(totals.rawTotal)}</td></tr>`;
+        if (totals.discountPercent > 0) {
+            tableHtml += `<tr class="discount-row"><td colspan="4" style="text-align:right;">${totals.discountLabel}</td><td>-${fmt(totals.discountAmount)}</td></tr>`;
+        }
+        tableHtml += `<tr class="grand-total-row"><td colspan="4" style="text-align:right;"><strong>Grand Total</strong></td><td><strong>${fmt(totals.finalTotal)}</strong></td></tr>
+        </tfoot></table>`;
+
+        mobileHtml += '</div>';
+
+        // Mobile totals
+        mobileHtml += `<div style="text-align:right;padding:0.75rem 0;border-top:2px solid var(--gray-200);margin-top:0.5rem;">
+            <div style="font-size:0.9rem;color:var(--gray-600);">Subtotal: ${fmt(totals.rawTotal)}</div>`;
+        if (totals.discountPercent > 0) {
+            mobileHtml += `<div style="font-size:0.9rem;color:#16a34a;font-weight:600;">${totals.discountLabel}: -${fmt(totals.discountAmount)}</div>`;
+        }
+        mobileHtml += `<div style="font-size:1.2rem;font-weight:700;color:var(--gray-900);margin-top:0.25rem;">Grand Total: ${fmt(totals.finalTotal)}</div></div>`;
+
+        reviewEl.innerHTML = tableHtml + mobileHtml + `
+        <div class="review-actions">
+            <button type="button" class="btn-edit-samples" onclick="hideReview()">Edit Samples</button>
+            <button type="button" class="btn-proceed-checkout" onclick="showCustomerCheckout()">Proceed to Secure Checkout</button>
+        </div>`;
+
+        reviewEl.style.display = 'block';
+        setTimeout(() => reviewEl.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
+
+    function hideReview() {
+        document.getElementById('review-section').style.display = 'none';
+    }
+
+    // ========== CUSTOMER CHECKOUT ==========
+    function showCustomerCheckout() {
+        const el = document.getElementById('customer-checkout');
+        el.innerHTML = `
+            <h3>Your Information</h3>
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label>Full Name <span class="req">*</span></label>
+                    <input type="text" id="co-name" required>
+                </div>
+                <div class="form-group">
+                    <label>Company Name</label>
+                    <input type="text" id="co-company">
+                </div>
+            </div>
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label>Email Address <span class="req">*</span></label>
+                    <input type="email" id="co-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Phone Number <span class="req">*</span></label>
+                    <input type="tel" id="co-phone" required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Street Address <span class="req">*</span></label>
+                <input type="text" id="co-street" placeholder="123 Main Street" required autocomplete="street-address">
+            </div>
+            <div class="form-row-3">
+                <div class="form-group">
+                    <label>City <span class="req">*</span></label>
+                    <input type="text" id="co-city" required autocomplete="address-level2">
+                </div>
+                <div class="form-group">
+                    <label>State <span class="req">*</span></label>
+                    <select id="co-state" required autocomplete="address-level1">
+                        <option value="">Select</option>
+                        <option value="AL">AL</option><option value="AK">AK</option><option value="AZ">AZ</option><option value="AR">AR</option>
+                        <option value="CA">CA</option><option value="CO">CO</option><option value="CT">CT</option><option value="DE">DE</option>
+                        <option value="FL">FL</option><option value="GA">GA</option><option value="HI">HI</option><option value="ID">ID</option>
+                        <option value="IL">IL</option><option value="IN">IN</option><option value="IA">IA</option><option value="KS">KS</option>
+                        <option value="KY">KY</option><option value="LA">LA</option><option value="ME">ME</option><option value="MD">MD</option>
+                        <option value="MA">MA</option><option value="MI">MI</option><option value="MN">MN</option><option value="MS">MS</option>
+                        <option value="MO">MO</option><option value="MT">MT</option><option value="NE">NE</option><option value="NV">NV</option>
+                        <option value="NH">NH</option><option value="NJ">NJ</option><option value="NM">NM</option><option value="NY">NY</option>
+                        <option value="NC">NC</option><option value="ND">ND</option><option value="OH">OH</option><option value="OK">OK</option>
+                        <option value="OR">OR</option><option value="PA">PA</option><option value="RI">RI</option><option value="SC">SC</option>
+                        <option value="SD">SD</option><option value="TN">TN</option><option value="TX">TX</option><option value="UT">UT</option>
+                        <option value="VT">VT</option><option value="VA">VA</option><option value="WA">WA</option><option value="WV">WV</option>
+                        <option value="WI">WI</option><option value="WY">WY</option><option value="DC">DC</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>ZIP Code <span class="req">*</span></label>
+                    <input type="text" id="co-zip" placeholder="77845" maxlength="10" required autocomplete="postal-code" inputmode="numeric">
+                </div>
+            </div>
+            <div class="payment-section-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                <h3>Payment Information</h3>
+            </div>
+            <div class="card-row-3">
+                <div class="form-group">
+                    <label>Card Number <span class="req">*</span></label>
+                    <input type="text" id="co-card-number" placeholder="4111 1111 1111 1111" maxlength="19" autocomplete="cc-number" inputmode="numeric">
+                </div>
+                <div class="form-group">
+                    <label>Expiration <span class="req">*</span></label>
+                    <input type="text" id="co-card-exp" placeholder="MM/YY" maxlength="5" autocomplete="cc-exp" inputmode="numeric">
+                </div>
+                <div class="form-group">
+                    <label>CVV <span class="req">*</span></label>
+                    <input type="text" id="co-card-cvv" placeholder="123" maxlength="4" autocomplete="cc-csc" inputmode="numeric">
+                </div>
+            </div>
+            <div class="payment-error" id="payment-error"></div>
+            <div class="payment-processing" id="payment-processing"><div class="spinner"></div>Processing payment securely...</div>
+            <div class="checkbox-row">
+                <input type="checkbox" id="co-agree">
+                <label for="co-agree">I have read and will follow the sample requirements and packaging guidelines below. I understand my samples must be properly labeled with my Order # for identification.</label>
+            </div>
+            <button type="button" class="btn-place-order" id="btn-place-order" onclick="handleCheckout()">Place Order &mdash; ${fmt(getGrandTotals().finalTotal)}</button>
+            <div class="checkout-trust">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                256-bit SSL encrypted &bull; Card data never touches our server
+            </div>`;
+        el.style.display = 'block';
+        setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+    }
+
+    function hideCustomerCheckout() {
+        document.getElementById('customer-checkout').style.display = 'none';
+    }
+
+    // ========== PAYMENT CONFIG ==========
+    let paymentConfig = null;
+
+    async function loadPaymentConfig() {
+        try {
+            const resp = await fetch('/api/payment/config');
+            if (!resp.ok) return null;
+            const data = await resp.json();
+            if (data.configured) {
+                paymentConfig = data;
+                // Load Accept.js script for the correct environment
+                loadAcceptJs(data.environment);
+            }
+            return data;
+        } catch (e) {
+            console.log('Payment config not available (static preview mode)');
+            return null;
+        }
+    }
+
+    function loadAcceptJs(env) {
+        if (document.getElementById('accept-js-script')) return;
+        const script = document.createElement('script');
+        script.id = 'accept-js-script';
+        script.charset = 'utf-8';
+        script.src = env === 'production'
+            ? 'https://js.authorize.net/v1/Accept.js'
+            : 'https://jstest.authorize.net/v1/Accept.js';
+        document.head.appendChild(script);
+    }
+
+    // Load config on page load
+    loadPaymentConfig();
+
+    // ========== CARD FIELD FORMATTING ==========
+    document.addEventListener('input', function(e) {
+        // Auto-format card number with spaces
+        if (e.target.id === 'co-card-number') {
+            let v = e.target.value.replace(/\D/g, '').substring(0, 16);
+            e.target.value = v.replace(/(.{4})/g, '$1 ').trim();
+        }
+        // Auto-format expiration MM/YY
+        if (e.target.id === 'co-card-exp') {
+            let v = e.target.value.replace(/\D/g, '').substring(0, 4);
+            if (v.length >= 3) v = v.substring(0, 2) + '/' + v.substring(2);
+            e.target.value = v;
+        }
+        // CVV: digits only
+        if (e.target.id === 'co-card-cvv') {
+            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 4);
+        }
+    });
+
+    // ========== CHECKOUT ==========
+    function handleCheckout() {
+        const fields = [
+            { id: 'co-name', label: 'Full Name' },
+            { id: 'co-email', label: 'Email Address' },
+            { id: 'co-phone', label: 'Phone Number' },
+            { id: 'co-street', label: 'Street Address' },
+            { id: 'co-city', label: 'City' },
+            { id: 'co-state', label: 'State' },
+            { id: 'co-zip', label: 'ZIP Code' },
+            { id: 'co-card-number', label: 'Card Number' },
+            { id: 'co-card-exp', label: 'Expiration' },
+            { id: 'co-card-cvv', label: 'CVV' }
+        ];
+
+        let valid = true;
+        let firstError = null;
+
+        // Hide previous errors
+        const errEl = document.getElementById('payment-error');
+        errEl.classList.remove('visible');
+        errEl.textContent = '';
+
+        fields.forEach(f => {
+            const el = document.getElementById(f.id);
+            if (!el.value.trim()) {
+                el.classList.add('error');
+                valid = false;
+                if (!firstError) firstError = el;
+            } else {
+                el.classList.remove('error');
+            }
+        });
+
+        // Email validation
+        const emailEl = document.getElementById('co-email');
+        if (emailEl.value.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailEl.value.trim())) {
+            emailEl.classList.add('error');
+            valid = false;
+            if (!firstError) firstError = emailEl;
+        }
+
+        // Card number validation (at least 13 digits)
+        const cardNum = document.getElementById('co-card-number').value.replace(/\D/g, '');
+        if (cardNum.length < 13) {
+            document.getElementById('co-card-number').classList.add('error');
+            valid = false;
+            if (!firstError) firstError = document.getElementById('co-card-number');
+        }
+
+        // Expiration validation
+        const expVal = document.getElementById('co-card-exp').value;
+        const expMatch = expVal.match(/^(\d{2})\/(\d{2})$/);
+        if (!expMatch || parseInt(expMatch[1]) < 1 || parseInt(expMatch[1]) > 12) {
+            document.getElementById('co-card-exp').classList.add('error');
+            valid = false;
+            if (!firstError) firstError = document.getElementById('co-card-exp');
+        }
+
+        // CVV validation (3-4 digits)
+        const cvv = document.getElementById('co-card-cvv').value.replace(/\D/g, '');
+        if (cvv.length < 3) {
+            document.getElementById('co-card-cvv').classList.add('error');
+            valid = false;
+            if (!firstError) firstError = document.getElementById('co-card-cvv');
+        }
+
+        // Agreement checkbox
+        const agreeEl = document.getElementById('co-agree');
+        const agreeRow = agreeEl.closest('.checkbox-row');
+        if (!agreeEl.checked) {
+            agreeRow.style.outline = '2px solid #dc2626';
+            agreeRow.style.borderRadius = 'var(--radius-md)';
+            valid = false;
+            if (!firstError) firstError = agreeRow;
+        } else {
+            agreeRow.style.outline = '';
+        }
+
+        if (!valid) {
+            if (firstError) firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        // Check if Accept.js is available and payment is configured
+        if (!paymentConfig || !paymentConfig.apiLoginId || !paymentConfig.clientKey) {
+            // Fallback: mock mode for static preview (Netlify)
+            completeMockCheckout();
+            return;
+        }
+
+        if (typeof Accept === 'undefined') {
+            showPaymentError('Payment system is loading. Please wait a moment and try again.');
+            return;
+        }
+
+        // Disable button and show processing
+        setCheckoutProcessing(true);
+
+        // Tokenize card with Accept.js
+        const authData = {
+            clientKey: paymentConfig.clientKey,
+            apiLoginId: paymentConfig.apiLoginId
+        };
+
+        const cardData = {
+            cardNumber: cardNum,
+            month: expMatch[1],
+            year: '20' + expMatch[2],
+            cardCode: cvv
+        };
+
+        Accept.dispatchData({ authData, cardData }, acceptResponseHandler);
+    }
+
+    function acceptResponseHandler(response) {
+        if (response.messages.resultCode === 'Error') {
+            setCheckoutProcessing(false);
+            const errors = response.messages.message.map(m => m.text).join('. ');
+            showPaymentError(errors);
+            return;
+        }
+
+        // Got the payment nonce — send to server
+        const opaqueData = response.opaqueData;
+        chargePayment(opaqueData);
+    }
+
+    async function chargePayment(opaqueData) {
+        const totals = getGrandTotals();
+        const customerInfo = {
+            name: document.getElementById('co-name').value.trim(),
+            company: document.getElementById('co-company').value.trim(),
+            email: document.getElementById('co-email').value.trim(),
+            phone: document.getElementById('co-phone').value.trim(),
+            billing: {
+                street: document.getElementById('co-street').value.trim(),
+                city: document.getElementById('co-city').value.trim(),
+                state: document.getElementById('co-state').value,
+                zip: document.getElementById('co-zip').value.trim()
+            }
+        };
+
+        // Build line items for the server
+        const lineItems = [];
+        state.samples.forEach((s, idx) => {
+            const selectedTests = TEST_CATALOG.filter(t => s.tests[t.key]);
+            selectedTests.forEach(t => {
+                lineItems.push({
+                    sampleName: s.sampleName || 'Sample #' + (idx + 1),
+                    testName: t.label,
+                    price: t.price
+                });
+            });
+        });
+
+        try {
+            const resp = await fetch('/api/payment/charge', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    opaqueData,
+                    amount: totals.finalTotal,
+                    orderDetails: {
+                        customer: customerInfo,
+                        samples: state.samples.map((s, idx) => ({
+                            name: s.sampleName || 'Sample #' + (idx + 1),
+                            quantity: s.quantity,
+                            batchNumber: s.batchNumber,
+                            specialInstructions: s.specialInstructions,
+                            tests: TEST_CATALOG.filter(t => s.tests[t.key]).map(t => ({ label: t.label, price: t.price }))
+                        })),
+                        lineItems,
+                        totals: {
+                            rawTotal: totals.rawTotal,
+                            discountPercent: totals.discountPercent,
+                            discountAmount: totals.discountAmount,
+                            discountLabel: totals.discountLabel,
+                            finalTotal: totals.finalTotal
+                        }
+                    }
+                })
+            });
+
+            const data = await resp.json();
+            setCheckoutProcessing(false);
+
+            if (data.success) {
+                showConfirmationModal(data.transactionId, data.orderNumber);
+            } else {
+                showPaymentError(data.error || 'Payment failed. Please check your card details and try again.');
+            }
+        } catch (err) {
+            setCheckoutProcessing(false);
+            showPaymentError('Network error. Please check your connection and try again.');
+        }
+    }
+
+    // Mock checkout for static preview (Netlify) where no server is available
+    function completeMockCheckout() {
+        const orderNum = 'ZT-2026-' + String(Math.floor(Math.random() * 9000) + 1000);
+        showConfirmationModal(null, orderNum);
+    }
+
+    function showConfirmationModal(transactionId, orderNumber) {
+        const orderNum = orderNumber || 'ZT-2026-' + String(Math.floor(Math.random() * 9000) + 1000);
+        document.getElementById('modal-order-num').textContent = 'Order #' + orderNum;
+        document.getElementById('modal-order-inline').textContent = orderNum;
+
+        const totals = getGrandTotals();
+        let summaryHtml = `<div style="text-align:center;font-size:0.95rem;color:var(--gray-600);">
+            ${totals.sampleCount} sample${totals.sampleCount > 1 ? 's' : ''} &bull; ${fmt(totals.finalTotal)}
+            ${totals.discountPercent > 0 ? '<br><span style="color:#16a34a;font-weight:600;">' + totals.discountLabel + ' applied</span>' : ''}`;
+        if (transactionId) {
+            summaryHtml += `<br><span style="font-size:0.85rem;">Transaction ID: ${escHtml(transactionId)}</span>`;
+        }
+        summaryHtml += '</div>';
+        document.getElementById('modal-order-summary').innerHTML = summaryHtml;
+
+        document.getElementById('confirmation-modal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function showPaymentError(msg) {
+        const errEl = document.getElementById('payment-error');
+        errEl.textContent = msg;
+        errEl.classList.add('visible');
+        errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function setCheckoutProcessing(processing) {
+        const btn = document.getElementById('btn-place-order');
+        const proc = document.getElementById('payment-processing');
+        if (processing) {
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            proc.classList.add('visible');
+        } else {
+            btn.disabled = false;
+            const totals = getGrandTotals();
+            btn.innerHTML = 'Place Order &mdash; ' + fmt(totals.finalTotal);
+            proc.classList.remove('visible');
+        }
+    }
+
+    // ========== MODAL ==========
+    function closeModal() {
+        document.getElementById('confirmation-modal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    document.getElementById('confirmation-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') closeModal();
+    });
+
+    // ========== UTILITIES ==========
+    function escHtml(str) {
+        if (!str) return '';
+        const d = document.createElement('div');
+        d.textContent = str;
+        return d.innerHTML;
+    }
+
+    // Copyright year
+    const yearEl = document.getElementById('current-year');
+    if (yearEl) yearEl.textContent = new Date().getFullYear();
+
+    // Clear error on input for checkout fields
+    document.addEventListener('input', function(e) {
+        if (e.target.classList.contains('error')) {
+            e.target.classList.remove('error');
+        }
+    });
+    </script>
 </body>
 </html>

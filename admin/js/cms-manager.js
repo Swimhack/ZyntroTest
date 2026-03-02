@@ -85,6 +85,7 @@ class CMSManager {
                 case 'blog': await this.loadBlogPosts(); break;
                 case 'testimonials': await this.loadTestimonials(); break;
                 case 'settings': await this.loadSiteSettings(); break;
+                case 'payment': await this.loadPaymentSettings(); break;
             }
         } catch (error) {
             console.error('Error loading tab content:', error);
@@ -222,6 +223,128 @@ class CMSManager {
         } catch (error) {
             this.showNotification('Error loading site settings: ' + error.message, 'error');
         }
+    }
+
+    async loadPaymentSettings() {
+        try {
+            const result = await window.ApiClient.getPaymentSettings();
+            const settings = result.data || {};
+            const status = result.status || {};
+
+            document.getElementById('authnetApiLoginId').value = settings.authnet_api_login_id || '';
+            document.getElementById('authnetTransactionKey').value = '';
+            document.getElementById('authnetTransactionKey').placeholder = settings.authnet_transaction_key
+                ? settings.authnet_transaction_key + ' (saved - leave blank to keep)'
+                : 'Enter transaction key';
+            document.getElementById('authnetClientKey').value = settings.authnet_client_key || '';
+            document.getElementById('authnetEnvironment').value = settings.authnet_environment || 'sandbox';
+
+            this.updatePaymentStatus(status);
+        } catch (error) {
+            this.showNotification('Error loading payment settings: ' + error.message, 'error');
+        }
+    }
+
+    async savePaymentSettings() {
+        const apiLoginId = document.getElementById('authnetApiLoginId').value.trim();
+        const transactionKey = document.getElementById('authnetTransactionKey').value.trim();
+        const clientKey = document.getElementById('authnetClientKey').value.trim();
+        const environment = document.getElementById('authnetEnvironment').value;
+
+        if (apiLoginId && apiLoginId.length < 5) {
+            this.showNotification('API Login ID appears too short. Please check the value.', 'error');
+            return;
+        }
+        if (transactionKey && transactionKey.length < 10) {
+            this.showNotification('Transaction Key appears too short. Please check the value.', 'error');
+            return;
+        }
+        if (clientKey && clientKey.length < 10) {
+            this.showNotification('Client Key appears too short. Please check the value.', 'error');
+            return;
+        }
+
+        const settingsData = [
+            { key: 'authnet_api_login_id', value: apiLoginId, category: 'payment' },
+            { key: 'authnet_client_key', value: clientKey, category: 'payment' },
+            { key: 'authnet_environment', value: environment, category: 'payment' }
+        ];
+
+        if (transactionKey) {
+            settingsData.push({ key: 'authnet_transaction_key', value: transactionKey, category: 'payment' });
+        }
+
+        const loading = document.getElementById('paymentLoading');
+        loading.style.display = 'inline-block';
+        try {
+            await window.ApiClient.adminUpsert('site_settings', settingsData);
+            this.showNotification('Payment settings saved successfully!', 'success');
+            await this.loadPaymentSettings();
+        } catch (error) {
+            this.showNotification('Error saving payment settings: ' + error.message, 'error');
+        } finally {
+            loading.style.display = 'none';
+        }
+    }
+
+    async testPaymentConnection() {
+        const testBtn = document.getElementById('testConnectionBtn');
+        const resultDiv = document.getElementById('paymentTestResult');
+        testBtn.disabled = true;
+        testBtn.textContent = 'Testing...';
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = '#f8fafc';
+        resultDiv.style.color = '#475569';
+        resultDiv.style.border = '1px solid #e2e8f0';
+        resultDiv.textContent = 'Connecting to Authorize.net...';
+
+        try {
+            const result = await window.ApiClient.testPaymentConnection();
+            if (result.success) {
+                resultDiv.style.background = '#f0fdf4';
+                resultDiv.style.color = '#166534';
+                resultDiv.style.border = '1px solid #bbf7d0';
+                resultDiv.textContent = '\u2713 ' + result.message + ' (Environment: ' + result.environment + ')';
+            } else {
+                resultDiv.style.background = '#fef2f2';
+                resultDiv.style.color = '#991b1b';
+                resultDiv.style.border = '1px solid #fecaca';
+                resultDiv.textContent = '\u2717 ' + (result.error || 'Connection test failed.');
+            }
+        } catch (error) {
+            resultDiv.style.background = '#fef2f2';
+            resultDiv.style.color = '#991b1b';
+            resultDiv.style.border = '1px solid #fecaca';
+            resultDiv.textContent = '\u2717 Error: ' + error.message;
+        } finally {
+            testBtn.disabled = false;
+            testBtn.textContent = 'Test Connection';
+        }
+    }
+
+    updatePaymentStatus(status) {
+        const statusDiv = document.getElementById('paymentStatusIndicator');
+        if (!statusDiv) return;
+
+        if (status.configured) {
+            statusDiv.style.background = '#f0fdf4';
+            statusDiv.style.border = '1px solid #bbf7d0';
+            statusDiv.style.color = '#166534';
+            statusDiv.innerHTML = '<strong>\u2713 Payment Gateway Configured</strong> &mdash; ' +
+                (status.environment === 'production' ? 'LIVE (Production)' : 'Sandbox (Testing)') +
+                '<br><small style="color: #15803d;">API Login ID, Transaction Key, and Client Key are all set.</small>';
+        } else {
+            const missing = [];
+            if (!status.hasLoginId) missing.push('API Login ID');
+            if (!status.hasTransactionKey) missing.push('Transaction Key');
+            if (!status.hasClientKey) missing.push('Client Key');
+            statusDiv.style.background = '#fef3c7';
+            statusDiv.style.border = '1px solid #fde68a';
+            statusDiv.style.color = '#92400e';
+            statusDiv.innerHTML = '<strong>\u26A0 Payment Gateway Not Fully Configured</strong>' +
+                '<br><small>Missing: ' + missing.join(', ') + '</small>';
+        }
+        statusDiv.style.display = 'block';
     }
 
     async savePageContent() {
@@ -536,6 +659,8 @@ window.showAddBlogModal = () => cmsManager.showAddBlogModal();
 window.showAddTestimonialModal = () => cmsManager.showAddTestimonialModal();
 window.savePageContent = () => cmsManager.savePageContent();
 window.saveSiteSettings = () => cmsManager.saveSiteSettings();
+window.savePaymentSettings = () => cmsManager.savePaymentSettings();
+window.testPaymentConnection = () => cmsManager.testPaymentConnection();
 window.selectHeroImage = () => cmsManager.selectHeroImage();
 window.clearHeroImage = () => cmsManager.clearHeroImage();
 

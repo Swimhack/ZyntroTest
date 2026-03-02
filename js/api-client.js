@@ -153,6 +153,20 @@ const ApiClient = {
         return json;
     },
 
+    // ===========================
+    // Payment admin operations
+    // ===========================
+
+    async getPaymentSettings() {
+        return this._fetch('/api/admin/payment/settings');
+    },
+
+    async testPaymentConnection() {
+        return this._fetch('/api/admin/payment/test', {
+            method: 'POST'
+        });
+    },
+
     async uploadMedia(file, title, altText) {
         const formData = new FormData();
         formData.append('file', file);

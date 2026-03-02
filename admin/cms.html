@@ -641,6 +641,7 @@
                     <button class="tab-button" data-tab="testimonials">💬 Testimonials</button>
                     <button class="tab-button" data-tab="media">🖼️ Media</button>
                     <button class="tab-button" data-tab="settings">⚙️ Settings</button>
+                    <button class="tab-button" data-tab="payment">💳 Payment</button>
                 </div>
 
                 <!-- Pages Tab -->
@@ -824,6 +825,54 @@
                         <button class="btn-primary" onclick="saveSiteSettings()">
                             <span class="loading" id="settingsLoading" style="display: none;"></span>
                             Save Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Payment Tab -->
+                <div class="tab-content" id="payment-tab">
+                    <h3>Payment Gateway Settings</h3>
+                    <p>Configure Authorize.net credentials for processing payments on the sample submission page.</p>
+
+                    <div id="paymentStatusIndicator" style="display:none; border-radius: 6px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.9rem;"></div>
+
+                    <div style="background: #eff6ff; border: 1px solid #bfdbfe; border-radius: 6px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; font-size: 0.9rem; color: #1e40af;">
+                        <strong>How it works:</strong> The API Login ID is used client-side to tokenize card data via Accept.js. The Transaction Key stays server-side only and is never exposed to the browser. Use Sandbox mode to test before going live.
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label">Environment</label>
+                            <select class="form-select" id="authnetEnvironment">
+                                <option value="sandbox">Sandbox (Testing)</option>
+                                <option value="production">Production (Live)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">API Login ID</label>
+                            <input type="text" class="form-input" id="authnetApiLoginId" placeholder="e.g. 5KP3u95bQpv">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Transaction Key</label>
+                            <input type="password" class="form-input" id="authnetTransactionKey" placeholder="Enter transaction key">
+                            <small style="color: #64748b; font-size: 0.8rem;">Stored securely. Leave blank to keep existing value.</small>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Client Key (Public)</label>
+                            <input type="text" class="form-input" id="authnetClientKey" placeholder="e.g. 2a8bR7VGn94PJxtt">
+                            <small style="color: #64748b; font-size: 0.8rem;">Used by Accept.js for client-side tokenization. Safe to expose.</small>
+                        </div>
+                    </div>
+
+                    <div id="paymentTestResult" style="display:none; margin-bottom: 1rem; padding: 0.75rem 1rem; border-radius: 6px; font-size: 0.9rem;"></div>
+
+                    <div class="form-group" style="display: flex; gap: 1rem; align-items: center;">
+                        <button class="btn-primary" onclick="savePaymentSettings()">
+                            <span class="loading" id="paymentLoading" style="display: none;"></span>
+                            Save Payment Settings
+                        </button>
+                        <button class="btn-secondary" id="testConnectionBtn" onclick="testPaymentConnection()">
+                            Test Connection
                         </button>
                     </div>
                 </div>

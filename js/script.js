@@ -214,33 +214,30 @@ document.addEventListener('DOMContentLoaded', function() {
                             return;
                         }
                         
-                        // Save to database first - this should always work
-                        console.log('Saving contact submission to database:', formData);
-                        let dbSaved = false;
-                        try {
-                            const result = await saveContactSubmission(formData);
-                            console.log('Contact submission saved successfully:', result);
-                            dbSaved = true;
-                        } catch (dbError) {
-                            console.error('Database save failed:', dbError);
-                            showNotification('There was an issue saving your submission. Please try again or contact us directly.', 'error');
-                            return;
-                        }
-                        
-                        // Then try to send email - but don't fail if email service isn't available
+                        // Send email notification first (primary action)
                         let emailSent = false;
                         try {
                             await sendContactEmail(formData);
                             console.log('Email sent successfully');
                             emailSent = true;
                         } catch (emailError) {
-                            console.error('Email send failed (this is OK if Resend not configured yet):', emailError);
+                            console.error('Email send failed:', emailError);
                         }
-                        
-                        // Show success message
-                        if (dbSaved) {
+
+                        // Try to save to database (secondary, optional)
+                        try {
+                            await saveContactSubmission(formData);
+                            console.log('Contact submission saved to database');
+                        } catch (dbError) {
+                            console.log('Database save skipped:', dbError.message);
+                        }
+
+                        // Show result based on email delivery
+                        if (emailSent) {
                             showNotification('Thank you! Your inquiry has been received. We\'ll review your requirements and send you a detailed quote within 24 hours.', 'success');
                             form.reset();
+                        } else {
+                            showNotification('There was an issue sending your inquiry. Please email us directly at info@zyntrotest.com', 'error');
                         }
                     } else {
                         // Generic form submission

@@ -17,8 +17,9 @@ app.use(express.static(path.join(__dirname), {
     index: 'index.html'
 }));
 
-// Resend email client
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Resend email client (graceful if key missing)
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
+if (!resend) console.warn('WARNING: RESEND_API_KEY not set — email sending disabled');
 const EMAIL_CONFIG = {
     from: process.env.FROM_EMAIL || 'noreply@zyntrotest.com',
     to: process.env.TO_EMAIL || 'info@zyntrotest.com',
@@ -156,9 +157,14 @@ app.get('/api/coas/:id', async (req, res) => {
 // --- CMS Content (public read) ---
 app.get('/api/cms/settings', async (req, res) => {
     try {
+        const SENSITIVE_KEYS = ['authnet_transaction_key', 'authnet_api_login_id', 'authnet_client_key', 'authnet_environment'];
         const result = await db.query('SELECT * FROM site_settings');
         const settings = {};
-        result.rows.forEach(row => { settings[row.key] = row.value; });
+        result.rows.forEach(row => {
+            if (!SENSITIVE_KEYS.includes(row.key)) {
+                settings[row.key] = row.value;
+            }
+        });
         res.json({ data: settings });
     } catch (err) {
         console.error('GET /api/cms/settings error:', err);
@@ -290,6 +296,10 @@ app.post('/api/send-email', async (req, res) => {
                 return res.status(400).json({ error: 'Invalid email type' });
         }
 
+        if (!resend) {
+            console.warn('Email send skipped — RESEND_API_KEY not configured');
+            return res.json({ success: true, data: { message: 'Email disabled (no API key)' } });
+        }
         const result = await resend.emails.send(emailOpts);
         res.json({ success: true, data: result });
     } catch (err) {
@@ -318,6 +328,104 @@ const ADMIN_TABLES = {
     'consultation_bookings': { pk: 'id' },
     'pricing_items': { pk: 'id' }
 };
+
+// Admin: get payment settings (masks transaction key)
+app.get('/api/admin/payment/settings', adminAuth, async (req, res) => {
+    try {
+        const result = await db.query(
+            "SELECT key, value FROM site_settings WHERE key IN ('authnet_api_login_id', 'authnet_transaction_key', 'authnet_client_key', 'authnet_environment')"
+        );
+        const settings = {};
+        result.rows.forEach(row => {
+            if (row.key === 'authnet_transaction_key' && row.value) {
+                settings[row.key] = '\u2022\u2022\u2022\u2022\u2022\u2022\u2022\u2022' + row.value.slice(-4);
+            } else {
+                settings[row.key] = row.value;
+            }
+        });
+
+        const hasLoginId = !!settings.authnet_api_login_id;
+        const hasTransactionKey = result.rows.some(r => r.key === 'authnet_transaction_key' && r.value);
+        const hasClientKey = !!settings.authnet_client_key;
+        const environment = settings.authnet_environment || 'sandbox';
+
+        res.json({
+            data: settings,
+            status: {
+                configured: hasLoginId && hasTransactionKey && hasClientKey,
+                hasLoginId,
+                hasTransactionKey,
+                hasClientKey,
+                environment
+            }
+        });
+    } catch (err) {
+        console.error('GET /api/admin/payment/settings error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Admin: test Authorize.net credentials
+app.post('/api/admin/payment/test', adminAuth, async (req, res) => {
+    try {
+        const credResult = await db.query(
+            "SELECT key, value FROM site_settings WHERE key IN ('authnet_api_login_id', 'authnet_transaction_key', 'authnet_environment')"
+        );
+        const creds = {};
+        credResult.rows.forEach(row => { creds[row.key] = row.value; });
+
+        if (!creds.authnet_api_login_id || !creds.authnet_transaction_key) {
+            return res.json({ success: false, error: 'API Login ID and Transaction Key must be saved before testing.' });
+        }
+
+        const isProduction = creds.authnet_environment === 'production';
+        const apiHost = isProduction ? 'api.authorize.net' : 'apitest.authorize.net';
+
+        const xmlRequest = `<?xml version="1.0" encoding="utf-8"?>
+        <authenticateTestRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">
+            <merchantAuthentication>
+                <name>${escapeXml(creds.authnet_api_login_id)}</name>
+                <transactionKey>${escapeXml(creds.authnet_transaction_key)}</transactionKey>
+            </merchantAuthentication>
+        </authenticateTestRequest>`;
+
+        const authNetResponse = await new Promise((resolve, reject) => {
+            const options = {
+                hostname: apiHost,
+                port: 443,
+                path: '/xml/v1/request.api',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/xml',
+                    'Content-Length': Buffer.byteLength(xmlRequest)
+                }
+            };
+
+            const request = https.request(options, (response) => {
+                let data = '';
+                response.on('data', chunk => { data += chunk; });
+                response.on('end', () => resolve(data));
+            });
+
+            request.on('error', reject);
+            request.setTimeout(15000, () => { request.destroy(); reject(new Error('Request timeout')); });
+            request.write(xmlRequest);
+            request.end();
+        });
+
+        const resultCode = extractXml(authNetResponse, 'resultCode');
+        const messageText = extractXml(authNetResponse, 'text');
+
+        if (resultCode === 'Ok') {
+            res.json({ success: true, message: 'Credentials verified successfully.', environment: isProduction ? 'production' : 'sandbox' });
+        } else {
+            res.json({ success: false, error: messageText || 'Authentication failed. Please check your credentials.' });
+        }
+    } catch (err) {
+        console.error('POST /api/admin/payment/test error:', err);
+        res.json({ success: false, error: 'Connection test failed: ' + err.message });
+    }
+});
 
 // Admin: List all records
 app.get('/api/admin/:table', adminAuth, async (req, res) => {
@@ -509,14 +617,266 @@ app.post('/api/admin/upload/media', adminAuth, mediaUpload.single('file'), async
     }
 });
 
+// ===========================
+// PAYMENT PROCESSING
+// ===========================
+const https = require('https');
+
+// Public endpoint: get payment config (only safe-to-expose values)
+app.get('/api/payment/config', async (req, res) => {
+    try {
+        const result = await db.query(
+            "SELECT key, value FROM site_settings WHERE key IN ('authnet_api_login_id', 'authnet_client_key', 'authnet_environment')"
+        );
+        const config = {};
+        result.rows.forEach(row => { config[row.key] = row.value; });
+        if (!config.authnet_api_login_id || !config.authnet_client_key) {
+            return res.json({ configured: false });
+        }
+        res.json({
+            configured: true,
+            apiLoginId: config.authnet_api_login_id,
+            clientKey: config.authnet_client_key,
+            environment: config.authnet_environment || 'sandbox'
+        });
+    } catch (err) {
+        console.error('GET /api/payment/config error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Charge endpoint: receives Accept.js nonce, charges via Authorize.net
+app.post('/api/payment/charge', async (req, res) => {
+    try {
+        const { opaqueData, amount, orderDetails } = req.body;
+
+        if (!opaqueData || !opaqueData.dataDescriptor || !opaqueData.dataValue) {
+            return res.status(400).json({ success: false, error: 'Missing payment token' });
+        }
+        if (!amount || amount <= 0) {
+            return res.status(400).json({ success: false, error: 'Invalid amount' });
+        }
+
+        // Load credentials from DB
+        const credResult = await db.query(
+            "SELECT key, value FROM site_settings WHERE key IN ('authnet_api_login_id', 'authnet_transaction_key', 'authnet_environment')"
+        );
+        const creds = {};
+        credResult.rows.forEach(row => { creds[row.key] = row.value; });
+
+        if (!creds.authnet_api_login_id || !creds.authnet_transaction_key) {
+            return res.status(500).json({ success: false, error: 'Payment gateway not configured' });
+        }
+
+        const isProduction = creds.authnet_environment === 'production';
+        const apiHost = isProduction ? 'api.authorize.net' : 'apitest.authorize.net';
+
+        // Build line items from order details
+        let lineItemsXml = '';
+        if (orderDetails && orderDetails.samples) {
+            orderDetails.samples.forEach((sample, i) => {
+                if (i < 30) { // Authorize.net max 30 line items
+                    const name = (sample.sampleName || `Sample ${i+1}`).substring(0, 31);
+                    const tests = (sample.tests || []).join(', ').substring(0, 255);
+                    lineItemsXml += `<lineItem>
+                        <itemId>${i+1}</itemId>
+                        <name>${escapeXml(name)}</name>
+                        <description>${escapeXml(tests)}</description>
+                        <quantity>1</quantity>
+                        <unitPrice>${sample.subtotal || 0}</unitPrice>
+                    </lineItem>`;
+                }
+            });
+        }
+
+        // Build order description
+        const orderNum = orderDetails?.orderNumber || ('ZT-' + Date.now());
+        const orderDesc = `ZyntroTest Order - ${orderDetails?.sampleCount || 0} sample(s)`;
+
+        // Build customer info
+        let billToXml = '';
+        if (orderDetails?.customer) {
+            const c = orderDetails.customer;
+            const nameParts = (c.name || '').split(' ');
+            const firstName = escapeXml((nameParts[0] || '').substring(0, 50));
+            const lastName = escapeXml((nameParts.slice(1).join(' ') || '').substring(0, 50));
+            billToXml = `<billTo>
+                <firstName>${firstName}</firstName>
+                <lastName>${lastName}</lastName>
+                ${c.company ? `<company>${escapeXml(c.company.substring(0, 50))}</company>` : ''}
+                ${c.billing?.street ? `<address>${escapeXml(c.billing.street.substring(0, 60))}</address>` : ''}
+                ${c.billing?.city ? `<city>${escapeXml(c.billing.city.substring(0, 40))}</city>` : ''}
+                ${c.billing?.state ? `<state>${escapeXml(c.billing.state.substring(0, 40))}</state>` : ''}
+                ${c.billing?.zip ? `<zip>${escapeXml(c.billing.zip.substring(0, 20))}</zip>` : ''}
+                <country>US</country>
+                ${c.phone ? `<phoneNumber>${escapeXml(c.phone.substring(0, 25))}</phoneNumber>` : ''}
+                ${c.email ? `<email>${escapeXml(c.email.substring(0, 255))}</email>` : ''}
+            </billTo>`;
+        }
+
+        // Authorize.net XML API request
+        const xmlRequest = `<?xml version="1.0" encoding="utf-8"?>
+        <createTransactionRequest xmlns="AnetApi/xml/v1/schema/AnetApiSchema.xsd">
+            <merchantAuthentication>
+                <name>${escapeXml(creds.authnet_api_login_id)}</name>
+                <transactionKey>${escapeXml(creds.authnet_transaction_key)}</transactionKey>
+            </merchantAuthentication>
+            <transactionRequest>
+                <transactionType>authCaptureTransaction</transactionType>
+                <amount>${parseFloat(amount).toFixed(2)}</amount>
+                <payment>
+                    <opaqueData>
+                        <dataDescriptor>${escapeXml(opaqueData.dataDescriptor)}</dataDescriptor>
+                        <dataValue>${escapeXml(opaqueData.dataValue)}</dataValue>
+                    </opaqueData>
+                </payment>
+                <order>
+                    <invoiceNumber>${escapeXml(orderNum.substring(0, 20))}</invoiceNumber>
+                    <description>${escapeXml(orderDesc.substring(0, 255))}</description>
+                </order>
+                ${lineItemsXml ? `<lineItems>${lineItemsXml}</lineItems>` : ''}
+                ${billToXml}
+            </transactionRequest>
+        </createTransactionRequest>`;
+
+        // Send to Authorize.net
+        const authNetResponse = await new Promise((resolve, reject) => {
+            const options = {
+                hostname: apiHost,
+                port: 443,
+                path: '/xml/v1/request.api',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/xml',
+                    'Content-Length': Buffer.byteLength(xmlRequest)
+                }
+            };
+
+            const request = https.request(options, (response) => {
+                let data = '';
+                response.on('data', chunk => { data += chunk; });
+                response.on('end', () => resolve(data));
+            });
+
+            request.on('error', reject);
+            request.setTimeout(30000, () => { request.destroy(); reject(new Error('Request timeout')); });
+            request.write(xmlRequest);
+            request.end();
+        });
+
+        // Parse XML response (simple regex for known fields)
+        const resultCode = extractXml(authNetResponse, 'resultCode');
+        const messageCode = extractXml(authNetResponse, 'code');
+        const messageText = extractXml(authNetResponse, 'text') || extractXml(authNetResponse, 'description');
+        const transId = extractXml(authNetResponse, 'transId');
+        const authCode = extractXml(authNetResponse, 'authCode');
+        const responseCode = extractXml(authNetResponse, 'responseCode');
+
+        if (resultCode === 'Ok' && responseCode === '1') {
+            console.log(`Payment success: ${orderNum} - $${amount} - transId: ${transId}`);
+
+            // Send order confirmation email
+            if (resend && orderDetails?.customer?.email) {
+                try {
+                    const sampleRows = (orderDetails.samples || []).map(s =>
+                        `<tr><td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${s.sampleName || 'N/A'}</td>` +
+                        `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${s.batchNumber || '—'}</td>` +
+                        `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${(s.tests || []).join(', ')}</td>` +
+                        `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;text-align:right;">$${(s.subtotal || 0).toFixed(2)}</td></tr>`
+                    ).join('');
+
+                    const emailHtml = `
+                    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+                        <div style="background:#2563eb;color:white;padding:1.5rem;text-align:center;border-radius:8px 8px 0 0;">
+                            <h1 style="margin:0;font-size:1.5rem;">Order Confirmation</h1>
+                            <p style="margin:0.5rem 0 0;opacity:0.9;">ZyntroTest Laboratory</p>
+                        </div>
+                        <div style="padding:1.5rem;background:#fff;border:1px solid #e2e8f0;">
+                            <p>Thank you for your order!</p>
+                            <div style="background:#eff6ff;border:2px solid #2563eb;border-radius:8px;padding:1rem;text-align:center;margin:1rem 0;">
+                                <strong>Order Number: ${orderNum}</strong><br>
+                                <span style="font-size:0.9rem;color:#64748b;">Transaction ID: ${transId}</span>
+                            </div>
+                            <table style="width:100%;border-collapse:collapse;margin:1rem 0;">
+                                <thead><tr style="background:#f8fafc;">
+                                    <th style="padding:8px 12px;text-align:left;font-size:0.85rem;">Sample</th>
+                                    <th style="padding:8px 12px;text-align:left;font-size:0.85rem;">Batch #</th>
+                                    <th style="padding:8px 12px;text-align:left;font-size:0.85rem;">Tests</th>
+                                    <th style="padding:8px 12px;text-align:right;font-size:0.85rem;">Subtotal</th>
+                                </tr></thead>
+                                <tbody>${sampleRows}</tbody>
+                            </table>
+                            ${orderDetails.discountLabel ? `<p style="color:#16a34a;font-weight:600;">${orderDetails.discountLabel}: -$${(orderDetails.discountAmount || 0).toFixed(2)}</p>` : ''}
+                            <p style="font-size:1.25rem;font-weight:700;">Total Charged: $${parseFloat(amount).toFixed(2)}</p>
+                            <hr style="border:none;border-top:1px solid #e2e8f0;margin:1.5rem 0;">
+                            <h3 style="margin-bottom:0.5rem;">Next Step: Ship Your Samples</h3>
+                            <ol style="color:#475569;font-size:0.9rem;">
+                                <li>Package samples per our shipping guidelines</li>
+                                <li>Label the box with Order #: <strong>${orderNum}</strong></li>
+                                <li>Ship to: <strong>ZyntroTest Laboratory, 11134-A Hopes Creek Road, College Station, TX 77845</strong></li>
+                                <li>Email tracking # to info@zyntrotest.com</li>
+                            </ol>
+                        </div>
+                    </div>`;
+
+                    await resend.emails.send({
+                        from: EMAIL_CONFIG.from,
+                        to: orderDetails.customer.email,
+                        bcc: EMAIL_CONFIG.bcc,
+                        subject: `ZyntroTest Order Confirmation - ${orderNum}`,
+                        html: emailHtml
+                    });
+
+                    // Also send to lab
+                    await resend.emails.send({
+                        from: EMAIL_CONFIG.from,
+                        to: EMAIL_CONFIG.to,
+                        subject: `New Order Received - ${orderNum} - $${parseFloat(amount).toFixed(2)}`,
+                        html: emailHtml
+                    });
+                } catch (emailErr) {
+                    console.error('Order confirmation email failed:', emailErr);
+                }
+            }
+
+            res.json({ success: true, transactionId: transId, authCode, orderNumber: orderNum });
+        } else {
+            const errorMsg = messageText || 'Transaction declined';
+            console.error(`Payment failed: ${orderNum} - ${errorMsg}`);
+            res.json({ success: false, error: errorMsg, errorCode: messageCode });
+        }
+    } catch (err) {
+        console.error('POST /api/payment/charge error:', err);
+        res.status(500).json({ success: false, error: 'Payment processing failed. Please try again.' });
+    }
+});
+
+// XML helpers for Authorize.net
+function escapeXml(str) {
+    if (!str) return '';
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
+function extractXml(xml, tag) {
+    const match = xml.match(new RegExp(`<${tag}>([^<]*)</${tag}>`));
+    return match ? match[1] : null;
+}
+
 // Health check
 app.get('/api/health', async (req, res) => {
-    try {
-        await db.query('SELECT 1');
-        res.json({ status: 'ok', database: 'connected' });
-    } catch (err) {
-        res.status(503).json({ status: 'error', database: 'disconnected', error: err.message });
+    let dbStatus = 'unknown';
+    for (let attempt = 0; attempt < 2; attempt++) {
+        try {
+            await db.query('SELECT 1');
+            dbStatus = 'connected';
+            break;
+        } catch (err) {
+            dbStatus = 'reconnecting';
+            if (attempt === 0) await new Promise(r => setTimeout(r, 500));
+        }
     }
+    // Always return 200 so Fly doesn't kill the app over transient DB blips
+    res.json({ status: 'ok', database: dbStatus });
 });
 
 // SPA fallback - serve index.html for unmatched routes
