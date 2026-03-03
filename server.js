@@ -14,7 +14,16 @@ app.use(express.urlencoded({ extended: true }));
 // Static files - serve from project root
 app.use(express.static(path.join(__dirname), {
     extensions: ['html'],
-    index: 'index.html'
+    index: 'index.html',
+    setHeaders: (res, filePath) => {
+        if (filePath.endsWith('.html')) {
+            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+        } else if (filePath.match(/\.(js|css)$/)) {
+            res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+        }
+    }
 }));
 
 // Resend email client (graceful if key missing)
