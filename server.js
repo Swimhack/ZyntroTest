@@ -48,6 +48,21 @@ function adminAuth(req, res, next) {
     res.status(401).json({ error: 'Unauthorized' });
 }
 
+// --- Admin Login (returns token for authenticated admin sessions) ---
+app.post('/api/admin/login', (req, res) => {
+    const { username, password } = req.body;
+    const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'drew';
+    const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'ZyntroAdmin2025!';
+
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+        // Return the admin token (or a dev-mode flag if no token configured)
+        const token = process.env.ADMIN_TOKEN || 'dev-mode';
+        res.json({ success: true, token });
+    } else {
+        res.status(401).json({ success: false, error: 'Invalid username or password' });
+    }
+});
+
 // ===========================
 // PUBLIC API ROUTES
 // ===========================
@@ -90,6 +105,113 @@ app.post('/api/sample', async (req, res) => {
     } catch (err) {
         console.error('POST /api/sample error:', err);
         res.status(500).json({ error: err.message });
+    }
+});
+
+// --- Sample Order (bank transfer / no-payment mode) ---
+app.post('/api/sample/order', async (req, res) => {
+    try {
+        const { customer, samples, totals } = req.body;
+        if (!customer || !customer.name || !customer.email) {
+            return res.status(400).json({ success: false, error: 'Customer name and email are required' });
+        }
+
+        const orderNum = 'ZT-' + Date.now();
+        const testLabels = (samples || []).map(s =>
+            (s.tests || []).map(t => typeof t === 'string' ? t : t.label).join(', ')
+        ).join('; ');
+
+        // Save to sample_submissions
+        await db.query(
+            `INSERT INTO sample_submissions (client_name, email, phone, company, sample_type, sample_count, analysis_requested, message, status, created_at, updated_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'unread', now(), now())`,
+            [
+                customer.name,
+                customer.email,
+                customer.phone || null,
+                customer.company || null,
+                (samples || []).map(s => s.name).join(', ') || null,
+                samples ? samples.length : 0,
+                testLabels || null,
+                `Order: ${orderNum} | Payment: Bank Transfer | Amount: $${(totals?.finalTotal || 0).toFixed(2)}` +
+                (totals?.discountLabel ? ` | ${totals.discountLabel}` : '')
+            ]
+        );
+
+        // Send confirmation emails
+        if (resend) {
+            try {
+                const sampleRows = (samples || []).map(s => {
+                    const tests = (s.tests || []).map(t => typeof t === 'string' ? t : t.label).join(', ');
+                    const subtotal = (s.tests || []).reduce((sum, t) => sum + (typeof t === 'object' ? (t.price || 0) : 0), 0);
+                    return `<tr><td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${s.name || 'N/A'}</td>` +
+                    `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${s.batchNumber || '—'}</td>` +
+                    `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${tests}</td>` +
+                    `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;text-align:right;">$${subtotal.toFixed(2)}</td></tr>`;
+                }).join('');
+
+                const emailHtml = `
+                <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
+                    <div style="background:#2563eb;color:white;padding:1.5rem;text-align:center;border-radius:8px 8px 0 0;">
+                        <h1 style="margin:0;font-size:1.5rem;">Order Confirmation</h1>
+                        <p style="margin:0.5rem 0 0;opacity:0.9;">ZyntroTest Laboratory</p>
+                    </div>
+                    <div style="padding:1.5rem;background:#fff;border:1px solid #e2e8f0;">
+                        <p>Thank you for your order!</p>
+                        <div style="background:#eff6ff;border:2px solid #2563eb;border-radius:8px;padding:1rem;text-align:center;margin:1rem 0;">
+                            <strong>Order Number: ${orderNum}</strong><br>
+                            <span style="font-size:0.9rem;color:#64748b;">Payment: Bank Transfer</span>
+                        </div>
+                        <table style="width:100%;border-collapse:collapse;margin:1rem 0;">
+                            <thead><tr style="background:#f8fafc;">
+                                <th style="padding:8px 12px;text-align:left;font-size:0.85rem;">Sample</th>
+                                <th style="padding:8px 12px;text-align:left;font-size:0.85rem;">Batch #</th>
+                                <th style="padding:8px 12px;text-align:left;font-size:0.85rem;">Tests</th>
+                                <th style="padding:8px 12px;text-align:right;font-size:0.85rem;">Subtotal</th>
+                            </tr></thead>
+                            <tbody>${sampleRows}</tbody>
+                        </table>
+                        ${totals?.discountLabel ? `<p style="color:#16a34a;font-weight:600;">${totals.discountLabel}: -$${(totals.discountAmount || 0).toFixed(2)}</p>` : ''}
+                        <p style="font-size:1.25rem;font-weight:700;">Total Due: $${(totals?.finalTotal || 0).toFixed(2)}</p>
+                        <div style="background:#fef3c7;border:1px solid #f59e0b;border-radius:6px;padding:1rem;margin:1rem 0;">
+                            <strong>Payment via Bank Transfer</strong>
+                            <p style="margin:0.5rem 0 0;font-size:0.9rem;color:#92400e;">Please complete your bank transfer and reference Order # <strong>${orderNum}</strong>. Contact info@zyntrotest.com for transfer details.</p>
+                        </div>
+                        <hr style="border:none;border-top:1px solid #e2e8f0;margin:1.5rem 0;">
+                        <h3 style="margin-bottom:0.5rem;">Next Step: Ship Your Samples</h3>
+                        <ol style="color:#475569;font-size:0.9rem;">
+                            <li>Package samples per our shipping guidelines</li>
+                            <li>Label the box with Order #: <strong>${orderNum}</strong></li>
+                            <li>Ship to: <strong>ZyntroTest Laboratory, 11134-A Hopes Creek Road, College Station, TX 77845</strong></li>
+                            <li>Email tracking # to info@zyntrotest.com</li>
+                        </ol>
+                    </div>
+                </div>`;
+
+                await resend.emails.send({
+                    from: EMAIL_CONFIG.from,
+                    to: customer.email,
+                    bcc: EMAIL_CONFIG.bcc,
+                    subject: `ZyntroTest Order Confirmation - ${orderNum}`,
+                    html: emailHtml
+                });
+
+                await resend.emails.send({
+                    from: EMAIL_CONFIG.from,
+                    to: EMAIL_CONFIG.to,
+                    subject: `New Order (Bank Transfer) - ${orderNum} - $${(totals?.finalTotal || 0).toFixed(2)}`,
+                    html: emailHtml
+                });
+            } catch (emailErr) {
+                console.error('Order confirmation email failed:', emailErr);
+            }
+        }
+
+        console.log(`Bank transfer order: ${orderNum} - $${(totals?.finalTotal || 0).toFixed(2)} - ${customer.name}`);
+        res.json({ success: true, orderNumber: orderNum });
+    } catch (err) {
+        console.error('POST /api/sample/order error:', err);
+        res.status(500).json({ success: false, error: err.message });
     }
 });
 
@@ -436,6 +558,19 @@ app.post('/api/admin/payment/test', adminAuth, async (req, res) => {
     }
 });
 
+// Admin: Count records (for stats) — MUST be before :table/:id to avoid "count" matching as :id
+app.get('/api/admin/:table/count', adminAuth, async (req, res) => {
+    const table = req.params.table;
+    if (!ADMIN_TABLES[table]) return res.status(400).json({ error: 'Invalid table' });
+    try {
+        const result = await db.query(`SELECT COUNT(*) FROM ${table}`);
+        res.json({ count: parseInt(result.rows[0].count) });
+    } catch (err) {
+        console.error(`GET /api/admin/${table}/count error:`, err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Admin: List all records
 app.get('/api/admin/:table', adminAuth, async (req, res) => {
     const table = req.params.table;
@@ -557,19 +692,6 @@ app.put('/api/admin/:table/upsert', adminAuth, async (req, res) => {
     }
 });
 
-// Admin: Count records (for stats)
-app.get('/api/admin/:table/count', adminAuth, async (req, res) => {
-    const table = req.params.table;
-    if (!ADMIN_TABLES[table]) return res.status(400).json({ error: 'Invalid table' });
-    try {
-        const result = await db.query(`SELECT COUNT(*) FROM ${table}`);
-        res.json({ count: parseInt(result.rows[0].count) });
-    } catch (err) {
-        console.error(`GET /api/admin/${table}/count error:`, err);
-        res.status(500).json({ error: err.message });
-    }
-});
-
 // Admin: COA file upload
 const multer = require('multer');
 const upload = multer({
@@ -685,22 +807,24 @@ app.post('/api/payment/charge', async (req, res) => {
         if (orderDetails && orderDetails.samples) {
             orderDetails.samples.forEach((sample, i) => {
                 if (i < 30) { // Authorize.net max 30 line items
-                    const name = (sample.sampleName || `Sample ${i+1}`).substring(0, 31);
-                    const tests = (sample.tests || []).join(', ').substring(0, 255);
+                    const name = (sample.name || `Sample ${i+1}`).substring(0, 31);
+                    const tests = (sample.tests || []).map(t => typeof t === 'string' ? t : t.label).join(', ').substring(0, 255);
+                    const subtotal = (sample.tests || []).reduce((sum, t) => sum + (typeof t === 'object' ? (t.price || 0) : 0), 0);
                     lineItemsXml += `<lineItem>
                         <itemId>${i+1}</itemId>
                         <name>${escapeXml(name)}</name>
                         <description>${escapeXml(tests)}</description>
                         <quantity>1</quantity>
-                        <unitPrice>${sample.subtotal || 0}</unitPrice>
+                        <unitPrice>${subtotal.toFixed(2)}</unitPrice>
                     </lineItem>`;
                 }
             });
         }
 
         // Build order description
+        const sampleCount = orderDetails?.totals?.sampleCount || orderDetails?.samples?.length || 0;
         const orderNum = orderDetails?.orderNumber || ('ZT-' + Date.now());
-        const orderDesc = `ZyntroTest Order - ${orderDetails?.sampleCount || 0} sample(s)`;
+        const orderDesc = `ZyntroTest Order - ${sampleCount} sample(s)`;
 
         // Build customer info
         let billToXml = '';
@@ -787,12 +911,14 @@ app.post('/api/payment/charge', async (req, res) => {
             // Send order confirmation email
             if (resend && orderDetails?.customer?.email) {
                 try {
-                    const sampleRows = (orderDetails.samples || []).map(s =>
-                        `<tr><td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${s.sampleName || 'N/A'}</td>` +
+                    const sampleRows = (orderDetails.samples || []).map(s => {
+                        const testLabels = (s.tests || []).map(t => typeof t === 'string' ? t : t.label).join(', ');
+                        const subtotal = (s.tests || []).reduce((sum, t) => sum + (typeof t === 'object' ? (t.price || 0) : 0), 0);
+                        return `<tr><td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${s.name || 'N/A'}</td>` +
                         `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${s.batchNumber || '—'}</td>` +
-                        `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${(s.tests || []).join(', ')}</td>` +
-                        `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;text-align:right;">$${(s.subtotal || 0).toFixed(2)}</td></tr>`
-                    ).join('');
+                        `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;">${testLabels}</td>` +
+                        `<td style="padding:6px 12px;border-bottom:1px solid #e2e8f0;text-align:right;">$${subtotal.toFixed(2)}</td></tr>`;
+                    }).join('');
 
                     const emailHtml = `
                     <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
@@ -815,7 +941,7 @@ app.post('/api/payment/charge', async (req, res) => {
                                 </tr></thead>
                                 <tbody>${sampleRows}</tbody>
                             </table>
-                            ${orderDetails.discountLabel ? `<p style="color:#16a34a;font-weight:600;">${orderDetails.discountLabel}: -$${(orderDetails.discountAmount || 0).toFixed(2)}</p>` : ''}
+                            ${orderDetails.totals?.discountLabel ? `<p style="color:#16a34a;font-weight:600;">${orderDetails.totals.discountLabel}: -$${(orderDetails.totals.discountAmount || 0).toFixed(2)}</p>` : ''}
                             <p style="font-size:1.25rem;font-weight:700;">Total Charged: $${parseFloat(amount).toFixed(2)}</p>
                             <hr style="border:none;border-top:1px solid #e2e8f0;margin:1.5rem 0;">
                             <h3 style="margin-bottom:0.5rem;">Next Step: Ship Your Samples</h3>

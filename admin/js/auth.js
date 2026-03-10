@@ -8,11 +8,7 @@ const Auth = {
     SESSION_DURATION: 8 * 60 * 60 * 1000, // 8 hours in milliseconds
     REMEMBER_DURATION: 30 * 24 * 60 * 60 * 1000, // 30 days in milliseconds
     
-    // Default credentials (In production, this should be server-side)
-    CREDENTIALS: {
-        username: 'drew',
-        password: 'ZyntroAdmin2025!'
-    },
+    // Credentials are now validated server-side via /api/admin/login
     
     /**
      * Attempt to log in with provided credentials
@@ -22,35 +18,40 @@ const Auth = {
      * @returns {Promise<{success: boolean, message: string}>}
      */
     async login(username, password, remember = false) {
-        // Simulate network delay
-        await this.delay(500);
-        
-        if (username === this.CREDENTIALS.username && password === this.CREDENTIALS.password) {
-            const session = {
-                username: username,
-                loginTime: Date.now(),
-                expiresAt: Date.now() + this.SESSION_DURATION,
-                remember: remember
-            };
-            
-            // Store session
-            localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
-            
-            // If remember me, also store in longer-term storage
-            if (remember) {
-                const rememberToken = {
+        try {
+            // Authenticate with server to get admin token
+            const result = await window.ApiClient.adminLogin(username, password);
+
+            if (result.success) {
+                const session = {
                     username: username,
-                    createdAt: Date.now(),
-                    expiresAt: Date.now() + this.REMEMBER_DURATION
+                    loginTime: Date.now(),
+                    expiresAt: Date.now() + this.SESSION_DURATION,
+                    remember: remember
                 };
-                localStorage.setItem(this.REMEMBER_KEY, JSON.stringify(rememberToken));
+
+                // Store session
+                localStorage.setItem(this.SESSION_KEY, JSON.stringify(session));
+
+                // If remember me, also store in longer-term storage
+                if (remember) {
+                    const rememberToken = {
+                        username: username,
+                        createdAt: Date.now(),
+                        expiresAt: Date.now() + this.REMEMBER_DURATION
+                    };
+                    localStorage.setItem(this.REMEMBER_KEY, JSON.stringify(rememberToken));
+                }
+
+                console.log('Login successful for user:', username);
+                return { success: true, message: 'Login successful' };
+            } else {
+                console.log('Login failed for user:', username);
+                return { success: false, message: result.error || 'Invalid username or password' };
             }
-            
-            console.log('Login successful for user:', username);
-            return { success: true, message: 'Login successful' };
-        } else {
-            console.log('Login failed for user:', username);
-            return { success: false, message: 'Invalid username or password' };
+        } catch (error) {
+            console.error('Login error:', error);
+            return { success: false, message: error.message || 'Login failed' };
         }
     },
     
@@ -60,6 +61,7 @@ const Auth = {
     logout() {
         localStorage.removeItem(this.SESSION_KEY);
         localStorage.removeItem(this.REMEMBER_KEY);
+        if (window.ApiClient) window.ApiClient.clearAdminToken();
         console.log('User logged out');
         
         // Redirect to login page

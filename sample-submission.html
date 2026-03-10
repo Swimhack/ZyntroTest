@@ -1328,6 +1328,9 @@
 
     // ========== REVIEW & PAY ==========
     function showReview() {
+        // Hide checkout section if visible (prevents stale data when re-entering review)
+        document.getElementById('customer-checkout').style.display = 'none';
+
         // Validate: every sample needs at least one test and required fields
         let valid = true;
         let firstError = null;
@@ -1451,10 +1454,15 @@
 
     function hideReview() {
         document.getElementById('review-section').style.display = 'none';
+        document.getElementById('customer-checkout').style.display = 'none';
+        // Restore sticky totals bar when going back to sample editing
+        renderTotalsBar();
     }
 
     // ========== CUSTOMER CHECKOUT ==========
     function showCustomerCheckout() {
+        // Hide sticky totals bar to prevent accidental "Review & Pay" clicks wiping checkout data
+        document.getElementById('totals-bar').style.display = 'none';
         const el = document.getElementById('customer-checkout');
         el.innerHTML = `
             <h3>Your Information</h3>
@@ -1576,6 +1584,9 @@
         script.src = env === 'production'
             ? 'https://js.authorize.net/v1/Accept.js'
             : 'https://jstest.authorize.net/v1/Accept.js';
+        script.onerror = function() {
+            console.error('Failed to load Accept.js from Authorize.net');
+        };
         document.head.appendChild(script);
     }
 
@@ -1602,7 +1613,7 @@
     });
 
     // ========== CHECKOUT ==========
-    function handleCheckout() {
+    async function handleCheckout() {
         const fields = [
             { id: 'co-name', label: 'Full Name' },
             { id: 'co-email', label: 'Email Address' },
@@ -1687,8 +1698,8 @@
 
         // Check if Accept.js is available and payment is configured
         if (!paymentConfig || !paymentConfig.apiLoginId || !paymentConfig.clientKey) {
-            // Fallback: mock mode for static preview (Netlify)
-            completeMockCheckout();
+            // No payment gateway — submit as bank transfer order
+            await submitBankTransferOrder();
             return;
         }
 
@@ -1713,20 +1724,44 @@
             cardCode: cvv
         };
 
-        Accept.dispatchData({ authData, cardData }, acceptResponseHandler);
+        try {
+            Accept.dispatchData({ authData, cardData }, acceptResponseHandler);
+        } catch (err) {
+            console.error('Accept.dispatchData error:', err);
+            setCheckoutProcessing(false);
+            showPaymentError('Payment system error. Please refresh the page and try again.');
+        }
     }
 
     function acceptResponseHandler(response) {
-        if (response.messages.resultCode === 'Error') {
-            setCheckoutProcessing(false);
-            const errors = response.messages.message.map(m => m.text).join('. ');
-            showPaymentError(errors);
-            return;
-        }
+        try {
+            if (!response || !response.messages) {
+                setCheckoutProcessing(false);
+                showPaymentError('No response from payment gateway. Please try again.');
+                return;
+            }
 
-        // Got the payment nonce — send to server
-        const opaqueData = response.opaqueData;
-        chargePayment(opaqueData);
+            if (response.messages.resultCode === 'Error') {
+                setCheckoutProcessing(false);
+                const msgs = response.messages.message;
+                const errors = Array.isArray(msgs) ? msgs.map(m => m.text).join('. ') : (msgs && msgs.text ? msgs.text : 'Payment declined. Please check your card details.');
+                showPaymentError(errors);
+                return;
+            }
+
+            if (!response.opaqueData) {
+                setCheckoutProcessing(false);
+                showPaymentError('Payment token not received. Please try again.');
+                return;
+            }
+
+            // Got the payment nonce — send to server
+            chargePayment(response.opaqueData);
+        } catch (err) {
+            console.error('acceptResponseHandler error:', err);
+            setCheckoutProcessing(false);
+            showPaymentError('Payment processing error: ' + (err.message || 'Unknown error. Please try again.'));
+        }
     }
 
     async function chargePayment(opaqueData) {
@@ -1785,6 +1820,15 @@
                 })
             });
 
+            if (!resp.ok) {
+                setCheckoutProcessing(false);
+                const text = await resp.text();
+                let errorMsg = 'Payment server error (HTTP ' + resp.status + ')';
+                try { errorMsg = JSON.parse(text).error || errorMsg; } catch(e) {}
+                showPaymentError(errorMsg);
+                return;
+            }
+
             const data = await resp.json();
             setCheckoutProcessing(false);
 
@@ -1794,15 +1838,62 @@
                 showPaymentError(data.error || 'Payment failed. Please check your card details and try again.');
             }
         } catch (err) {
+            console.error('chargePayment error:', err);
             setCheckoutProcessing(false);
             showPaymentError('Network error. Please check your connection and try again.');
         }
     }
 
-    // Mock checkout for static preview (Netlify) where no server is available
-    function completeMockCheckout() {
-        const orderNum = 'ZT-2026-' + String(Math.floor(Math.random() * 9000) + 1000);
-        showConfirmationModal(null, orderNum);
+    // Submit order without payment (bank transfer mode)
+    async function submitBankTransferOrder() {
+        setCheckoutProcessing(true);
+        try {
+            const totals = getGrandTotals();
+            const resp = await fetch('/api/sample/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    customer: {
+                        name: document.getElementById('co-name').value.trim(),
+                        company: document.getElementById('co-company').value.trim(),
+                        email: document.getElementById('co-email').value.trim(),
+                        phone: document.getElementById('co-phone').value.trim(),
+                        billing: {
+                            street: document.getElementById('co-street').value.trim(),
+                            city: document.getElementById('co-city').value.trim(),
+                            state: document.getElementById('co-state').value,
+                            zip: document.getElementById('co-zip').value.trim()
+                        }
+                    },
+                    samples: state.samples.map((s, idx) => ({
+                        name: s.sampleName || 'Sample #' + (idx + 1),
+                        quantity: s.quantity,
+                        batchNumber: s.batchNumber,
+                        specialInstructions: s.specialInstructions,
+                        tests: TEST_CATALOG.filter(t => s.tests[t.key]).map(t => ({ label: t.label, price: t.price }))
+                    })),
+                    totals: {
+                        rawTotal: totals.rawTotal,
+                        discountPercent: totals.discountPercent,
+                        discountAmount: totals.discountAmount,
+                        discountLabel: totals.discountLabel,
+                        finalTotal: totals.finalTotal,
+                        sampleCount: totals.sampleCount
+                    }
+                })
+            });
+            const data = await resp.json();
+            if (data.success) {
+                showConfirmationModal(null, data.orderNumber);
+            } else {
+                showPaymentError(data.error || 'Order submission failed. Please try again.');
+            }
+        } catch (err) {
+            console.error('Bank transfer order error:', err);
+            showPaymentError('Could not submit order. Please try again or contact info@zyntrotest.com.');
+        } finally {
+            setCheckoutProcessing(false);
+        }
     }
 
     function showConfirmationModal(transactionId, orderNumber) {

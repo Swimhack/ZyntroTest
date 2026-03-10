@@ -5,6 +5,9 @@ const ApiClient = {
     // Base URL (empty = same origin)
     baseUrl: '',
 
+    // Admin token storage key
+    ADMIN_TOKEN_KEY: 'zyntro_admin_token',
+
     async _fetch(url, options = {}) {
         const defaults = {
             headers: { 'Content-Type': 'application/json' }
@@ -18,6 +21,41 @@ const ApiClient = {
             throw error;
         }
         return json;
+    },
+
+    // Fetch with admin token header included
+    async _adminFetch(url, options = {}) {
+        const token = this.getAdminToken();
+        const headers = { 'Content-Type': 'application/json' };
+        if (token) headers['x-admin-token'] = token;
+        if (options.headers) Object.assign(headers, options.headers);
+        return this._fetch(url, { ...options, headers });
+    },
+
+    // Login to get admin token from server
+    async adminLogin(username, password) {
+        const result = await this._fetch('/api/admin/login', {
+            method: 'POST',
+            body: JSON.stringify({ username, password })
+        });
+        if (result.success && result.token) {
+            localStorage.setItem(this.ADMIN_TOKEN_KEY, result.token);
+        }
+        return result;
+    },
+
+    // Get stored admin token
+    getAdminToken() {
+        try {
+            return localStorage.getItem(this.ADMIN_TOKEN_KEY);
+        } catch (e) {
+            return null;
+        }
+    },
+
+    // Clear admin token on logout
+    clearAdminToken() {
+        localStorage.removeItem(this.ADMIN_TOKEN_KEY);
     },
 
     // ===========================
@@ -99,42 +137,42 @@ const ApiClient = {
     // ===========================
 
     async adminList(table) {
-        return this._fetch('/api/admin/' + table);
+        return this._adminFetch('/api/admin/' + table);
     },
 
     async adminGet(table, id) {
-        return this._fetch('/api/admin/' + table + '/' + encodeURIComponent(id));
+        return this._adminFetch('/api/admin/' + table + '/' + encodeURIComponent(id));
     },
 
     async adminInsert(table, data) {
-        return this._fetch('/api/admin/' + table, {
+        return this._adminFetch('/api/admin/' + table, {
             method: 'POST',
             body: JSON.stringify(data)
         });
     },
 
     async adminUpdate(table, id, data) {
-        return this._fetch('/api/admin/' + table + '/' + encodeURIComponent(id), {
+        return this._adminFetch('/api/admin/' + table + '/' + encodeURIComponent(id), {
             method: 'PATCH',
             body: JSON.stringify(data)
         });
     },
 
     async adminDelete(table, id) {
-        return this._fetch('/api/admin/' + table + '/' + encodeURIComponent(id), {
+        return this._adminFetch('/api/admin/' + table + '/' + encodeURIComponent(id), {
             method: 'DELETE'
         });
     },
 
     async adminUpsert(table, data) {
-        return this._fetch('/api/admin/' + table + '/upsert', {
+        return this._adminFetch('/api/admin/' + table + '/upsert', {
             method: 'PUT',
             body: JSON.stringify(data)
         });
     },
 
     async adminCount(table) {
-        return this._fetch('/api/admin/' + table + '/count');
+        return this._adminFetch('/api/admin/' + table + '/count');
     },
 
     // ===========================
@@ -144,8 +182,12 @@ const ApiClient = {
     async uploadCOAFile(file) {
         const formData = new FormData();
         formData.append('file', file);
+        const headers = {};
+        const token = this.getAdminToken();
+        if (token) headers['x-admin-token'] = token;
         const response = await fetch(this.baseUrl + '/api/admin/upload/coa', {
             method: 'POST',
+            headers,
             body: formData
         });
         const json = await response.json();
@@ -158,11 +200,11 @@ const ApiClient = {
     // ===========================
 
     async getPaymentSettings() {
-        return this._fetch('/api/admin/payment/settings');
+        return this._adminFetch('/api/admin/payment/settings');
     },
 
     async testPaymentConnection() {
-        return this._fetch('/api/admin/payment/test', {
+        return this._adminFetch('/api/admin/payment/test', {
             method: 'POST'
         });
     },
@@ -172,8 +214,12 @@ const ApiClient = {
         formData.append('file', file);
         if (title) formData.append('title', title);
         if (altText) formData.append('alt_text', altText);
+        const headers = {};
+        const token = this.getAdminToken();
+        if (token) headers['x-admin-token'] = token;
         const response = await fetch(this.baseUrl + '/api/admin/upload/media', {
             method: 'POST',
+            headers,
             body: formData
         });
         const json = await response.json();
