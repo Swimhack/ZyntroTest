@@ -438,7 +438,35 @@ class CMSManager {
         });
     }
 
-    editService(serviceId) { this.showNotification('Service editing coming soon!', 'info'); }
+    async editService(serviceId) {
+        try {
+            const result = await window.ApiClient.adminGet('services', serviceId);
+            const service = result.data;
+            if (!service) { this.showNotification('Service not found', 'error'); return; }
+            const features = (() => { try { const f = typeof service.features === 'string' ? JSON.parse(service.features) : service.features; return Array.isArray(f) ? f.join('\n') : ''; } catch(e) { return ''; } })();
+            this.createModal('Edit Service', `<form>
+                <div class="form-group"><label class="form-label">Service Title</label><input type="text" name="title" class="form-input" value="${(service.title || '').replace(/"/g, '&quot;')}" required></div>
+                <div class="form-group"><label class="form-label">Subtitle</label><input type="text" name="subtitle" class="form-input" value="${(service.subtitle || '').replace(/"/g, '&quot;')}"></div>
+                <div class="form-group"><label class="form-label">Description</label><textarea name="description" class="form-textarea" rows="4">${service.description || ''}</textarea></div>
+                <div class="form-group"><label class="form-label">Base Price</label><input type="text" name="base_price" class="form-input" value="${(service.base_price || '').replace(/"/g, '&quot;')}"></div>
+                <div class="form-group"><label class="form-label">Status</label><select name="status" class="form-select"><option value="active" ${service.status === 'active' ? 'selected' : ''}>Active</option><option value="inactive" ${service.status === 'inactive' ? 'selected' : ''}>Inactive</option></select></div>
+                <div class="form-group"><label class="form-label">Features (one per line)</label><textarea name="features" class="form-textarea" rows="4">${features}</textarea></div>
+            </form>`, async (formData) => {
+                await window.ApiClient.adminUpdate('services', serviceId, {
+                    title: formData.title,
+                    subtitle: formData.subtitle,
+                    description: formData.description,
+                    base_price: formData.base_price,
+                    status: formData.status,
+                    features: JSON.stringify(formData.features ? formData.features.split('\n').filter(f => f.trim()) : [])
+                });
+                this.showNotification('Service updated successfully!', 'success');
+                this.loadServices();
+            });
+        } catch (error) {
+            this.showNotification('Error loading service: ' + error.message, 'error');
+        }
+    }
 
     async deleteService(serviceId) {
         if (!confirm('Are you sure you want to delete this service?')) return;
@@ -468,7 +496,35 @@ class CMSManager {
         });
     }
 
-    editBlogPost(postId) { this.showNotification('Blog post editing coming soon!', 'info'); }
+    async editBlogPost(postId) {
+        try {
+            const result = await window.ApiClient.adminGet('blog_posts', postId);
+            const post = result.data;
+            if (!post) { this.showNotification('Blog post not found', 'error'); return; }
+            this.createModal('Edit Blog Post', `<form>
+                <div class="form-group"><label class="form-label">Title</label><input type="text" name="title" class="form-input" value="${(post.title || '').replace(/"/g, '&quot;')}" required></div>
+                <div class="form-group"><label class="form-label">Excerpt</label><textarea name="excerpt" class="form-textarea" rows="2">${post.excerpt || ''}</textarea></div>
+                <div class="form-group"><label class="form-label">Content</label><textarea name="content" class="form-textarea" rows="8">${post.content || ''}</textarea></div>
+                <div class="form-group"><label class="form-label">Featured Image URL</label><input type="text" name="featured_image" class="form-input" value="${(post.featured_image || '').replace(/"/g, '&quot;')}"></div>
+                <div class="form-group"><label class="form-label">Author</label><input type="text" name="author" class="form-input" value="${(post.author || 'Zyntro Team').replace(/"/g, '&quot;')}"></div>
+                <div class="form-group"><label class="form-label">Status</label><select name="status" class="form-select"><option value="draft" ${post.status === 'draft' ? 'selected' : ''}>Draft</option><option value="published" ${post.status === 'published' ? 'selected' : ''}>Published</option></select></div>
+            </form>`, async (formData) => {
+                await window.ApiClient.adminUpdate('blog_posts', postId, {
+                    title: formData.title,
+                    excerpt: formData.excerpt,
+                    content: formData.content,
+                    featured_image: formData.featured_image,
+                    author: formData.author,
+                    status: formData.status,
+                    published_date: formData.status === 'published' && !post.published_date ? new Date().toISOString().split('T')[0] : post.published_date
+                });
+                this.showNotification('Blog post updated successfully!', 'success');
+                this.loadBlogPosts();
+            });
+        } catch (error) {
+            this.showNotification('Error loading blog post: ' + error.message, 'error');
+        }
+    }
 
     async deleteBlogPost(postId) {
         if (!confirm('Are you sure you want to delete this blog post?')) return;
@@ -495,7 +551,32 @@ class CMSManager {
         });
     }
 
-    editTestimonial(testimonialId) { this.showNotification('Testimonial editing coming soon!', 'info'); }
+    async editTestimonial(testimonialId) {
+        try {
+            const result = await window.ApiClient.adminGet('testimonials', testimonialId);
+            const t = result.data;
+            if (!t) { this.showNotification('Testimonial not found', 'error'); return; }
+            this.createModal('Edit Testimonial', `<form>
+                <div class="form-group"><label class="form-label">Author Name</label><input type="text" name="author_name" class="form-input" value="${(t.author_name || '').replace(/"/g, '&quot;')}" required></div>
+                <div class="form-group"><label class="form-label">Company</label><input type="text" name="company" class="form-input" value="${(t.company || '').replace(/"/g, '&quot;')}"></div>
+                <div class="form-group"><label class="form-label">Rating</label><select name="rating" class="form-select"><option value="5" ${t.rating === 5 ? 'selected' : ''}>5 Stars</option><option value="4" ${t.rating === 4 ? 'selected' : ''}>4 Stars</option><option value="3" ${t.rating === 3 ? 'selected' : ''}>3 Stars</option><option value="2" ${t.rating === 2 ? 'selected' : ''}>2 Stars</option><option value="1" ${t.rating === 1 ? 'selected' : ''}>1 Star</option></select></div>
+                <div class="form-group"><label class="form-label">Testimonial Content</label><textarea name="content" class="form-textarea" rows="4" required>${t.content || ''}</textarea></div>
+                <div class="form-group"><label class="form-label">Active</label><select name="active" class="form-select"><option value="true" ${t.active ? 'selected' : ''}>Active</option><option value="false" ${!t.active ? 'selected' : ''}>Inactive</option></select></div>
+            </form>`, async (formData) => {
+                await window.ApiClient.adminUpdate('testimonials', testimonialId, {
+                    author_name: formData.author_name,
+                    company: formData.company,
+                    rating: parseInt(formData.rating),
+                    content: formData.content,
+                    active: formData.active === 'true'
+                });
+                this.showNotification('Testimonial updated successfully!', 'success');
+                this.loadTestimonials();
+            });
+        } catch (error) {
+            this.showNotification('Error loading testimonial: ' + error.message, 'error');
+        }
+    }
 
     async deleteTestimonial(testimonialId) {
         if (!confirm('Are you sure you want to delete this testimonial?')) return;
