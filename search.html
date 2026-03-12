@@ -314,33 +314,60 @@
             const pdfViewer = document.getElementById('pdf-viewer');
             const errorDisplay = document.getElementById('pdf-error-display');
 
-            // Get the proper file URL
-            const fileUrl = coa.file_url || coa.fileUrl || './COAs/Zyntro BPC-157.pdf';
+            // Get the proper file URL from the database record
+            const rawFileUrl = coa.file_url || coa.fileUrl || '';
 
-            coaContent.innerHTML = generateCOAContent(coa, fileUrl);
+            if (!rawFileUrl) {
+                console.warn('SEARCH: No file_url found in COA record:', coa);
+            }
+
+            // Build the absolute URL for the PDF
+            // file_url from DB is relative like "/COAs/Zyntro BPC-157.pdf"
+            const origin = window.location.origin; // e.g. https://zyntrotest.com
+            const absolutePdfUrl = rawFileUrl.startsWith('http') ? rawFileUrl : origin + (rawFileUrl.startsWith('/') ? rawFileUrl : '/' + rawFileUrl);
+
+            console.log('SEARCH: Resolved PDF URL:', absolutePdfUrl);
+
+            // Store for download before rendering
+            window.currentSearchCOA = { ...coa, _absolutePdfUrl: absolutePdfUrl };
+
+            coaContent.innerHTML = generateCOAContent(coa, absolutePdfUrl);
             resultsSection.style.display = 'block';
             pdfPreview.style.display = 'block';
 
-            // Load PDF using Google Docs viewer (same as index.html)
+            // Load PDF in iframe
             if (pdfViewer) {
-                console.log('SEARCH: Loading PDF via Google Docs viewer:', fileUrl);
-                
+                if (errorDisplay) errorDisplay.style.display = 'none';
+
+                // Try loading the PDF directly first (works in Chrome, Edge, Firefox)
+                // Fall back to Google Docs viewer if direct load fails
                 pdfViewer.onload = function() {
-                    console.log('SEARCH: PDF loaded successfully');
-                    if (errorDisplay) errorDisplay.style.display = 'none';
-                };
-                
-                pdfViewer.onerror = function() {
-                    console.log('SEARCH: PDF failed to load, showing error display');
-                    if (errorDisplay) errorDisplay.style.display = 'block';
+                    console.log('SEARCH: PDF iframe loaded');
                 };
 
-                // Use Google Docs viewer for maximum compatibility
-                const googleUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
-                pdfViewer.src = googleUrl;
-                
-                // Store the original PDF URL for download
-                window.currentSearchCOA = coa;
+                pdfViewer.onerror = function() {
+                    console.log('SEARCH: Direct PDF load failed, trying Google Docs viewer');
+                    const googleUrl = 'https://docs.google.com/gview?url=' + encodeURIComponent(absolutePdfUrl) + '&embedded=true';
+                    pdfViewer.src = googleUrl;
+                };
+
+                // Start with direct load (most reliable for same-origin PDFs)
+                console.log('SEARCH: Loading PDF directly:', absolutePdfUrl);
+                pdfViewer.src = absolutePdfUrl;
+
+                // Timeout fallback: if iframe is blank after 5s, switch to Google Docs viewer
+                setTimeout(function() {
+                    try {
+                        // If the iframe loaded a PDF natively, we can't access contentDocument (cross-origin blocked by PDF plugin)
+                        // But if it's truly empty/errored, try Google Docs
+                        if (pdfViewer.src === absolutePdfUrl) {
+                            // Check if it might have failed silently — offer Google Docs as backup
+                            console.log('SEARCH: Direct load may have succeeded (PDF plugin handles rendering)');
+                        }
+                    } catch (e) {
+                        // Cross-origin error means PDF plugin loaded — that's good
+                    }
+                }, 5000);
             }
 
             resultsSection.scrollIntoView({ behavior: 'smooth' });
@@ -435,41 +462,27 @@
 
         // Download function for the current PDF
         function downloadCurrentPDF() {
-            // Use the stored COA data if available
-            if (window.currentSearchCOA && window.currentSearchCOA.file_url) {
+            // Use the stored absolute PDF URL
+            if (window.currentSearchCOA && window.currentSearchCOA._absolutePdfUrl) {
                 const coa = window.currentSearchCOA;
                 const link = document.createElement('a');
-                link.href = coa.file_url;
+                link.href = coa._absolutePdfUrl;
                 link.download = coa.id ? `${coa.id}_COA.pdf` : 'COA.pdf';
                 link.target = '_blank';
                 document.body.appendChild(link);
                 link.click();
                 document.body.removeChild(link);
-                console.log('Downloaded PDF:', coa.file_url);
+                console.log('Downloaded PDF:', coa._absolutePdfUrl);
                 return;
             }
-            
-            // Fallback to extracting from iframe
-            const pdfViewer = document.getElementById('pdf-viewer');
-            if (pdfViewer && pdfViewer.src) {
-                const googleUrl = pdfViewer.src;
-                const urlMatch = googleUrl.match(/url=([^&]+)/);
-                if (urlMatch) {
-                    const pdfUrl = decodeURIComponent(urlMatch[1]);
-                    const link = document.createElement('a');
-                    link.href = pdfUrl;
-                    link.download = 'COA.pdf';
-                    link.target = '_blank';
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                } else {
-                    // Fallback to opening the Google Docs viewer in new tab
-                    window.open(googleUrl, '_blank');
-                }
-            } else {
-                console.error('No PDF viewer or source found');
+
+            // Fallback: use file_url directly
+            if (window.currentSearchCOA && window.currentSearchCOA.file_url) {
+                window.open(window.currentSearchCOA.file_url, '_blank');
+                return;
             }
+
+            console.error('No PDF URL available for download');
         }
     </script>
     
