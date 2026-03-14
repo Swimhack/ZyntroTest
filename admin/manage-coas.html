@@ -237,13 +237,12 @@
                             <th>Type</th>
                             <th>Date</th>
                             <th>Status</th>
-                            <th>Added</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="coa-table-body">
                         <tr>
-                            <td colspan="8" class="text-center">Loading COAs...</td>
+                            <td colspan="7" class="text-center">Loading COAs...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -460,7 +459,7 @@
             const tbody = document.getElementById('coa-table-body');
             
             if (filteredCOAs.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="text-center text-gray">No COAs found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-gray">No COAs found</td></tr>';
                 return;
             }
             
@@ -471,19 +470,16 @@
             
             tbody.innerHTML = currentCOAs.map(coa => `
                 <tr>
-                    <td><strong>${coa.id}</strong></td>
+                    <td><strong><a href="#" onclick="viewCOA('${coa.id}'); return false;" style="color: var(--primary-color); text-decoration: none;">${coa.id}</a></strong></td>
                     <td>${coa.client}</td>
                     <td>${coa.compound}</td>
                     <td><span class="status-badge info">${coa.type}</span></td>
                     <td>${coa.date ? new Date(coa.date).toLocaleDateString() : 'N/A'}</td>
                     <td><span class="status-badge ${getStatusBadgeClass(coa.status)}">${coa.status}</span></td>
-                    <td>${new Date(coa.dateAdded).toLocaleDateString()}</td>
                     <td>
                         <div class="table-actions">
                             <button onclick="editCOA('${coa.id}')" class="btn btn-primary btn-sm">Edit</button>
-                            <button onclick="viewCOA('${coa.id}')" class="btn btn-outline btn-sm">View</button>
                             <button onclick="deleteCOA('${coa.id}')" class="btn btn-danger btn-sm">Delete</button>
-                            ${coa.fileUrl ? `<button onclick="downloadCOA('${coa.id}')" class="btn btn-outline btn-sm">Download</button>` : ''}
                         </div>
                     </td>
                 </tr>
