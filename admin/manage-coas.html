@@ -199,7 +199,10 @@
                     <h2 class="card-title">All COAs</h2>
                     <p class="card-description">View, edit, and manage your certificates of analysis</p>
                 </div>
-                <button onclick="openAddCOAModal()" class="btn btn-primary">+ Add COA</button>
+                <div style="display: flex; gap: 0.5rem;" id="header-action-buttons">
+                    <button onclick="toggleQuickEdit(event)" class="btn btn-outline" id="quick-edit-btn">Quick Edit Mode</button>
+                    <button onclick="openAddCOAModal()" class="btn btn-primary" id="add-coa-btn">+ Add COA</button>
+                </div>
             </div>
             
             <!-- Search and Filters -->
@@ -414,6 +417,121 @@
         let itemsPerPage = 10;
         let filteredCOAs = [];
         let currentEditId = null;
+        let isQuickEditMode = false;
+        
+        function toggleQuickEdit(event) {
+            isQuickEditMode = !isQuickEditMode;
+            
+            const btn = document.getElementById('quick-edit-btn');
+            const addBtn = document.getElementById('add-coa-btn');
+            
+            if (isQuickEditMode) {
+                btn.textContent = 'Save All Changes';
+                btn.classList.remove('btn-outline');
+                btn.classList.add('btn-success');
+                addBtn.style.display = 'none';
+                
+                if (!document.getElementById('cancel-quick-edit-btn')) {
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.id = 'cancel-quick-edit-btn';
+                    cancelBtn.className = 'btn btn-outline';
+                    cancelBtn.textContent = 'Cancel';
+                    cancelBtn.onclick = () => {
+                        isQuickEditMode = false;
+                        btn.textContent = 'Quick Edit Mode';
+                        btn.classList.add('btn-outline');
+                        btn.classList.remove('btn-success');
+                        addBtn.style.display = 'block';
+                        document.getElementById('cancel-quick-edit-btn').style.display = 'none';
+                        renderCOATable();
+                    };
+                    document.getElementById('header-action-buttons').insertBefore(cancelBtn, btn);
+                } else {
+                    document.getElementById('cancel-quick-edit-btn').style.display = 'block';
+                }
+            } else {
+                if (event && event.target.id === 'quick-edit-btn') {
+                    saveAllCOAs();
+                } else {
+                    isQuickEditMode = false;
+                    btn.textContent = 'Quick Edit Mode';
+                    btn.classList.add('btn-outline');
+                    btn.classList.remove('btn-success');
+                    addBtn.style.display = 'block';
+                    if (document.getElementById('cancel-quick-edit-btn')) {
+                        document.getElementById('cancel-quick-edit-btn').style.display = 'none';
+                    }
+                    renderCOATable();
+                }
+                return;
+            }
+            
+            renderCOATable();
+        }
+        
+        async function saveAllCOAs() {
+            try {
+                const btn = document.getElementById('quick-edit-btn');
+                btn.textContent = 'Saving...';
+                btn.disabled = true;
+                
+                const updates = [];
+                const rows = document.querySelectorAll('#coa-table-body tr');
+                
+                for (let row of rows) {
+                    const idInput = row.querySelector('.qe-id');
+                    if (!idInput) continue;
+                    
+                    const originalId = idInput.dataset.originalId;
+                    const id = idInput.value;
+                    const client = row.querySelector('.qe-client').value;
+                    const compound = row.querySelector('.qe-compound').value;
+                    const type = row.querySelector('.qe-type').value;
+                    const rawDate = row.querySelector('.qe-date').value;
+                    const date = rawDate ? new Date(rawDate).toISOString().split('T')[0] : '';
+                    const status = row.querySelector('.qe-status').value;
+                    
+                    const coa = filteredCOAs.find(c => c.id === originalId);
+                    const coaDate = coa && coa.date ? new Date(coa.date).toISOString().split('T')[0] : '';
+                    
+                    if (coa && (
+                        coa.id !== id || coa.client !== client || coa.compound !== compound || 
+                        coa.type !== type || coaDate !== date || coa.status !== status
+                    )) {
+                        updates.push({ originalId, data: { id, client, compound, type, date, status } });
+                    }
+                }
+                
+                if (updates.length > 0) {
+                    let successCount = 0;
+                    for (let update of updates) {
+                        const result = await SupabaseCOAManager.updateCOA(update.originalId, update.data);
+                        if (result.success || result === true) successCount++;
+                    }
+                    alert(`Successfully updated ${successCount} COAs`);
+                } else {
+                    alert('No changes detected.');
+                }
+                
+                isQuickEditMode = false;
+                btn.textContent = 'Quick Edit Mode';
+                btn.classList.add('btn-outline');
+                btn.classList.remove('btn-success');
+                btn.disabled = false;
+                document.getElementById('add-coa-btn').style.display = 'block';
+                if (document.getElementById('cancel-quick-edit-btn')) {
+                    document.getElementById('cancel-quick-edit-btn').style.display = 'none';
+                }
+                
+                await loadCOAs();
+                await updateStats();
+            } catch (error) {
+                console.error('Error saving all:', error);
+                alert('Error making batch updates');
+                document.getElementById('quick-edit-btn').disabled = false;
+                document.getElementById('quick-edit-btn').textContent = 'Save All Changes';
+            }
+        }
         
         // Initialize page
         document.addEventListener('DOMContentLoaded', async function() {
@@ -469,25 +587,62 @@
             const endIndex = Math.min(startIndex + itemsPerPage, filteredCOAs.length);
             const currentCOAs = filteredCOAs.slice(startIndex, endIndex);
             
-            tbody.innerHTML = currentCOAs.map(coa => `
-                <tr>
-                    <td><strong>${coa.id}</strong></td>
-                    <td>${coa.client}</td>
-                    <td>${coa.compound}</td>
-                    <td><span class="status-badge info">${coa.type}</span></td>
-                    <td>${coa.date}</td>
-                    <td><span class="status-badge ${getStatusBadgeClass(coa.status)}">${coa.status}</span></td>
-                    <td>${new Date(coa.dateAdded).toLocaleDateString()}</td>
-                    <td>
-                        <div class="table-actions">
-                            <button onclick="editCOA('${coa.id}')" class="btn btn-primary btn-sm">Edit</button>
-                            <button onclick="viewCOA('${coa.id}')" class="btn btn-outline btn-sm">View</button>
-                            <button onclick="deleteCOA('${coa.id}')" class="btn btn-danger btn-sm">Delete</button>
-                            ${coa.fileUrl ? `<button onclick="downloadCOA('${coa.id}')" class="btn btn-outline btn-sm">Download</button>` : ''}
-                        </div>
-                    </td>
-                </tr>
-            `).join('');
+            if (isQuickEditMode) {
+                tbody.innerHTML = currentCOAs.map(coa => `
+                    <tr>
+                        <td>
+                            <input type="text" class="qe-id" value="${coa.id}" data-original-id="${coa.id}" style="width: 100px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+                        </td>
+                        <td>
+                            <input type="text" class="qe-client" value="${coa.client}" style="width: 120px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+                        </td>
+                        <td>
+                            <input type="text" class="qe-compound" value="${coa.compound}" style="width: 120px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+                        </td>
+                        <td>
+                            <select class="qe-type" style="padding: 4px; width: 140px; border: 1px solid #ccc; border-radius: 4px;">
+                                <option value="Peptide Analysis" ${coa.type === 'Peptide Analysis' ? 'selected' : ''}>Peptide Analysis</option>
+                                <option value="Supplement Screening" ${coa.type === 'Supplement Screening' ? 'selected' : ''}>Supplement Screening</option>
+                                <option value="Biotech Analysis" ${coa.type === 'Biotech Analysis' ? 'selected' : ''}>Biotech Analysis</option>
+                            </select>
+                        </td>
+                        <td>
+                            <input type="date" class="qe-date" value="${coa.date ? new Date(coa.date).toISOString().split('T')[0] : ''}" style="width: 130px; padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+                        </td>
+                        <td>
+                            <select class="qe-status" style="padding: 4px; border: 1px solid #ccc; border-radius: 4px;">
+                                <option value="Complete" ${coa.status === 'Complete' ? 'selected' : ''}>Complete</option>
+                                <option value="Pending" ${coa.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                                <option value="In Progress" ${coa.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                            </select>
+                        </td>
+                        <td>${new Date(coa.dateAdded).toLocaleDateString()}</td>
+                        <td>
+                            <span class="text-gray text-sm">Editing...</span>
+                        </td>
+                    </tr>
+                `).join('');
+            } else {
+                tbody.innerHTML = currentCOAs.map(coa => `
+                    <tr>
+                        <td><strong>${coa.id}</strong></td>
+                        <td>${coa.client}</td>
+                        <td>${coa.compound}</td>
+                        <td><span class="status-badge info">${coa.type}</span></td>
+                        <td>${coa.date ? new Date(coa.date).toLocaleDateString() : ''}</td>
+                        <td><span class="status-badge ${getStatusBadgeClass(coa.status)}">${coa.status}</span></td>
+                        <td>${new Date(coa.dateAdded).toLocaleDateString()}</td>
+                        <td>
+                            <div class="table-actions">
+                                <button onclick="editCOA('${coa.id}')" class="btn btn-primary btn-sm">Edit</button>
+                                <button onclick="viewCOA('${coa.id}')" class="btn btn-outline btn-sm">View</button>
+                                <button onclick="deleteCOA('${coa.id}')" class="btn btn-danger btn-sm">Delete</button>
+                                ${coa.fileUrl ? `<button onclick="downloadCOA('${coa.id}')" class="btn btn-outline btn-sm">Download</button>` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `).join('');
+            }
         }
         
         function renderPagination() {
