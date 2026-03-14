@@ -527,7 +527,7 @@ body {
 .table-container {
     background: white;
     border-radius: var(--radius-lg);
-    overflow: hidden;
+    overflow-x: auto;
     box-shadow: var(--shadow-sm);
 }
 

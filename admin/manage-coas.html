@@ -475,7 +475,7 @@
                     <td>${coa.client}</td>
                     <td>${coa.compound}</td>
                     <td><span class="status-badge info">${coa.type}</span></td>
-                    <td>${coa.date}</td>
+                    <td>${coa.date ? new Date(coa.date).toLocaleDateString() : 'N/A'}</td>
                     <td><span class="status-badge ${getStatusBadgeClass(coa.status)}">${coa.status}</span></td>
                     <td>${new Date(coa.dateAdded).toLocaleDateString()}</td>
                     <td>
